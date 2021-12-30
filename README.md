@@ -2,6 +2,16 @@
 
 Python implemantation of a Multistate competing risk model
 
+## Dev setup
+create conda environment:  
+`conda create --name pymsm --file environment.yml`
+
+activate environment:   
+`conda activate pymsm`
+
+clone this repo and then pip install:  
+`pip install -e .`
+
 
 https://github.com/JonathanSomer/covid-19-multi-state-model
 

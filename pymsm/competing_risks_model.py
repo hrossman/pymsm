@@ -1,6 +1,5 @@
 # -- R source: https://github.com/JonathanSomer/covid-19-multi-state-model/blob/master/model/competing_risks_model.R --#
 
-import stat
 import numpy as np
 import pandas as pd
 from typing import List
@@ -77,7 +76,7 @@ class CompetingRisksModel:
         event_col: str = "E",
         cluster_col: str = None,
         weights_col: str = None,
-        t_start_col: str = None,
+        entry_col: str = None,
         verbose: int = 1,
         **coxph_kwargs,
     ):
@@ -89,9 +88,6 @@ class CompetingRisksModel:
                 f">>> Fitting Transition to State: {type}, n events: {np.sum(is_event)}"
             )
 
-        # TODO what is this:
-        #     surv_object = if (is.null(t_start)) Surv(t, is_event) else Surv(t_start, t, is_event)
-
         cox_model = CoxPHFitter()
         cox_model.fit(
             df=df,
@@ -99,6 +95,7 @@ class CompetingRisksModel:
             event_col=event_col,
             weights_col=weights_col,
             cluster_col=cluster_col,
+            entry_col=entry_col,
             **coxph_kwargs,
         )
 
@@ -195,7 +192,7 @@ class CompetingRisksModel:
         event_col: str = "E",
         cluster_col: str = None,
         weights_col: str = None,
-        t_start_col: str = None,
+        entry_col: str = None,
         break_ties: bool = True,
         epsilon_min: float = 0.0,
         epsilon_max: float = 0.0001,
@@ -256,7 +253,7 @@ class CompetingRisksModel:
                 event_col,
                 cluster_col,
                 weights_col,
-                t_start_col,
+                entry_col,
                 verbose,
             )
             self.event_specific_models[type] = self._extract_necessary_attributes(

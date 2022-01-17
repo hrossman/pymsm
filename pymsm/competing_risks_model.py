@@ -76,7 +76,7 @@ class CompetingRisksModel:
         event_col: str = "E",
         cluster_col: str = None,
         weights_col: str = None,
-        t_start: float = None,
+        t_start_col: str = None,
         verbose: int = 1,
         **coxph_kwargs,
     ):
@@ -128,7 +128,7 @@ class CompetingRisksModel:
         event_col: str = "E",
         cluster_col: str = None,
         weights_col: str = None,
-        t_start: float = None,
+        t_start_col: str = None,
         break_ties: bool = True,
         epsilon_min: float = 0.0,
         epsilon_max: float = 0.0001,
@@ -185,8 +185,7 @@ class CompetingRisksModel:
                 event_col,
                 cluster_col,
                 weights_col,
-                type,
-                t_start,
+                t_start_col,
                 verbose,
             )
             self.event_specific_models[type] = self._extract_necessary_attributes(

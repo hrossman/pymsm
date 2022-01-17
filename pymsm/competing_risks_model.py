@@ -20,6 +20,36 @@ class CompetingRisksModel:
         self.failure_types = failure_types
         self.event_specific_models = event_specific_models
 
+
+    def _assert_valid_dataset(t, failure_types, covariates_X):
+        pass
+        # TODO
+        #   # t should be non-negative
+        #   stopifnot(t >= 0)
+
+        #   # failure types should be integers from 0 to m, not necessarily consecutive
+        #   stopifnot(failure_types %% 1 == 0) # integers
+        #   stopifnot(min(failure_types) >= 0)
+
+        #   # covariates should all be numerical
+        #   stopifnot(sapply(covariates_X, is.numeric))
+        
+        #   # all 3 arguments should have the same length of n
+        #   stopifnot(length(t) == length(failure_types))
+        #   stopifnot(nrow(covariates_X) == length(t))
+      
+  
+    def _break_ties_by_adding_epsilon(t, epsilon_min = 0.0, epsilon_max = 0.0001):
+        pass
+        # TODO
+        # set.seed(42)
+        # counts = count(t)
+        # non_unique_times = counts$x[counts$freq > 1]
+        # eps = runif(length(t), epsilon_min, epsilon_max)
+        
+        # # note: leave zero times as-is, to avoid affecting model fit
+        # t + ((t != 0) *(t %in% non_unique_times) * eps)
+
     def _fit_event_specific_model(
         t,
         failure_types,
@@ -119,10 +149,10 @@ class CompetingRisksModel:
         these values should be chosen so that they do not change the order of the events.
         """
 
-        # TODO
-        # assert_valid_dataset(t, failure_types, covariates_X)
+        self._assert_valid_dataset(t, failure_types, covariates_X)
 
-        # if (break_ties) t = break_ties_by_adding_epsilon(t, epsilon_min, epsilon_max)
+        if break_ties:
+            t = self.break_ties_by_adding_epsilon(t, epsilon_min, epsilon_max)
 
         failure_types = np.unique(failure_types[failure_types > 0])
         for type in failure_types:

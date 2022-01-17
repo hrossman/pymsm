@@ -1,6 +1,7 @@
 # -- R source: https://github.com/JonathanSomer/covid-19-multi-state-model/blob/master/model/competing_risks_model.R --#
 
 import numpy as np
+import pandas as pd
 from typing import List
 from lifelines import CoxPHFitter
 
@@ -21,22 +22,21 @@ class CompetingRisksModel:
         self.event_specific_models = event_specific_models
 
 
-    def _assert_valid_dataset(t, failure_types, covariates_X):
-        pass
+    def _assert_valid_dataset(t: np.ndarray, failure_types: List, covariates_X: pd.DataFrame):
+        # t should be non-negative
+        assert (t >= 0)
+
+        # failure types should be integers from 0 to m, not necessarily consecutive
+        assert all(isinstance(f, int) for f in failure_types)
+        assert (min(failure_types) >= 0)
+
         # TODO
-        #   # t should be non-negative
-        #   stopifnot(t >= 0)
-
-        #   # failure types should be integers from 0 to m, not necessarily consecutive
-        #   stopifnot(failure_types %% 1 == 0) # integers
-        #   stopifnot(min(failure_types) >= 0)
-
-        #   # covariates should all be numerical
-        #   stopifnot(sapply(covariates_X, is.numeric))
-        
-        #   # all 3 arguments should have the same length of n
-        #   stopifnot(length(t) == length(failure_types))
-        #   stopifnot(nrow(covariates_X) == length(t))
+        # covariates should all be numerical
+        # stopifnot(sapply(covariates_X, is.numeric))
+    
+        # all 3 arguments should have the same length of n
+        assert (len(t) == len(failure_types))
+        assert (len(covariates_X) == len(t))
       
   
     def _break_ties_by_adding_epsilon(t, epsilon_min = 0.0, epsilon_max = 0.0001):
@@ -53,7 +53,7 @@ class CompetingRisksModel:
     def _fit_event_specific_model(
         t,
         failure_types,
-        covariates_X,
+        covariates_X: pd.DataFrame,
         type,
         sample_ids=None,
         t_start=None,
@@ -104,7 +104,7 @@ class CompetingRisksModel:
         self,
         t: np.ndarray,
         failure_types: np.ndarray,
-        covariates_X: np.ndarray,
+        covariates_X: pd.DataFrame,
         sample_ids: List = None,
         t_start: float = None,
         break_ties: bool = True,

@@ -226,7 +226,7 @@ class CompetingRisksModel:
         if time_passed > 0:
             predictions = (
                 predictions - cif_function(time_passed)
-            ) / self.__annotations___survival_function(time_passed, sample_covariates)
+            ) / self._survival_function(time_passed, sample_covariates)
 
         return predictions
 

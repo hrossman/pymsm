@@ -2,6 +2,7 @@
 
 import numpy as np
 from typing import List
+from lifelines import CoxPHFitter
 
 
 class CompetingRisksModel:
@@ -16,17 +17,59 @@ class CompetingRisksModel:
         3. baseline_hazard
         4. cumulative_baseline_hazard_function
         """
+        self.failure_types = failure_types
+        self.event_specific_models = event_specific_models
+
+    def _fit_event_specific_model(
+        t,
+        failure_types,
+        covariates_X,
+        type,
+        sample_ids=None,
+        t_start=None,
+        sample_weights=None,
+        verbose=1,
+        **coxph_kwargs,
+    ):
+        # Treat all 'failure_types' except 'type' as censoring events
+        is_event = failure_types == type
+
+        if verbose >= 1:
+            print(
+                f">>> Fitting Transition to State: {type}, n events: {np.sum(is_event)}"
+            )
+
+        # TODO what is this:
+        #     surv_object = if (is.null(t_start)) Surv(t, is_event) else Surv(t_start, t, is_event)
+
+        cox_model = CoxPHFitter()
+        cox_model.fit(
+            df=covariates_X,
+            duration_col="T",
+            event_col="E",
+            weights_col="sample_weights",
+            cluster_col=None,
+            **coxph_kwargs,
+        )
+        # TODO cluster col should be sample_ids?
+
+        if verbose >= 2:
+            cox_model.print_summary()
+
+        return cox_model
+
+    def _extract_necessary_attributes(cox_model):
         pass
 
     def fit(
         self,
         t: np.ndarray,
-        failure_types: List,
-        covariates_X: List,
-        sample_ids: List=None,
-        t_start:float=None,
+        failure_types: np.ndarray,
+        covariates_X: np.ndarray,
+        sample_ids: List = None,
+        t_start: float = None,
         break_ties: bool = True,
-        sample_weights:np.ndarray=None,
+        sample_weights: np.ndarray = None,
         epsilon_min: float = 0.0,
         epsilon_max: float = 0.0001,
         verbose: int = 1,
@@ -69,15 +112,24 @@ class CompetingRisksModel:
 
         # TODO
         # assert_valid_dataset(t, failure_types, covariates_X)
-    
+
         # if (break_ties) t = break_ties_by_adding_epsilon(t, epsilon_min, epsilon_max)
-        
-        # failure_types <<- unique(failure_types[failure_types > 0])
-        # for (type in .self$failure_types) {
-        # cox_model = fit_event_specific_model(t, failure_types, covariates_X, type, sample_ids, t_start, sample_weights, verbose)
-        # event_specific_models[[type]] <<- extract_necessary_attributes(cox_model)
-        # }
-        # },
+
+        failure_types = np.unique(failure_types[failure_types > 0])
+        for type in failure_types:
+            cox_model = self._fit_event_specific_model(
+                t,
+                failure_types,
+                covariates_X,
+                type,
+                sample_ids,
+                t_start,
+                sample_weights,
+                verbose,
+            )
+            self.event_specific_models[type] = self._extract_necessary_attributes(
+                cox_model
+            )
 
 
 if __name__ == "__main__":

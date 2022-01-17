@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 from typing import List
 from lifelines import CoxPHFitter
+from pandas.api.types import is_numeric_dtype
 
 
 class CompetingRisksModel:
@@ -23,22 +24,31 @@ class CompetingRisksModel:
 
     @staticmethod
     def _assert_valid_dataset(
-        t: np.ndarray, failure_types: List, covariates_X: pd.DataFrame
+        df: pd.DataFrame,
+        duration_col: str = None,
+        event_col: str = None,
+        cluster_col: str = None,
+        weights_col: str = None,
     ):
+
+        assert df[duration_col].count() == df[event_col].count()
+
         # t should be non-negative
-        assert t >= 0
+        assert df[duration_col] >= 0
 
         # failure types should be integers from 0 to m, not necessarily consecutive
+        failure_types = df[event_col].values
         assert all(isinstance(f, int) for f in failure_types)
         assert min(failure_types) >= 0
 
-        # TODO
         # covariates should all be numerical
-        # stopifnot(sapply(covariates_X, is.numeric))
-
-        # all 3 arguments should have the same length of n
-        assert len(t) == len(failure_types)
-        assert len(covariates_X) == len(t)
+        covariate_cols = [
+            col
+            for col in df.columns
+            if col not in [duration_col, event_col, cluster_col, weights_col]
+        ]
+        for col in covariate_cols:
+            assert is_numeric_dtype(df[col])
 
     @staticmethod
     def _break_ties_by_adding_epsilon(
@@ -52,6 +62,7 @@ class CompetingRisksModel:
         non_unique_times_idx = np.where(count[inverse] > 1)[
             0
         ]  # find all indices where counts > 1
+        # Add epsilon to all non-unique events, leave time zero as is
         t[((non_unique_times_idx) & (t != 0))] = (
             eps + t[((non_unique_times_idx) & (t != 0))]
         )
@@ -59,18 +70,18 @@ class CompetingRisksModel:
 
     @staticmethod
     def _fit_event_specific_model(
-        t,
-        failure_types,
-        covariates_X: pd.DataFrame,
-        type,
-        sample_ids=None,
-        t_start=None,
-        sample_weights=None,
-        verbose=1,
+        type: int,
+        df: pd.DataFrame,
+        duration_col: str = "T",
+        event_col: str = "E",
+        cluster_col: str = None,
+        weights_col: str = None,
+        t_start: float = None,
+        verbose: int = 1,
         **coxph_kwargs,
     ):
         # Treat all 'failure_types' except 'type' as censoring events
-        is_event = failure_types == type
+        is_event = df[event_col] == type
 
         if verbose >= 1:
             print(
@@ -82,14 +93,13 @@ class CompetingRisksModel:
 
         cox_model = CoxPHFitter()
         cox_model.fit(
-            df=covariates_X,
-            duration_col="T",
-            event_col="E",
-            weights_col="sample_weights",
-            cluster_col=None,
+            df=df,
+            duration_col=duration_col,
+            event_col=event_col,
+            weights_col=weights_col,
+            cluster_col=cluster_col,
             **coxph_kwargs,
         )
-        # TODO cluster col should be sample_ids?
 
         if verbose >= 2:
             cox_model.print_summary()
@@ -113,13 +123,13 @@ class CompetingRisksModel:
 
     def fit(
         self,
-        t: np.ndarray,
-        failure_types: np.ndarray,
-        covariates_X: pd.DataFrame,
-        sample_ids: List = None,
+        df: pd.DataFrame,
+        duration_col: str = "T",
+        event_col: str = "E",
+        cluster_col: str = None,
+        weights_col: str = None,
         t_start: float = None,
         break_ties: bool = True,
-        sample_weights: np.ndarray = None,
         epsilon_min: float = 0.0,
         epsilon_max: float = 0.0001,
         verbose: int = 1,
@@ -160,21 +170,23 @@ class CompetingRisksModel:
         these values should be chosen so that they do not change the order of the events.
         """
 
-        self._assert_valid_dataset(t, failure_types, covariates_X)
+        self._assert_valid_dataset(df, duration_col, event_col, cluster_col, weights_col)
 
         if break_ties:
-            t = self._break_ties_by_adding_epsilon(t, epsilon_min, epsilon_max)
+            t = df[duration_col].copy()
+            df[duration_col] = self._break_ties_by_adding_epsilon(t, epsilon_min, epsilon_max)
 
-        failure_types = np.unique(failure_types[failure_types > 0])
+        failure_types = df[event_col].unique()
+        failure_types = failure_types[failure_types>0]
         for type in failure_types:
             cox_model = self._fit_event_specific_model(
-                t,
-                failure_types,
-                covariates_X,
+                df,
+                duration_col,
+                event_col,
+                cluster_col,
+                weights_col,
                 type,
-                sample_ids,
                 t_start,
-                sample_weights,
                 verbose,
             )
             self.event_specific_models[type] = self._extract_necessary_attributes(

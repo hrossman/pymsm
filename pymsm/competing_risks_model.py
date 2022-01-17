@@ -21,35 +21,43 @@ class CompetingRisksModel:
         self.failure_types = failure_types
         self.event_specific_models = event_specific_models
 
-
-    def _assert_valid_dataset(t: np.ndarray, failure_types: List, covariates_X: pd.DataFrame):
+    @staticmethod
+    def _assert_valid_dataset(
+        t: np.ndarray, failure_types: List, covariates_X: pd.DataFrame
+    ):
         # t should be non-negative
-        assert (t >= 0)
+        assert t >= 0
 
         # failure types should be integers from 0 to m, not necessarily consecutive
         assert all(isinstance(f, int) for f in failure_types)
-        assert (min(failure_types) >= 0)
+        assert min(failure_types) >= 0
 
         # TODO
         # covariates should all be numerical
         # stopifnot(sapply(covariates_X, is.numeric))
-    
-        # all 3 arguments should have the same length of n
-        assert (len(t) == len(failure_types))
-        assert (len(covariates_X) == len(t))
-      
-  
-    def _break_ties_by_adding_epsilon(t, epsilon_min = 0.0, epsilon_max = 0.0001):
-        pass
-        # TODO
-        # set.seed(42)
-        # counts = count(t)
-        # non_unique_times = counts$x[counts$freq > 1]
-        # eps = runif(length(t), epsilon_min, epsilon_max)
-        
-        # # note: leave zero times as-is, to avoid affecting model fit
-        # t + ((t != 0) *(t %in% non_unique_times) * eps)
 
+        # all 3 arguments should have the same length of n
+        assert len(t) == len(failure_types)
+        assert len(covariates_X) == len(t)
+
+    @staticmethod
+    def _break_ties_by_adding_epsilon(
+        t: np.ndarray, epsilon_min: float = 0.0, epsilon_max: float = 0.0001
+    ):
+        np.random.seed(42)
+        eps = np.random.uniform(low=epsilon_min, high=epsilon_max, size=len(t))
+        _, inverse, count = np.unique(
+            t, return_inverse=True, return_counts=True, axis=0
+        )
+        non_unique_times_idx = np.where(count[inverse] > 1)[
+            0
+        ]  # find all indices where counts > 1
+        t[((non_unique_times_idx) & (t != 0))] = (
+            eps + t[((non_unique_times_idx) & (t != 0))]
+        )
+        return t
+
+    @staticmethod
     def _fit_event_specific_model(
         t,
         failure_types,
@@ -88,14 +96,17 @@ class CompetingRisksModel:
 
         return cox_model
 
+    @staticmethod
     def _extract_necessary_attributes(cox_model):
         # TODO
         pass
 
+    @staticmethod
     def _compute_cif_function(sample_covariates, failure_type):
         # TODO
         pass
 
+    @staticmethod
     def _survival_function(time_passed, sample_covariates):
         # TODO
         pass
@@ -152,7 +163,7 @@ class CompetingRisksModel:
         self._assert_valid_dataset(t, failure_types, covariates_X)
 
         if break_ties:
-            t = self.break_ties_by_adding_epsilon(t, epsilon_min, epsilon_max)
+            t = self._break_ties_by_adding_epsilon(t, epsilon_min, epsilon_max)
 
         failure_types = np.unique(failure_types[failure_types > 0])
         for type in failure_types:

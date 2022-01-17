@@ -59,6 +59,15 @@ class CompetingRisksModel:
         return cox_model
 
     def _extract_necessary_attributes(cox_model):
+        # TODO
+        pass
+
+    def _compute_cif_function(sample_covariates, failure_type):
+        # TODO
+        pass
+
+    def _survival_function(time_passed, sample_covariates):
+        # TODO
         pass
 
     def fit(
@@ -130,6 +139,43 @@ class CompetingRisksModel:
             self.event_specific_models[type] = self._extract_necessary_attributes(
                 cox_model
             )
+
+    def predict_CIF(self, predict_at_t, sample_covariates, failure_type, time_passed=0):
+        """
+        Description:
+        ------------------------------------------------------------------------------------------------------------
+        This method computes the failure-type-specific cumulative incidence function, given that 'time_passed' time
+        has passed (default is 0)
+        
+        Arguments:
+        ------------------------------------------------------------------------------------------------------------
+        predict_at_t: numeric vector
+          times at which the cif will be computed
+        
+        sample_covariates: numeric vector
+          a numerical vector of same length as the covariate matrix the model was fit to.
+        
+        failure_type: integer
+          integer corresponing to the failure type, as given when fitting the model
+        
+        time_passed: numeric
+          compute the cif conditioned on the fact that this amount of time has already passed.
+        
+        Returns:
+        ------------------------------------------------------------------------------------------------------------
+        the predicted cumulative incidence values for the given sample_covariates at times predict_at_t.
+        """
+        cif_function = self._compute_cif_function(sample_covariates, failure_type)
+
+        predictions = cif_function(predict_at_t)
+
+        # re-normalize the probability to account for the time passed
+        if time_passed > 0:
+            predictions = (
+                predictions - cif_function(time_passed)
+            ) / self.__annotations___survival_function(time_passed, sample_covariates)
+
+        return predictions
 
 
 if __name__ == "__main__":

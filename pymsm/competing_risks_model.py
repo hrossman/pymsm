@@ -146,9 +146,8 @@ class CompetingRisksModel:
         the cumulative hazard is the sum of hazards at times of events, the hazards are then the diffs 
         
         """
-        return self.event_specific_models[failure_type].baseline_hazard
+        return self.event_specific_models[failure_type]["baseline_hazard"]
 
-    
     def _extract_necessary_attributes(cox_model: CoxPHFitter):
 
         # TODO what is this?
@@ -166,19 +165,28 @@ class CompetingRisksModel:
         return model
 
     def _partial_hazard(self, failure_type, sample_covariates):
-        # simply e^x_dot_beta for the chosen failure type's coefficients  
-        coefs = self.event_specific_models[failure_type]['coefficients']
+        # simply e^x_dot_beta for the chosen failure type's coefficients
+        coefs = self.event_specific_models[failure_type]["coefficients"]
         x_dot_beta = sample_covariates * coefs
-        return(np.exp(x_dot_beta))
+        return np.exp(x_dot_beta)
 
-    def _unique_event_times(self,failure_type):
-        # uses a coxph function which returns unique times, regardless of the original fit which might have tied times. 
-        return self.event_specific_models[failure_type]['unique_event_times'] 
+    def _unique_event_times(self, failure_type):
+        # uses a coxph function which returns unique times, regardless of the original fit which might have tied times.
+        return self.event_specific_models[failure_type]["unique_event_times"]
 
-    @staticmethod
-    def _survival_function(time_passed, sample_covariates):
-        # TODO
-        pass
+    def _survival_function(self, t, sample_covariates):
+        # simply: exp( sum of cumulative hazards of all types )
+        exponent = np.zeros_like(t)
+        for type in self.failure_types:
+            exponent = exponent - (
+                self.event_specific_models[type]["cumulative_baseline_hazard_function"][
+                    t
+                ]
+                * (self._partial_hazard(type, sample_covariates))
+            )
+        survival_function_at_t = np.exp(exponent)
+        assert len(survival_function_at_t) == len(t)
+        return survival_function_at_t
 
     def fit(
         self,

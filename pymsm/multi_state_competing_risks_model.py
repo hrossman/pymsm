@@ -2,6 +2,7 @@
 
 from typing import List, Callable
 from pandas import Series, DataFrame
+from pymsm.competing_risks_model import CompetingRisksModel
 
 
 def default_update_covariates_function(covariates_entering_origin_state, origin_state=None, target_state=None,
@@ -13,7 +14,8 @@ RIGHT_CENSORING = 0
 
 
 class PathObject:
-    def __init__(self, covariates: Series, states: List, time_at_each_state: List, sample_id: int = None):
+    def __init__(self, covariates: Series, states: List, time_at_each_state: List, sample_id: int = None,
+                 weight: float = None):
         """
         PathObject class holds a sample of a single path through the multi state model
         :param covariates: named pandas Series of sample covariates at the initial state
@@ -24,18 +26,24 @@ class PathObject:
         states by 1. Conversely, if the last state is not a terminal state, then the length of vector times should be
         the same as that of the states.
         :param: optional, int, an identification of this sample
-
+        :param: optional, float, sample weight
         """
         self.covariates = covariates
         self.states = states
         self.time_at_each_state = time_at_each_state
         self.sample_id = sample_id
+        self.sample_weight = weight
 
 
 class MultiStateModel:
-    def __init__(self, dataset: List[PathObject], terminal_states: List,
-                 update_covariates_fn: Callable = default_update_covariates_function,
-                 covariate_names: List[str] = None):
+    dataset: List[PathObject]
+    terminal_states: List[int]
+    update_covariates_fn: Callable
+    covariate_names: List[str]
+    state_specific_models: List[CompetingRisksModel]
+
+    def __init__(self, dataset, terminal_states, update_covariates_fn=default_update_covariates_function,
+                 covariate_names=None):
         """
         MultiStateModel class fits a competing risks model per state, that is, it treats all state transitions as competing risks.
         See the CompetingRisksModel class.
@@ -64,7 +72,7 @@ class MultiStateModel:
             if verbose >= 1:
                 print('Fitting Model at State: {}'.format(state))
 
-            model = self._fit_state_specific_model(state, self._competing_risk_dataset, verbose)
+            model = self._fit_state_specific_model(state, verbose)
             self.state_specific_models[state] = model
 
     def _assert_valid_input(self) -> None:
@@ -78,9 +86,13 @@ class MultiStateModel:
                 # TODO - do we want to add printing of the obj ?
                 exit("Error: encountered a sample with a single state that is a terminal state.")
 
-        # Check either all objects have and id or none has
+        # Check either all objects have an id or none has
         has_id = [obj for obj in self.dataset if obj.sample_id is not None]
         assert(len(has_id) == len(self.dataset) or len(has_id) == 0)
+
+        # Check either all objects have sample weight or none has
+        has_weight = [obj for obj in self.dataset if obj.sample_weight is not None]
+        assert(len(has_weight) == len(self.dataset) or len(has_weight) == 0)
 
         # Check all covariates are of the same length
         cov_len = len(self.dataset[0].covariates)
@@ -106,7 +118,7 @@ class MultiStateModel:
 
     def _prepare_dataset_for_competing_risks_fit(self) -> DataFrame:
         self._competing_risk_dataset = DataFrame(columns=['sample_id', 'origin_state', 'target_state',
-                                                          'time_entry_to_origin', 'time_transition_to_target'] +
+                                                          '4', 'time_transition_to_target'] +
                                                  self.covariate_names)
         for obj in self.dataset:
             origin_state = obj.states[0]
@@ -120,6 +132,7 @@ class MultiStateModel:
 
                 # append row corresponding to this transition
                 transition_row['sample_id'] = obj.sample_id
+                transition_row['sample_weight'] = obj.sample_weight
                 transition_row['origin_state'] = origin_state
                 transition_row['target_state'] = target_state
                 transition_row['time_entry_to_origin'] = time_entry_to_origin
@@ -138,8 +151,12 @@ class MultiStateModel:
 
         return self._competing_risk_dataset
 
-    def _fit_state_specific_model(self, state: int, competing_risk_dataset: DataFrame, verbose: int = 1):
-        pass
+    def _fit_state_specific_model(self, state: int, verbose: int = 1):
+        state_specific_df = self._competing_risk_dataset[self._competing_risk_dataset['origin_state'] == state]
+        crm = CompetingRisksModel()
+        crm.fit(state_specific_df, event_col='target_state', duration_col='time_transition_to_target',
+                cluster_col='sample_id', t_start_col='time_entry_to_origin', verbose=verbose)
+        return crm
 
     def _run_monte_carlo_simulation(self, sample_covariates, origin_state: int, current_time: int = 0,
                                     n_random_sampels: int =  100, max_transitions: int = 10):
@@ -148,12 +165,14 @@ class MultiStateModel:
     def _one_monte_carlo_run(self, sample_covariates, origin_state: int, max_transitions: int, current_time: int = 0):
         pass
 
-    def _probability_for_next_state(self, next_state: int, competing_risks_model, sample_covariates,
+    def _probability_for_next_state(self, next_state: int, competing_risks_model : CompetingRisksModel, sample_covariates,
                                     t_entry_to_current_state : int = 0):
         pass
 
     def _sample_next_state(self, current_state: int, sample_covariates, t_entry_to_current_state: int):
-        pass
+        competing_risk_model = self.state_specific_models[current_state]
+        possible_next_states = competing_risk_model.failure_types
+        # TODO - finish
 
     def _sample_time_to_next_state(self, current_state: int, next_state: int, sample_covariates,
                                    t_entry_to_current_state: int):

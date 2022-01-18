@@ -29,7 +29,7 @@ class CompetingRisksModel:
         cluster_col: str = None,
         weights_col: str = None,
         entry_col: str = None,
-    ):
+    ) -> None:
 
         assert df[duration_col].count() == df[event_col].count()
 
@@ -56,24 +56,28 @@ class CompetingRisksModel:
                 ), f"Non-numeric values found in {col} column"
 
     def break_ties_by_adding_epsilon(
-        t: np.ndarray, epsilon_min: float = 0.0, epsilon_max: float = 0.0001
-    ):
+        self, t: np.ndarray, epsilon_min: float = 0.0, epsilon_max: float = 0.0001
+    ) -> np.ndarray:
         np.random.seed(42)
-        eps = np.random.uniform(low=epsilon_min, high=epsilon_max, size=len(t))
         _, inverse, count = np.unique(
             t, return_inverse=True, return_counts=True, axis=0
         )
         non_unique_times_idx = np.where(count[inverse] > 1)[
             0
         ]  # find all indices where counts > 1
-        # Add epsilon to all non-unique events, leave time zero as is
-        t[((non_unique_times_idx) & (t != 0))] = (
-            eps + t[((non_unique_times_idx) & (t != 0))]
+        # Add epsilon to all non-unique events
+        eps = np.random.uniform(
+            low=epsilon_min, high=epsilon_max, size=len(non_unique_times_idx)
         )
-        return t
+        t_new = t.copy().astype(float)
+        np.add.at(t_new, non_unique_times_idx, eps)
+        # Leave time zero as it was
+        t_new[0] = t[0]
+        return t_new
 
     def fit_event_specific_model(
-        type: int,
+        self,
+        event_of_interest: int,
         df: pd.DataFrame,
         duration_col: str = "T",
         event_col: str = "E",
@@ -82,18 +86,18 @@ class CompetingRisksModel:
         entry_col: str = None,
         verbose: int = 1,
         **coxph_kwargs,
-    ):
-        # Treat all 'failure_types' except 'type' as censoring events
-        is_event = df[event_col] == type
+    ) -> CoxPHFitter:
+        # Treat all 'failure_types' except 'event_of_interest' as censoring events
+        is_event = df[event_col] == event_of_interest
 
-        # Apply censoring to all but type of event
+        # Apply censoring to all but event_of_interest
         event_df = df.copy()
         event_df.loc[~is_event, event_col] = 0
         event_df.loc[is_event, event_col] = 1
 
         if verbose >= 1:
             print(
-                f">>> Fitting Transition to State: {type}, n events: {np.sum(is_event)}"
+                f">>> Fitting Transition to State: {event_of_interest}, n events: {np.sum(is_event)}"
             )
 
         cox_model = CoxPHFitter()

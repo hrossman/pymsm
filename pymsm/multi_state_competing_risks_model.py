@@ -163,8 +163,11 @@ class MultiStateModel:
         return crm
 
     def _run_monte_carlo_simulation(self, sample_covariates, origin_state: int, current_time: int = 0,
-                                    n_random_sampels: int =  100, max_transitions: int = 10):
-        pass
+                                    n_random_sampels: int = 100, max_transitions: int = 10) -> List[PathObject]:
+        runs = list()
+        for i in range(0, n_random_sampels):
+            runs.append(self._one_monte_carlo_run(sample_covariates, origin_state, max_transitions, current_time))
+        return runs
 
     def _one_monte_carlo_run(self, sample_covariates, origin_state: int, max_transitions: int,
                              current_time: int = 0) -> PathObject:

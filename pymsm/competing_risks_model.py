@@ -2,33 +2,32 @@
 
 import numpy as np
 import pandas as pd
+from scipy.interpolate import interp1d
 from typing import List
 from lifelines import CoxPHFitter
 from pandas.api.types import is_numeric_dtype
 
 
 class CompetingRisksModel:
-    def __init__(
-        self, failure_types: List = None, event_specific_models: List = None
-    ) -> None:
+    def __init__(self) -> None:
         """
-        Each element of "event_specific_models"is a dict
+        Each element of "event_specific_models" will be a dictionary
         with the following keys:
         1. coefficients
         2. unique_event_times
         3. baseline_hazard
         4. cumulative_baseline_hazard_function
         """
-        self.failure_types = failure_types
-        self.event_specific_models = event_specific_models
+        self.failure_types = None
+        self.event_specific_models = None
 
-    @staticmethod
-    def _assert_valid_dataset(
+    def assert_valid_dataset(
         df: pd.DataFrame,
         duration_col: str = None,
         event_col: str = None,
         cluster_col: str = None,
         weights_col: str = None,
+        entry_col: str = None,
     ):
 
         assert df[duration_col].count() == df[event_col].count()
@@ -39,19 +38,20 @@ class CompetingRisksModel:
         # failure types should be integers from 0 to m, not necessarily consecutive
         failure_types = df[event_col].values
         assert all(isinstance(f, int) for f in failure_types)
-        assert min(failure_types) >= 0
+        assert np.min(failure_types) >= 0
 
         # covariates should all be numerical
-        covariate_cols = [
-            col
-            for col in df.columns
-            if col not in [duration_col, event_col, cluster_col, weights_col]
-        ]
-        for col in covariate_cols:
-            assert is_numeric_dtype(df[col])
+        for col in df.columns:
+            if col not in [
+                duration_col,
+                event_col,
+                cluster_col,
+                weights_col,
+                entry_col,
+            ]:
+                assert is_numeric_dtype(df[col])
 
-    @staticmethod
-    def _break_ties_by_adding_epsilon(
+    def break_ties_by_adding_epsilon(
         t: np.ndarray, epsilon_min: float = 0.0, epsilon_max: float = 0.0001
     ):
         np.random.seed(42)
@@ -68,8 +68,7 @@ class CompetingRisksModel:
         )
         return t
 
-    @staticmethod
-    def _fit_event_specific_model(
+    def fit_event_specific_model(
         type: int,
         df: pd.DataFrame,
         duration_col: str = "T",
@@ -83,6 +82,11 @@ class CompetingRisksModel:
         # Treat all 'failure_types' except 'type' as censoring events
         is_event = df[event_col] == type
 
+        # Apply censoring to all but type of event
+        event_df = df.copy()
+        event_df.loc[~is_event, event_col] = 0
+        event_df.loc[is_event, event_col] = 1
+
         if verbose >= 1:
             print(
                 f">>> Fitting Transition to State: {type}, n events: {np.sum(is_event)}"
@@ -90,7 +94,7 @@ class CompetingRisksModel:
 
         cox_model = CoxPHFitter()
         cox_model.fit(
-            df=df,
+            df=event_df,
             duration_col=duration_col,
             event_col=event_col,
             weights_col=weights_col,
@@ -104,40 +108,38 @@ class CompetingRisksModel:
 
         return cox_model
 
-    @staticmethod
-    def _extract_necessary_attributes(cox_model):
+    def extract_necessary_attributes(cox_model):
         # TODO
         pass
 
-    @staticmethod
-    def _compute_cif_function(sample_covariates, failure_type):
+    def compute_cif_function(self, sample_covariates, failure_type):
         pass
         # TODO
-        # cif_x = self._unique_event_times(failure_type)
-        # cif_y = cumsum(self._hazard_at_unique_event_times(sample_covariates, failure_type)*self._survival_function(cif_x, sample_covariates))
-        # return(stepfun(cif_x, c(0, cif_y)))
+        cif_x = self.unique_event_times(failure_type)
+        cif_y = np.cumsum(
+            self.hazard_at_unique_event_times(sample_covariates, failure_type)
+            * self.survival_function(cif_x, sample_covariates)
+        )
+        return interp1d(cif_x, cif_y, kind='previous', fill_value=np.nan)
 
-    @staticmethod
-    def _hazard_at_unique_event_times(self, sample_covariates, failure_type):
+    def hazard_at_unique_event_times(self, sample_covariates, failure_type):
         # the hazard is given by multiplying the baseline hazard (which has value per unique event time) by the partial hazard
-        hazard = self._baseline_hazard(failure_type) * (
+        hazard = self.baseline_hazard(failure_type) * (
             self._partial_hazard(failure_type, sample_covariates)
         )
         assert len(hazard) == len(self._unique_event_times(failure_type))
         return hazard
 
-    @staticmethod
-    def _cumulative_baseline_hazard(cox_model: CoxPHFitter):
+    def cumulative_baseline_hazard(cox_model: CoxPHFitter):
         return cox_model.baseline_cumulative_hazard_
 
-    @staticmethod
-    def _cumulative_baseline_hazard_step_function(cox_model: CoxPHFitter):
+    def cumulative_baseline_hazard_step_function(cox_model: CoxPHFitter):
         # TODO
         # return(stepfun(coxph.detail(cox_model)$time,
         #            c(0,cumulative_baseline_hazard(cox_model))))
         pass
 
-    def _baseline_hazard(self, failure_type):
+    def baseline_hazard(self, failure_type):
         """
         the baseline hazard is given as a non-paramateric function, whose values are given at the times of observed events
         the cumulative hazard is the sum of hazards at times of events, the hazards are then the diffs 
@@ -145,7 +147,7 @@ class CompetingRisksModel:
         """
         return self.event_specific_models[failure_type]["baseline_hazard"]
 
-    def _extract_necessary_attributes(cox_model: CoxPHFitter):
+    def extract_necessary_attributes(cox_model: CoxPHFitter):
 
         # TODO what is this?
         # cache all relevant model attributes in one method:
@@ -161,17 +163,17 @@ class CompetingRisksModel:
 
         return model
 
-    def _partial_hazard(self, failure_type, sample_covariates):
+    def partial_hazard(self, failure_type, sample_covariates):
         # simply e^x_dot_beta for the chosen failure type's coefficients
         coefs = self.event_specific_models[failure_type]["coefficients"]
         x_dot_beta = sample_covariates * coefs
         return np.exp(x_dot_beta)
 
-    def _unique_event_times(self, failure_type):
+    def unique_event_times(self, failure_type):
         # uses a coxph function which returns unique times, regardless of the original fit which might have tied times.
         return self.event_specific_models[failure_type]["unique_event_times"]
 
-    def _survival_function(self, t, sample_covariates):
+    def survival_function(self, t, sample_covariates):
         # simply: exp( sum of cumulative hazards of all types )
         exponent = np.zeros_like(t)
         for type in self.failure_types:
@@ -179,7 +181,7 @@ class CompetingRisksModel:
                 self.event_specific_models[type]["cumulative_baseline_hazard_function"][
                     t
                 ]
-                * (self._partial_hazard(type, sample_covariates))
+                * (self.partial_hazard(type, sample_covariates))
             )
         survival_function_at_t = np.exp(exponent)
         assert len(survival_function_at_t) == len(t)
@@ -234,20 +236,18 @@ class CompetingRisksModel:
         these values should be chosen so that they do not change the order of the events.
         """
 
-        self._assert_valid_dataset(
-            df, duration_col, event_col, cluster_col, weights_col
-        )
+        self.assert_valid_dataset(df, duration_col, event_col, cluster_col, weights_col)
 
         if break_ties:
             t = df[duration_col].copy()
-            df[duration_col] = self._break_ties_by_adding_epsilon(
+            df[duration_col] = self.break_ties_by_adding_epsilon(
                 t, epsilon_min, epsilon_max
             )
 
         failure_types = df[event_col].unique()
         failure_types = failure_types[failure_types > 0]
         for type in failure_types:
-            cox_model = self._fit_event_specific_model(
+            cox_model = self.fit_event_specific_model(
                 df,
                 duration_col,
                 event_col,
@@ -256,7 +256,7 @@ class CompetingRisksModel:
                 entry_col,
                 verbose,
             )
-            self.event_specific_models[type] = self._extract_necessary_attributes(
+            self.event_specific_models[type] = self.extract_necessary_attributes(
                 cox_model
             )
 
@@ -285,7 +285,7 @@ class CompetingRisksModel:
         ------------------------------------------------------------------------------------------------------------
         the predicted cumulative incidence values for the given sample_covariates at times predict_at_t.
         """
-        cif_function = self._compute_cif_function(sample_covariates, failure_type)
+        cif_function = self.compute_cif_function(sample_covariates, failure_type)
 
         predictions = cif_function(predict_at_t)
 
@@ -293,7 +293,7 @@ class CompetingRisksModel:
         if time_passed > 0:
             predictions = (
                 predictions - cif_function(time_passed)
-            ) / self._survival_function(time_passed, sample_covariates)
+            ) / self.survival_function(time_passed, sample_covariates)
 
         return predictions
 

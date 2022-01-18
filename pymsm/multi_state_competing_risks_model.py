@@ -1,12 +1,12 @@
 # -- R source: https://github.com/JonathanSomer/covid-19-multi-state-model/blob/master/model/multi_state_competing_risks_model.R --#
 
-from typing import List, Callable
+from typing import List, Callable, Optional
 from pandas import Series, DataFrame
 from pymsm.competing_risks_model import CompetingRisksModel
 
 
 def default_update_covariates_function(covariates_entering_origin_state, origin_state=None, target_state=None,
-                                       time_at_origin=None):
+                                       time_at_origin=None, abs_time_entry_to_target_state=None):
     return covariates_entering_origin_state
 
 
@@ -14,7 +14,7 @@ RIGHT_CENSORING = 0
 
 
 class PathObject:
-    def __init__(self, covariates: Series, states: List, time_at_each_state: List, sample_id: int = None,
+    def __init__(self, covariates: Series = None, states = None, time_at_each_state: List = None, sample_id: int = None,
                  weight: float = None):
         """
         PathObject class holds a sample of a single path through the multi state model
@@ -28,17 +28,22 @@ class PathObject:
         :param: optional, int, an identification of this sample
         :param: optional, float, sample weight
         """
+        if states is None:
+            states = list()
         self.covariates = covariates
         self.states = states
         self.time_at_each_state = time_at_each_state
         self.sample_id = sample_id
         self.sample_weight = weight
+        # This variable is used when simulating paths using monte carlo
+        self.stopped_early = None
 
 
 class MultiStateModel:
     dataset: List[PathObject]
     terminal_states: List[int]
-    update_covariates_fn: Callable
+    # TODO - is there a way to force parameter names on function?
+    update_covariates_fn: Callable[[Series, int, int, float, float], Series]
     covariate_names: List[str]
     state_specific_models: List[CompetingRisksModel]
 
@@ -162,18 +167,44 @@ class MultiStateModel:
                                     n_random_sampels: int =  100, max_transitions: int = 10):
         pass
 
-    def _one_monte_carlo_run(self, sample_covariates, origin_state: int, max_transitions: int, current_time: int = 0):
-        pass
+    def _one_monte_carlo_run(self, sample_covariates, origin_state: int, max_transitions: int,
+                             current_time: int = 0) -> PathObject:
+        run = PathObject(states=list(), time_at_each_state=list())
+        run.stopped_early = False
+
+        current_state = origin_state
+        for i in range(0, max_transitions):
+            next_state = self._sample_next_state(current_state, sample_covariates, current_time)
+            if next_state is None:
+                run.stopped_early = True
+
+            time_to_next_state = self._sample_time_to_next_state(current_state, next_state, sample_covariates,
+                                                                 current_time)
+            run.states.append(current_state)
+            run.time_at_each_state.append(time_to_next_state)
+
+            if next_state in self.terminal_states:
+                run.states.append(next_state)
+                break
+            else:
+                time_entry_to_target = current_state+time_to_next_state
+                sample_covariates = self.update_covariates_fn(sample_covariates, current_state, next_state,
+                                                              time_to_next_state, time_entry_to_target)
+            current_state = next_state
+            current_time = current_time + time_to_next_state
+
+        return run
 
     def _probability_for_next_state(self, next_state: int, competing_risks_model : CompetingRisksModel, sample_covariates,
                                     t_entry_to_current_state : int = 0):
         pass
 
-    def _sample_next_state(self, current_state: int, sample_covariates, t_entry_to_current_state: int):
-        competing_risk_model = self.state_specific_models[current_state]
-        possible_next_states = competing_risk_model.failure_types
+    def _sample_next_state(self, current_state: int, sample_covariates, t_entry_to_current_state: int) -> Optional[int]:
+        # competing_risk_model = self.state_specific_models[current_state]
+        # possible_next_states = competing_risk_model.failure_types
         # TODO - finish
+        return None
 
     def _sample_time_to_next_state(self, current_state: int, next_state: int, sample_covariates,
-                                   t_entry_to_current_state: int):
+                                   t_entry_to_current_state: int) -> float:
         pass

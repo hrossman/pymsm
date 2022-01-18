@@ -22,6 +22,7 @@ class CompetingRisksModel:
         self.event_specific_models = None
 
     def assert_valid_dataset(
+        self,
         df: pd.DataFrame,
         duration_col: str = None,
         event_col: str = None,
@@ -33,12 +34,11 @@ class CompetingRisksModel:
         assert df[duration_col].count() == df[event_col].count()
 
         # t should be non-negative
-        assert df[duration_col] >= 0
+        assert (df[duration_col] >= 0).any(), "duration column has negative values"
 
         # failure types should be integers from 0 to m, not necessarily consecutive
-        failure_types = df[event_col].values
-        assert all(isinstance(f, int) for f in failure_types)
-        assert np.min(failure_types) >= 0
+        assert df[event_col].dtypes == int, "event column needs to be of type int"
+        assert df[event_col].min() >= 0
 
         # covariates should all be numerical
         for col in df.columns:
@@ -120,7 +120,7 @@ class CompetingRisksModel:
             self.hazard_at_unique_event_times(sample_covariates, failure_type)
             * self.survival_function(cif_x, sample_covariates)
         )
-        return interp1d(cif_x, cif_y, kind='previous', fill_value=np.nan)
+        return interp1d(cif_x, cif_y, kind="previous", fill_value=np.nan)
 
     def hazard_at_unique_event_times(self, sample_covariates, failure_type):
         # the hazard is given by multiplying the baseline hazard (which has value per unique event time) by the partial hazard

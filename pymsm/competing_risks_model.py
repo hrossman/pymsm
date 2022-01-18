@@ -38,7 +38,9 @@ class CompetingRisksModel:
 
         # failure types should be integers from 0 to m, not necessarily consecutive
         assert df[event_col].dtypes == int, "event column needs to be of type int"
-        assert df[event_col].min() >= 0
+        assert (
+            df[event_col].min() >= 0
+        ), "Failure types need to zero or positive integers"
 
         # covariates should all be numerical
         for col in df.columns:
@@ -49,7 +51,9 @@ class CompetingRisksModel:
                 weights_col,
                 entry_col,
             ]:
-                assert is_numeric_dtype(df[col])
+                assert is_numeric_dtype(
+                    df[col]
+                ), f"Non-numeric values found in {col} column"
 
     def break_ties_by_adding_epsilon(
         t: np.ndarray, epsilon_min: float = 0.0, epsilon_max: float = 0.0001

@@ -81,8 +81,8 @@ def test_fit_event_specific_model(df=None, crm=None):
         duration_col="T",
         event_col="transition",
         cluster_col="id",
+        verbose=2,
     )
-    cox_model1.print_summary()
 
     # Fit second transition
     cox_model2 = crm.fit_event_specific_model(
@@ -91,14 +91,17 @@ def test_fit_event_specific_model(df=None, crm=None):
         duration_col="T",
         event_col="transition",
         cluster_col="id",
+        verbose=2,
+
     )
-    cox_model2.print_summary()
 
 
 def test_all():
     crm = CompetingRisksModel()
+    data = create_test_data(N=1_000)
     test_assert_valid_dataset(crm=crm)
     test_break_ties_by_adding_epsilon(crm=crm)
+    test_fit_event_specific_model(df=data, crm=None)
 
 
 if __name__ == "__main__":

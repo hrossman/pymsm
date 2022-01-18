@@ -3,7 +3,7 @@
 import numpy as np
 import pandas as pd
 from scipy.interpolate import interp1d
-from typing import List
+from typing import Dict, List
 from lifelines import CoxPHFitter
 from pandas.api.types import is_numeric_dtype
 
@@ -116,13 +116,15 @@ class CompetingRisksModel:
 
         return cox_model
 
-    def extract_necessary_attributes(cox_model):
-        # TODO
-        pass
+    def extract_necessary_attributes(self, cox_model: CoxPHFitter) -> Dict:
+        return {
+            "coefficients": cox_model.params_,
+            "unique_event_times": cox_model.event_observed,
+            "baseline_hazard ": cox_model.baseline_hazard_,
+            "cumulative_baseline_hazard_function": cox_model.baseline_cumulative_hazard_,
+        }
 
     def compute_cif_function(self, sample_covariates, failure_type):
-        pass
-        # TODO
         cif_x = self.unique_event_times(failure_type)
         cif_y = np.cumsum(
             self.hazard_at_unique_event_times(sample_covariates, failure_type)
@@ -133,9 +135,9 @@ class CompetingRisksModel:
     def hazard_at_unique_event_times(self, sample_covariates, failure_type):
         # the hazard is given by multiplying the baseline hazard (which has value per unique event time) by the partial hazard
         hazard = self.baseline_hazard(failure_type) * (
-            self._partial_hazard(failure_type, sample_covariates)
+            self.partial_hazard(failure_type, sample_covariates)
         )
-        assert len(hazard) == len(self._unique_event_times(failure_type))
+        assert len(hazard) == len(self.unique_event_times(failure_type))
         return hazard
 
     def cumulative_baseline_hazard(cox_model: CoxPHFitter):

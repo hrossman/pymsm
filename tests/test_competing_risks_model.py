@@ -95,6 +95,24 @@ def test_fit_event_specific_model(df=None, crm=None):
 
     )
 
+def test_extract_necessary_attributes(crm=None, df=None):
+    if crm is None:
+        crm = CompetingRisksModel()
+    if df is None:
+        df = create_test_data(N=1_000)
+    cox_model = crm.fit_event_specific_model(
+        event_of_interest=1,
+        df=df,
+        duration_col="T",
+        event_col="transition",
+        cluster_col="id",
+        verbose=0,
+    )
+    attributes_dict = crm.extract_necessary_attributes(cox_model)
+    # print(attributes_dict)
+    # TODO check lens
+
+
 
 def test_all():
     crm = CompetingRisksModel()

@@ -116,12 +116,16 @@ class CompetingRisksModel:
 
         return cox_model
 
-    def extract_necessary_attributes(self, cox_model: CoxPHFitter) -> Dict:
+    def extract_necessary_attributes(
+        self, cox_model: CoxPHFitter
+    ) -> Dict[str, np.ndarray]:
         return {
-            "coefficients": cox_model.params_,
-            "unique_event_times": cox_model.event_observed,
-            "baseline_hazard ": cox_model.baseline_hazard_,
-            "cumulative_baseline_hazard_function": cox_model.baseline_cumulative_hazard_,
+            "coefficients": cox_model.params_.values,
+            "unique_event_times": cox_model.baseline_hazard_.index.values,
+            "baseline_hazard ": cox_model.baseline_hazard_["baseline hazard"].values,
+            "cumulative_baseline_hazard_function": cox_model.baseline_cumulative_hazard_[
+                "baseline cumulative hazard"
+            ].values,
         }
 
     def compute_cif_function(self, sample_covariates, failure_type):
@@ -156,22 +160,6 @@ class CompetingRisksModel:
         
         """
         return self.event_specific_models[failure_type]["baseline_hazard"]
-
-    def extract_necessary_attributes(cox_model: CoxPHFitter):
-
-        # TODO what is this?
-        # cache all relevant model attributes in one method:
-        # ALWAYS CACHE AN UNALTERED COX MODEL! THE COMPUTATION OF THE BASELINE HAZARD IS BASED ON THE COVARIATES!
-        # if (0 %in% cox_model$coefficients) print(" ------ WARNING ------: Are you caching a modified cox model?")
-
-        model = dict(
-            coefficients=cox_model.params_,
-            unique_event_times=cox_model.durations,
-            baseline_hazard=cox_model.baseline_hazard_,
-            cumulative_baseline_hazard_function=cox_model.baseline_cumulative_hazard_,
-        )
-
-        return model
 
     def partial_hazard(self, failure_type, sample_covariates):
         # simply e^x_dot_beta for the chosen failure type's coefficients

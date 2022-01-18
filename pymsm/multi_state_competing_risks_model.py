@@ -42,7 +42,6 @@ class PathObject:
 class MultiStateModel:
     dataset: List[PathObject]
     terminal_states: List[int]
-    # TODO - is there a way to force parameter names on function?
     update_covariates_fn: Callable[[Series, int, int, float, float], Series]
     covariate_names: List[str]
     state_specific_models: List[CompetingRisksModel]

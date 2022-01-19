@@ -157,10 +157,9 @@ class CompetingRisksModel:
         self, sample_covariates: np.ndarray, failure_type: int
     ) -> interp1d:
         cif_x = self.unique_event_times(failure_type)
-        cif_y = np.cumsum(
-            self.hazard_at_unique_event_times(sample_covariates, failure_type)
-            * self.survival_function(cif_x, sample_covariates)
-        )
+        hazard = self.hazard_at_unique_event_times(sample_covariates, failure_type)
+        survival_func = self.survival_function(cif_x, sample_covariates)
+        cif_y = np.cumsum(hazard * survival_func)
         return stepfunc(cif_x, cif_y)
 
     def hazard_at_unique_event_times(
@@ -198,7 +197,7 @@ class CompetingRisksModel:
     ) -> np.ndarray:
         # simply e^x_dot_beta for the chosen failure type's coefficients
         coefs = self.event_specific_models[failure_type].coefficients
-        x_dot_beta = sample_covariates * coefs
+        x_dot_beta = np.dot(sample_covariates, coefs)
         return np.exp(x_dot_beta)
 
     def unique_event_times(self, failure_type: int) -> np.ndarray:
@@ -212,7 +211,9 @@ class CompetingRisksModel:
         for type in self.failure_types:
             exponent = exponent - (
                 # self.event_specific_models[type].cumulative_baseline_hazard_function[t]  ## TODO Bugs found here, looks good for now
-                self.cumulative_baseline_hazard_step_function(self.event_specific_models[type].cox_model)(t)
+                self.cumulative_baseline_hazard_step_function(
+                    self.event_specific_models[type].cox_model
+                )(t)
                 * (self._partial_hazard(type, sample_covariates))
             )
         survival_function_at_t = np.exp(exponent)
@@ -266,7 +267,9 @@ class CompetingRisksModel:
             )
 
         failure_types = df[event_col].unique()
-        failure_types = failure_types[failure_types > 0] # Do not include censoring as failure_type
+        failure_types = failure_types[
+            failure_types > 0
+        ]  # Do not include censoring as failure_type
         self.failure_types = failure_types
         for event_of_interest in failure_types:
             # Fit cox model for specific event

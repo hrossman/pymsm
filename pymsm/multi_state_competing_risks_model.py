@@ -1,12 +1,13 @@
 # -- R source: https://github.com/JonathanSomer/covid-19-multi-state-model/blob/master/model/multi_state_competing_risks_model.R --#
 
-from typing import List, Callable
+from typing import List, Callable, Optional
 from pandas import Series, DataFrame
+import numpy as np
 from pymsm.competing_risks_model import CompetingRisksModel
 
 
 def default_update_covariates_function(covariates_entering_origin_state, origin_state=None, target_state=None,
-                                       time_at_origin=None):
+                                       time_at_origin=None, abs_time_entry_to_target_state=None):
     return covariates_entering_origin_state
 
 
@@ -14,7 +15,7 @@ RIGHT_CENSORING = 0
 
 
 class PathObject:
-    def __init__(self, covariates: Series, states: List, time_at_each_state: List, sample_id: int = None,
+    def __init__(self, covariates: Series = None, states = None, time_at_each_state: List = None, sample_id: int = None,
                  weight: float = None):
         """
         PathObject class holds a sample of a single path through the multi state model
@@ -28,17 +29,21 @@ class PathObject:
         :param: optional, int, an identification of this sample
         :param: optional, float, sample weight
         """
+        if states is None:
+            states = list()
         self.covariates = covariates
         self.states = states
         self.time_at_each_state = time_at_each_state
         self.sample_id = sample_id
         self.sample_weight = weight
+        # This variable is used when simulating paths using monte carlo
+        self.stopped_early = None
 
 
 class MultiStateModel:
     dataset: List[PathObject]
     terminal_states: List[int]
-    update_covariates_fn: Callable
+    update_covariates_fn: Callable[[Series, int, int, float, float], Series]
     covariate_names: List[str]
     state_specific_models: List[CompetingRisksModel]
 
@@ -159,21 +164,104 @@ class MultiStateModel:
         return crm
 
     def _run_monte_carlo_simulation(self, sample_covariates, origin_state: int, current_time: int = 0,
-                                    n_random_sampels: int =  100, max_transitions: int = 10):
-        pass
+                                    n_random_sampels: int = 100, max_transitions: int = 10) -> List[PathObject]:
+        runs = list()
+        for i in range(0, n_random_sampels):
+            runs.append(self._one_monte_carlo_run(sample_covariates, origin_state, max_transitions, current_time))
+        return runs
 
-    def _one_monte_carlo_run(self, sample_covariates, origin_state: int, max_transitions: int, current_time: int = 0):
-        pass
+    def _one_monte_carlo_run(self, sample_covariates, origin_state: int, max_transitions: int,
+                             current_time: int = 0) -> PathObject:
+        run = PathObject(states=list(), time_at_each_state=list())
+        run.stopped_early = False
 
-    def _probability_for_next_state(self, next_state: int, competing_risks_model : CompetingRisksModel, sample_covariates,
-                                    t_entry_to_current_state : int = 0):
-        pass
+        current_state = origin_state
+        for i in range(0, max_transitions):
+            next_state = self._sample_next_state(current_state, sample_covariates, current_time)
+            if next_state is None:
+                run.stopped_early = True
 
-    def _sample_next_state(self, current_state: int, sample_covariates, t_entry_to_current_state: int):
+            time_to_next_state = self._sample_time_to_next_state(current_state, next_state, sample_covariates,
+                                                                 current_time)
+            run.states.append(current_state)
+            run.time_at_each_state.append(time_to_next_state)
+
+            if next_state in self.terminal_states:
+                run.states.append(next_state)
+                break
+            else:
+                time_entry_to_target = current_state+time_to_next_state
+                sample_covariates = self.update_covariates_fn(sample_covariates, current_state, next_state,
+                                                              time_to_next_state, time_entry_to_target)
+            current_state = next_state
+            current_time = current_time + time_to_next_state
+
+        return run
+
+    def _probability_for_next_state(self, next_state: int, competing_risks_model: CompetingRisksModel, sample_covariates,
+                                    t_entry_to_current_state: int = 0):
+        unique_event_times = competing_risks_model.unique_event_times(next_state)
+        if self._time_is_discrete:
+            mask = (unique_event_times > np.floor(t_entry_to_current_state+1))
+        else:
+            mask = (unique_event_times > t_entry_to_current_state)
+
+        # hazard for the failure type corresponding to 'state':
+        hazard = competing_risks_model.hazard_at_unique_event_times(sample_covariates, next_state)
+        hazard = hazard[mask]
+
+        # overall survival function evaluated at time of failures corresponding to 'state'
+        survival = competing_risks_model.survival_function(unique_event_times[mask], sample_covariates)
+
+        probability_for_state = (hazard*survival).sum()
+        return probability_for_state
+
+    def _sample_next_state(self, current_state: int, sample_covariates, t_entry_to_current_state: int) -> Optional[int]:
         competing_risk_model = self.state_specific_models[current_state]
         possible_next_states = competing_risk_model.failure_types
-        # TODO - finish
+
+        # compute probabilities for multinomial distribution
+        probabilites = {}
+        for state in possible_next_states:
+            probabilites[state] = self._probability_for_next_state(state, competing_risk_model, sample_covariates,
+                                                                   t_entry_to_current_state)
+
+        # when no transition after t_entry_to_current_state was seen
+        if all(value == 0 for value in probabilites.values()):
+            return None
+
+        mult = np.random.multinomial(1, list(probabilites.values()))
+        next_state = possible_next_states[mult.argmax()]
+        return next_state
 
     def _sample_time_to_next_state(self, current_state: int, next_state: int, sample_covariates,
-                                   t_entry_to_current_state: int):
-        pass
+                                   t_entry_to_current_state: int) -> float:
+        competing_risk_model = self.state_specific_models[current_state]
+        unique_event_times = competing_risk_model.unique_event_times(next_state)
+
+        # ensure discrete variables are sampled from the next time unit
+        if self._time_is_discrete:
+            mask = (unique_event_times > np.floor(t_entry_to_current_state+1))
+        else:
+            mask = (unique_event_times > t_entry_to_current_state)
+        unique_event_times = unique_event_times[mask]
+
+        # hazard for the failure type corresponding to 'state'
+        hazard = competing_risk_model.hazard_at_unique_event_times(sample_covariates, next_state)
+        hazard = hazard[mask]
+
+        # overall survival function evaluated at time of failures corresponding to 'state'
+        survival = competing_risk_model.survival_function(unique_event_times, sample_covariates)
+
+        probability_for_each_t = (hazard*survival).cumsum()
+        probability_for_each_t_given_next_state = probability_for_each_t/probability_for_each_t.max()
+
+        # take the first event time whose probability is less than or equal to eps
+        # if we drew a very small eps, use the minimum observed time
+        eps = np.random.uniform(size=1)
+        possible_times = np.concatenate((unique_event_times[probability_for_each_t_given_next_state <= eps],
+                                         [unique_event_times[0]]))
+        time_to_next_state = possible_times.max()
+        time_to_next_state = time_to_next_state - t_entry_to_current_state
+
+        return time_to_next_state

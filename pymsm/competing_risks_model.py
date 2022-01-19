@@ -23,7 +23,7 @@ class EventSpecificModel:
         Each object of the class will have the following attributes:
         :param failure_type:
         :param cox_model:
-        Each object of the class will hold the additional following attribuites:
+        Each object of the class will hold the additional following attribuites after the extract_necessary_attributes function is called:
         1. coefficients
         2. unique_event_times
         3. baseline_hazard
@@ -38,7 +38,7 @@ class EventSpecificModel:
 
     def extract_necessary_attributes(self) -> None:
         """
-        Extract relevent arrays from cox_model
+        Extract relevant arrays from cox_model
         """
         self.coefficients = self.cox_model.params_.values
         self.unique_event_times = self.cox_model.baseline_hazard_.index.values
@@ -179,7 +179,7 @@ class CompetingRisksModel:
             "baseline cumulative hazard"
         ].values
 
-    def cumulative_baseline_hazard_step_function(self, cox_model: CoxPHFitter):
+    def cumulative_baseline_hazard_step_function(self, cox_model: CoxPHFitter) -> interp1d:
         return stepfunc(
             cox_model.baseline_hazard_.index.values,
             self.cumulative_baseline_hazard(cox_model),
@@ -210,7 +210,6 @@ class CompetingRisksModel:
         exponent = np.zeros_like(t)
         for type in self.failure_types:
             exponent = exponent - (
-                # self.event_specific_models[type].cumulative_baseline_hazard_function[t]  ## TODO Bugs found here, looks good for now
                 self.cumulative_baseline_hazard_step_function(
                     self.event_specific_models[type].cox_model
                 )(t)

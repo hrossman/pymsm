@@ -211,7 +211,7 @@ class CompetingRisksModel:
         exponent = np.zeros_like(t)
         for type in self.failure_types:
             exponent = exponent - (
-                # self.event_specific_models[type].cumulative_baseline_hazard_function[t]  ## TODO Bugs found here
+                # self.event_specific_models[type].cumulative_baseline_hazard_function[t]  ## TODO Bugs found here, looks good for now
                 self.cumulative_baseline_hazard_step_function(self.event_specific_models[type].cox_model)(t)
                 * (self._partial_hazard(type, sample_covariates))
             )

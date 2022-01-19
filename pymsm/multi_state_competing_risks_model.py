@@ -1,6 +1,6 @@
 # -- R source: https://github.com/JonathanSomer/covid-19-multi-state-model/blob/master/model/multi_state_competing_risks_model.R --#
 
-from typing import List, Callable, Optional
+from typing import List, Callable, Optional, Dict
 from pandas import Series, DataFrame
 import numpy as np
 from pymsm.competing_risks_model import CompetingRisksModel
@@ -49,7 +49,7 @@ class MultiStateModel:
     terminal_states: List[int]
     update_covariates_fn: Callable[[Series, int, int, float, float], Series]
     covariate_names: List[str]
-    state_specific_models: List[CompetingRisksModel]
+    state_specific_models: Dict[int, CompetingRisksModel]
 
     def __init__(self, dataset, terminal_states, update_covariates_fn=default_update_covariates_function,
                  covariate_names=None):
@@ -67,7 +67,7 @@ class MultiStateModel:
         self.terminal_states = terminal_states
         self.update_covariates_fn = update_covariates_fn
         self.covariate_names = self._get_covariate_names(covariate_names)
-        self.state_specific_models = list()
+        self.state_specific_models = dict()
         self._time_is_discrete = None
         self._competing_risk_dataset = None
         self._samples_have_weights = False
@@ -166,6 +166,8 @@ class MultiStateModel:
 
     def _fit_state_specific_model(self, state: int, verbose: int = 1):
         state_specific_df = self._competing_risk_dataset[self._competing_risk_dataset['origin_state'] == state]
+        state_specific_df.drop(['origin_state'], axis=1, inplace=True)
+        state_specific_df.reset_index(drop=True, inplace=True)
         crm = CompetingRisksModel()
         crm.fit(state_specific_df, event_col='target_state', duration_col='time_transition_to_target',
                 cluster_col='sample_id', entry_col='time_entry_to_origin', verbose=verbose)

@@ -197,7 +197,7 @@ class CompetingRisksModel:
 
         if break_ties:
             t = df[duration_col].copy()
-            df[duration_col] = self.break_ties_by_adding_epsilon(t, epsilon_min, epsilon_max)
+            df.loc[:, duration_col] = self.break_ties_by_adding_epsilon(t, epsilon_min, epsilon_max)
 
         failure_types = df[event_col].unique()
         failure_types = failure_types[failure_types > 0]

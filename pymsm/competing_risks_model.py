@@ -18,8 +18,8 @@ class CompetingRisksModel:
         3. baseline_hazard
         4. cumulative_baseline_hazard_function
         """
-        self.failure_types = None
-        self.event_specific_models = None
+        self.failure_types: List[int] = []
+        self.event_specific_models: Dict[Dict] = {}
 
     def assert_valid_dataset(
         self,
@@ -208,8 +208,7 @@ class CompetingRisksModel:
         epsilon_max: float = 0.0001,
         verbose: int = 1,
     ) -> None:
-        """
-        This method fits a cox proportional hazards model for each failure type, treating others as censoring events.
+        """This method fits a cox proportional hazards model for each failure type, treating others as censoring events.
         Tied event times are dealt with by adding an epsilon to tied event times.
 
         :param df: A pandas DataFrame contaning all relevant columns, must have duration and event columns. Optional to have clester and weight columns. All other columns other than these 4 will be treated as covariate columns
@@ -244,8 +243,11 @@ class CompetingRisksModel:
 
         failure_types = df[event_col].unique()
         failure_types = failure_types[failure_types > 0]
-        for type in failure_types:
+        print(failure_types)
+        for event_of_interest in failure_types:
+
             cox_model = self.fit_event_specific_model(
+                event_of_interest,
                 df,
                 duration_col,
                 event_col,
@@ -254,9 +256,9 @@ class CompetingRisksModel:
                 entry_col,
                 verbose,
             )
-            self.event_specific_models[type] = self.extract_necessary_attributes(
-                cox_model
-            )
+            self.event_specific_models[
+                event_of_interest
+            ] = self.extract_necessary_attributes(cox_model)
 
     def predict_CIF(
         self,

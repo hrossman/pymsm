@@ -6,6 +6,7 @@ from scipy.interpolate import interp1d
 from typing import Dict, List
 from lifelines import CoxPHFitter
 from pandas.api.types import is_numeric_dtype
+from pymsm.utils import stepfunc
 
 
 class CompetingRisksModel:
@@ -136,7 +137,7 @@ class CompetingRisksModel:
             self.hazard_at_unique_event_times(sample_covariates, failure_type)
             * self.survival_function(cif_x, sample_covariates)
         )
-        return interp1d(cif_x, cif_y, kind="previous", fill_value=0, bounds_error=False)
+        return stepfunc(cif_x, cif_y)
 
     def hazard_at_unique_event_times(
         self, sample_covariates: np.ndarray, failure_type: int

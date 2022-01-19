@@ -186,7 +186,6 @@ class CompetingRisksModel:
         return np.exp(x_dot_beta)
 
     def unique_event_times(self, failure_type: int) -> np.ndarray:
-        # uses a coxph function which returns unique times, regardless of the original fit which might have tied times.
         return self.event_specific_models[failure_type].unique_event_times
 
     def survival_function(

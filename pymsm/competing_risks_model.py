@@ -9,18 +9,39 @@ from pandas.api.types import is_numeric_dtype
 from pymsm.utils import stepfunc
 
 
+class EventSpecificModel:
+    """
+    Each element of "event_specific_models" will have the following attributes:
+    1. coefficients
+    2. unique_event_times
+    3. baseline_hazard
+    4. cumulative_baseline_hazard_function
+    """
+
+    def __init__(self, failure_type: int = None, cox_model: CoxPHFitter = None) -> None:
+        self.failure_type = failure_type
+        self.cox_model = cox_model
+        self.coefficients: np.ndarray = None
+        self.unique_event_times: np.ndarray = None
+        self.baseline_hazard: np.ndarray = None
+        self.cumulative_baseline_hazard_function: np.ndarray = None
+
+    def extract_necessary_attributes(self) -> None:
+        """Extract relevent arrays from cox_model
+        """
+        self.coefficients = self.cox_model.params_.values
+        self.unique_event_times = self.cox_model.baseline_hazard_.index.values
+        self.baseline_hazard = self.cox_model.baseline_hazard_["baseline hazard"].values
+        self.cumulative_baseline_hazard_function = (
+            self.cox_model.baseline_cumulative_hazard_
+        )
+
+
 class CompetingRisksModel:
     def __init__(self) -> None:
-        """
-        Each element of "event_specific_models" will be a dictionary
-        with the following keys:
-        1. coefficients
-        2. unique_event_times
-        3. baseline_hazard
-        4. cumulative_baseline_hazard_function
-        """
+
         self.failure_types: List[int] = []
-        self.event_specific_models: Dict[Dict] = {}
+        self.event_specific_models: Dict[EventSpecificModel] = {}
 
     def assert_valid_dataset(
         self,
@@ -117,18 +138,6 @@ class CompetingRisksModel:
 
         return cox_model
 
-    def extract_necessary_attributes(
-        self, cox_model: CoxPHFitter
-    ) -> Dict[str, np.ndarray]:
-        return {
-            "coefficients": cox_model.params_.values,
-            "unique_event_times": cox_model.baseline_hazard_.index.values,
-            "baseline_hazard": cox_model.baseline_hazard_["baseline hazard"].values,
-            "cumulative_baseline_hazard_function": cox_model.baseline_cumulative_hazard_[
-                "baseline cumulative hazard"
-            ].values,
-        }
-
     def compute_cif_function(
         self, sample_covariates: np.ndarray, failure_type: int
     ) -> interp1d:
@@ -166,19 +175,19 @@ class CompetingRisksModel:
         the cumulative hazard is the sum of hazards at times of events, the hazards are then the diffs 
         
         """
-        return self.event_specific_models[failure_type]["baseline_hazard"]
+        return self.event_specific_models[failure_type].baseline_hazard
 
     def partial_hazard(
         self, failure_type: int, sample_covariates: np.ndarray
     ) -> np.ndarray:
         # simply e^x_dot_beta for the chosen failure type's coefficients
-        coefs = self.event_specific_models[failure_type]["coefficients"]
+        coefs = self.event_specific_models[failure_type].coefficients
         x_dot_beta = sample_covariates * coefs
         return np.exp(x_dot_beta)
 
     def unique_event_times(self, failure_type: int) -> np.ndarray:
         # uses a coxph function which returns unique times, regardless of the original fit which might have tied times.
-        return self.event_specific_models[failure_type]["unique_event_times"]
+        return self.event_specific_models[failure_type].unique_event_times
 
     def survival_function(
         self, t: np.ndarray, sample_covariates: np.ndarray
@@ -187,9 +196,7 @@ class CompetingRisksModel:
         exponent = np.zeros_like(t)
         for type in self.failure_types:
             exponent = exponent - (
-                self.event_specific_models[type]["cumulative_baseline_hazard_function"][
-                    t
-                ]
+                self.event_specific_models[type].cumulative_baseline_hazard_function[t]
                 * (self.partial_hazard(type, sample_covariates))
             )
         survival_function_at_t = np.exp(exponent)
@@ -246,7 +253,7 @@ class CompetingRisksModel:
         failure_types = failure_types[failure_types > 0]
         print(failure_types)
         for event_of_interest in failure_types:
-
+            # Fit cox model for specific event
             cox_model = self.fit_event_specific_model(
                 event_of_interest,
                 df,
@@ -257,9 +264,13 @@ class CompetingRisksModel:
                 entry_col,
                 verbose,
             )
-            self.event_specific_models[
-                event_of_interest
-            ] = self.extract_necessary_attributes(cox_model)
+            # Save as instance of event_specific_model
+            event_specific_model = EventSpecificModel(
+                failure_type=event_of_interest, cox_model=cox_model
+            )
+            event_specific_model.extract_necessary_attributes()
+            # Add to event_specific_models dictionary
+            self.event_specific_models[event_of_interest] = event_specific_model
 
     def predict_CIF(
         self,

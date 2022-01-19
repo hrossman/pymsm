@@ -154,11 +154,11 @@ class CompetingRisksModel:
             "baseline cumulative hazard"
         ].values
 
-    def cumulative_baseline_hazard_step_function(cox_model: CoxPHFitter):
-        # TODO
-        # return(stepfun(coxph.detail(cox_model)$time,
-        #            c(0,cumulative_baseline_hazard(cox_model))))
-        pass
+    def cumulative_baseline_hazard_step_function(self, cox_model: CoxPHFitter):
+        return stepfunc(
+            cox_model.baseline_hazard_.index.values,
+            self.cumulative_baseline_hazard(cox_model),
+        )
 
     def baseline_hazard(self, failure_type: int) -> np.ndarray:
         """

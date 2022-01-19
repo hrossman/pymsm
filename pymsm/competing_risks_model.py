@@ -211,7 +211,8 @@ class CompetingRisksModel:
         exponent = np.zeros_like(t)
         for type in self.failure_types:
             exponent = exponent - (
-                self.event_specific_models[type].cumulative_baseline_hazard_function[t]
+                # self.event_specific_models[type].cumulative_baseline_hazard_function[t]  ## TODO Bugs found here
+                self.cumulative_baseline_hazard_step_function(self.event_specific_models[type].cox_model)(t)
                 * (self._partial_hazard(type, sample_covariates))
             )
         survival_function_at_t = np.exp(exponent)
@@ -265,8 +266,8 @@ class CompetingRisksModel:
             )
 
         failure_types = df[event_col].unique()
-        failure_types = failure_types[failure_types > 0]
-        print(failure_types)
+        failure_types = failure_types[failure_types > 0] # Do not include censoring as failure_type
+        self.failure_types = failure_types
         for event_of_interest in failure_types:
             # Fit cox model for specific event
             cox_model = self.fit_event_specific_model(

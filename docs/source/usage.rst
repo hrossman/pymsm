@@ -1,8 +1,10 @@
-Creating recipes
-----------------
+CompetingRisksModel
+--------------------------------------
 
-The ``CompetingRisksModel()`` class:
+.. autoclass:: pymsm.competing_risks_model.CompetingRisksModel
+    :members:
+    :undoc-members:
 
-.. autofunction:: pymsm.competing_risks_model.CompetingRisksModel.fit  
+    .. method:: fit()
 
-.. autofunction:: pymsm.competing_risks_model.CompetingRisksModel.predict_CIF
+    .. method:: predict_CIF()

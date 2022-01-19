@@ -15,8 +15,14 @@ RIGHT_CENSORING = 0
 
 
 class PathObject:
-    def __init__(self, covariates: Series = None, states = None, time_at_each_state: List = None, sample_id: int = None,
-                 weight: float = None):
+    covariates: Series
+    states: List[int]
+    time_at_each_state: List[float]
+    sample_id: int
+    sample_weight: float
+
+    def __init__(self, covariates=None, states=None, time_at_each_state=None, sample_id=None,
+                 weight=None):
         """
         PathObject class holds a sample of a single path through the multi state model
         :param covariates: named pandas Series of sample covariates at the initial state
@@ -29,11 +35,9 @@ class PathObject:
         :param: optional, int, an identification of this sample
         :param: optional, float, sample weight
         """
-        if states is None:
-            states = list()
         self.covariates = covariates
-        self.states = states
-        self.time_at_each_state = time_at_each_state
+        self.states = list() if states is None else states
+        self.time_at_each_state = list() if time_at_each_state is None else time_at_each_state
         self.sample_id = sample_id
         self.sample_weight = weight
         # This variable is used when simulating paths using monte carlo
@@ -66,6 +70,7 @@ class MultiStateModel:
         self.state_specific_models = list()
         self._time_is_discrete = None
         self._competing_risk_dataset = None
+        self._samples_have_weights = False
 
         self._assert_valid_input()
 
@@ -98,6 +103,7 @@ class MultiStateModel:
         # Check either all objects have sample weight or none has
         has_weight = [obj for obj in self.dataset if obj.sample_weight is not None]
         assert(len(has_weight) == len(self.dataset) or len(has_weight) == 0)
+        self._samples_have_weights = True if len(has_weight) > 0 else False
 
         # Check all covariates are of the same length
         cov_len = len(self.dataset[0].covariates)
@@ -122,12 +128,10 @@ class MultiStateModel:
         return False
 
     def _prepare_dataset_for_competing_risks_fit(self) -> DataFrame:
-        self._competing_risk_dataset = DataFrame(columns=['sample_id', 'origin_state', 'target_state',
-                                                          '4', 'time_transition_to_target'] +
-                                                 self.covariate_names)
+        self._competing_risk_dataset = DataFrame()
         for obj in self.dataset:
             origin_state = obj.states[0]
-            covs_entering_origin = obj.covariates
+            covs_entering_origin = Series(dict(zip(self.covariate_names, obj.covariates.values)))
             time_entry_to_origin = 0
             for i, state in enumerate(obj.states):
                 transition_row = {}
@@ -137,7 +141,8 @@ class MultiStateModel:
 
                 # append row corresponding to this transition
                 transition_row['sample_id'] = obj.sample_id
-                transition_row['sample_weight'] = obj.sample_weight
+                if self._samples_have_weights:
+                    transition_row['sample_weight'] = obj.sample_weight
                 transition_row['origin_state'] = origin_state
                 transition_row['target_state'] = target_state
                 transition_row['time_entry_to_origin'] = time_entry_to_origin
@@ -154,13 +159,16 @@ class MultiStateModel:
                     origin_state = target_state
                     time_entry_to_origin = time_transition_to_target
 
+        self._competing_risk_dataset['sample_id'] = self._competing_risk_dataset['sample_id'].astype(int)
+        self._competing_risk_dataset['origin_state'] = self._competing_risk_dataset['origin_state'].astype(int)
+        self._competing_risk_dataset['target_state'] = self._competing_risk_dataset['target_state'].astype(int)
         return self._competing_risk_dataset
 
     def _fit_state_specific_model(self, state: int, verbose: int = 1):
         state_specific_df = self._competing_risk_dataset[self._competing_risk_dataset['origin_state'] == state]
         crm = CompetingRisksModel()
         crm.fit(state_specific_df, event_col='target_state', duration_col='time_transition_to_target',
-                cluster_col='sample_id', t_start_col='time_entry_to_origin', verbose=verbose)
+                cluster_col='sample_id', entry_col='time_entry_to_origin', verbose=verbose)
         return crm
 
     def _run_monte_carlo_simulation(self, sample_covariates, origin_state: int, current_time: int = 0,

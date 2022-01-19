@@ -204,7 +204,7 @@ class CompetingRisksModel:
         print(failure_types)
         for event_of_interest in failure_types:
             # Fit cox model for specific event
-            cox_model = self._fit_event_specific_model(event_of_interest, df, duration_col, event_col, cluster_col,
+            cox_model = self.fit_event_specific_model(event_of_interest, df, duration_col, event_col, cluster_col,
                                                        weights_col, entry_col, verbose)
             # Save as instance of event_specific_model
             event_specific_model = EventSpecificModel(failure_type=event_of_interest, cox_model=cox_model)

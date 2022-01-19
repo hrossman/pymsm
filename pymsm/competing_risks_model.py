@@ -128,7 +128,9 @@ class CompetingRisksModel:
             ].values,
         }
 
-    def compute_cif_function(self, sample_covariates, failure_type):
+    def compute_cif_function(
+        self, sample_covariates: np.ndarray, failure_type: int
+    ) -> interp1d:
         cif_x = self.unique_event_times(failure_type)
         cif_y = np.cumsum(
             self.hazard_at_unique_event_times(sample_covariates, failure_type)
@@ -136,7 +138,9 @@ class CompetingRisksModel:
         )
         return interp1d(cif_x, cif_y, kind="previous", fill_value=np.nan)
 
-    def hazard_at_unique_event_times(self, sample_covariates, failure_type):
+    def hazard_at_unique_event_times(
+        self, sample_covariates: np.ndarray, failure_type: int
+    ) -> np.ndarray:
         # the hazard is given by multiplying the baseline hazard (which has value per unique event time) by the partial hazard
         hazard = self.baseline_hazard(failure_type) * (
             self.partial_hazard(failure_type, sample_covariates)
@@ -144,8 +148,10 @@ class CompetingRisksModel:
         assert len(hazard) == len(self.unique_event_times(failure_type))
         return hazard
 
-    def cumulative_baseline_hazard(cox_model: CoxPHFitter):
-        return cox_model.baseline_cumulative_hazard_
+    def cumulative_baseline_hazard(cox_model: CoxPHFitter) -> np.ndarray:
+        return cox_model.baseline_cumulative_hazard_[
+            "baseline cumulative hazard"
+        ].values
 
     def cumulative_baseline_hazard_step_function(cox_model: CoxPHFitter):
         # TODO
@@ -153,7 +159,7 @@ class CompetingRisksModel:
         #            c(0,cumulative_baseline_hazard(cox_model))))
         pass
 
-    def baseline_hazard(self, failure_type):
+    def baseline_hazard(self, failure_type: int) -> np.ndarray:
         """
         the baseline hazard is given as a non-paramateric function, whose values are given at the times of observed events
         the cumulative hazard is the sum of hazards at times of events, the hazards are then the diffs 
@@ -161,17 +167,21 @@ class CompetingRisksModel:
         """
         return self.event_specific_models[failure_type]["baseline_hazard"]
 
-    def partial_hazard(self, failure_type, sample_covariates):
+    def partial_hazard(
+        self, failure_type: int, sample_covariates: np.ndarray
+    ) -> np.ndarray:
         # simply e^x_dot_beta for the chosen failure type's coefficients
         coefs = self.event_specific_models[failure_type]["coefficients"]
         x_dot_beta = sample_covariates * coefs
         return np.exp(x_dot_beta)
 
-    def unique_event_times(self, failure_type):
+    def unique_event_times(self, failure_type: int) -> np.ndarray:
         # uses a coxph function which returns unique times, regardless of the original fit which might have tied times.
         return self.event_specific_models[failure_type]["unique_event_times"]
 
-    def survival_function(self, t, sample_covariates):
+    def survival_function(
+        self, t: np.ndarray, sample_covariates: np.ndarray
+    ) -> np.ndarray:
         # simply: exp( sum of cumulative hazards of all types )
         exponent = np.zeros_like(t)
         for type in self.failure_types:
@@ -197,7 +207,7 @@ class CompetingRisksModel:
         epsilon_min: float = 0.0,
         epsilon_max: float = 0.0001,
         verbose: int = 1,
-    ):
+    ) -> None:
         """
         Description:
         ------------------------------------------------------------------------------------------------------------
@@ -258,7 +268,13 @@ class CompetingRisksModel:
                 cox_model
             )
 
-    def predict_CIF(self, predict_at_t, sample_covariates, failure_type, time_passed=0):
+    def predict_CIF(
+        self,
+        predict_at_t: np.ndarray,
+        sample_covariates: np.ndarray,
+        failure_type: int,
+        time_passed: float = 0,
+    ) -> np.ndarray:
         """
         Description:
         ------------------------------------------------------------------------------------------------------------

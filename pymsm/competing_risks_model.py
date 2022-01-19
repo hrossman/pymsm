@@ -268,29 +268,19 @@ class CompetingRisksModel:
         failure_type: int,
         time_passed: float = 0,
     ) -> np.ndarray:
-        """
-        Description:
-        ------------------------------------------------------------------------------------------------------------
-        This method computes the failure-type-specific cumulative incidence function, given that 'time_passed' time
-        has passed (default is 0)
-        
-        Arguments:
-        ------------------------------------------------------------------------------------------------------------
-        predict_at_t: numeric vector
-          times at which the cif will be computed
-        
-        sample_covariates: numeric vector
-          a numerical vector of same length as the covariate matrix the model was fit to.
-        
-        failure_type: integer
-          integer corresponing to the failure type, as given when fitting the model
-        
-        time_passed: numeric
-          compute the cif conditioned on the fact that this amount of time has already passed.
-        
-        Returns:
-        ------------------------------------------------------------------------------------------------------------
-        the predicted cumulative incidence values for the given sample_covariates at times predict_at_t.
+        """This method computes the failure-type-specific cumulative incidence function, given that 'time_passed' time
+        has passed (default is 0). Returns the predicted cumulative incidence values for the given sample_covariates at times predict_at_t.
+
+        :param predict_at_t: times at which the cif will be computed
+        :type predict_at_t: np.ndarray
+        :param sample_covariates: an array of same length as the covariate matrix the model was fit to.
+        :type sample_covariates: np.ndarray
+        :param failure_type: integer corresponing to the failure type, as given when fitting the model
+        :type failure_type: int
+        :param time_passed: [description], defaults to 0
+        :type time_passed: float, optional
+        :return: compute the cif conditioned on the fact that this amount of time has already passed.
+        :rtype: np.ndarray
         """
         # Obtain CIF step function (interp1d function)
         cif_function = self.compute_cif_function(sample_covariates, failure_type)

@@ -20,7 +20,7 @@ class EventSpecificModel:
     def __init__(self, failure_type=None, cox_model=None):
         """
         Class EventSpecificModel will hold a cox model specific to event.
-        Each object of the class " will have the following attributes:
+        Each object of the class will have the following attributes:
         :param failure_type:
         :param cox_model:
         Each object of the class will hold the additional following attribuites:

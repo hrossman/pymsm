@@ -122,7 +122,7 @@ class CompetingRisksModel:
         return {
             "coefficients": cox_model.params_.values,
             "unique_event_times": cox_model.baseline_hazard_.index.values,
-            "baseline_hazard ": cox_model.baseline_hazard_["baseline hazard"].values,
+            "baseline_hazard": cox_model.baseline_hazard_["baseline hazard"].values,
             "cumulative_baseline_hazard_function": cox_model.baseline_cumulative_hazard_[
                 "baseline cumulative hazard"
             ].values,
@@ -136,7 +136,7 @@ class CompetingRisksModel:
             self.hazard_at_unique_event_times(sample_covariates, failure_type)
             * self.survival_function(cif_x, sample_covariates)
         )
-        return interp1d(cif_x, cif_y, kind="previous", fill_value=np.nan)
+        return interp1d(cif_x, cif_y, kind="previous", fill_value=0, bounds_error=False)
 
     def hazard_at_unique_event_times(
         self, sample_covariates: np.ndarray, failure_type: int

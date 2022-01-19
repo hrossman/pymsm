@@ -209,39 +209,29 @@ class CompetingRisksModel:
         verbose: int = 1,
     ) -> None:
         """
-        Description:
-        ------------------------------------------------------------------------------------------------------------
         This method fits a cox proportional hazards model for each failure type, treating others as censoring events.
         Tied event times are dealt with by adding an epsilon to tied event times.
 
-        Arguments:
-        ------------------------------------------------------------------------------------------------------------
-        t : numeric vector
-        A length n vector of positive times of events
-
-        failure_types: numeric vector
-        The event type corresponding to the time in vector t.
-        Failure types are encoded as integers from 1 to m.
-        Right-censoring events (the only kind of censoring supported) are encoded as 0.
-        Thus, the failure type argument holds integers from 0 to m, where m is the number of distinct failure types
-
-        covariates_X: numeric dataframe
-        an n by #(covariates) numerical matrix
-        All columns are used in the estimate.
-
-        OPTIONAL:
-
-        sample_ids:
-        used inside the coxph model in order to identify subjects with repeating entries.
-
-        t_start:
-        A length n vector of positive start times, used in case of interval data.
-        In that case: left=t_start, and right=t
-
-        epsilon_min/max:
-        epsilon is added to events with identical times to break ties.
-        epsilon is sampled from a uniform distribution in the range (epsilon_min, epsilon_max)
-        these values should be chosen so that they do not change the order of the events.
+        :param df: A pandas DataFrame contaning all relevant columns, must have duration and event columns. Optional to have clester and weight columns. All other columns other than these 4 will be treated as covariate columns
+        :type df: pd.DataFrame
+        :param duration_col: the name of the column in DataFrame that contains the subjects’ lifetimes, defaults to "T"
+        :type duration_col: str, optional
+        :param event_col: the name of the column in DataFrame that contains the subjects’ death observation, defaults to "E"
+        :type event_col: str, optional
+        :param cluster_col: specifies what column has unique identifiers for clustering covariances. Using this forces the sandwich estimator (robust variance estimator) to be used, defaults to None
+        :type cluster_col: str, optional
+        :param weights_col: an optional column in the DataFrame, df, that denotes the weight per subject. This column is expelled and not used as a covariate, but as a weight in the final regression. Default weight is 1. This can be used for case-weights. For example, a weight of 2 means there were two subjects with identical observations. This can be used for sampling weights. In that case, use robust=True to get more accurate standard errors, defaults to None
+        :type weights_col: str, optional
+        :param entry_col: a column denoting when a subject entered the study, i.e. left-truncation, defaults to None
+        :type entry_col: str, optional
+        :param break_ties: Break event ties by adding epsilon, defaults to True
+        :type break_ties: bool, optional
+        :param epsilon_min: epsilon is added to events with identical times to break ties. these values should be chosen so that they do not change the order of the events, defaults to 0.0
+        :type epsilon_min: float, optional
+        :param epsilon_max: epsilon is added to events with identical times to break ties. these values should be chosen so that they do not change the order of the events, defaults to 0.0001
+        :type epsilon_max: float, optional
+        :param verbose: verbosity, defaults to 1
+        :type verbose: int, optional
         """
 
         self.assert_valid_dataset(df, duration_col, event_col, cluster_col, weights_col)
@@ -299,8 +289,9 @@ class CompetingRisksModel:
         ------------------------------------------------------------------------------------------------------------
         the predicted cumulative incidence values for the given sample_covariates at times predict_at_t.
         """
+        # Obtain CIF step function (interp1d function)
         cif_function = self.compute_cif_function(sample_covariates, failure_type)
-
+        # Predict at t
         predictions = cif_function(predict_at_t)
 
         # re-normalize the probability to account for the time passed

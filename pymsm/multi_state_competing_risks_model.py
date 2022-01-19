@@ -2,6 +2,7 @@
 
 from typing import List, Callable, Optional
 from pandas import Series, DataFrame
+import numpy as np
 from pymsm.competing_risks_model import CompetingRisksModel
 
 
@@ -197,16 +198,70 @@ class MultiStateModel:
 
         return run
 
-    def _probability_for_next_state(self, next_state: int, competing_risks_model : CompetingRisksModel, sample_covariates,
-                                    t_entry_to_current_state : int = 0):
-        pass
+    def _probability_for_next_state(self, next_state: int, competing_risks_model: CompetingRisksModel, sample_covariates,
+                                    t_entry_to_current_state: int = 0):
+        unique_event_times = competing_risks_model.unique_event_times(next_state)
+        if self._time_is_discrete:
+            mask = (unique_event_times > np.floor(t_entry_to_current_state+1))
+        else:
+            mask = (unique_event_times > t_entry_to_current_state)
+
+        # hazard for the failure type corresponding to 'state':
+        hazard = competing_risks_model.hazard_at_unique_event_times(sample_covariates, next_state)
+        hazard = hazard[mask]
+
+        # overall survival function evaluated at time of failures corresponding to 'state'
+        survival = competing_risks_model.survival_function(unique_event_times[mask], sample_covariates)
+
+        probability_for_state = (hazard*survival).sum()
+        return probability_for_state
 
     def _sample_next_state(self, current_state: int, sample_covariates, t_entry_to_current_state: int) -> Optional[int]:
-        # competing_risk_model = self.state_specific_models[current_state]
-        # possible_next_states = competing_risk_model.failure_types
-        # TODO - finish
-        return None
+        competing_risk_model = self.state_specific_models[current_state]
+        possible_next_states = competing_risk_model.failure_types
+
+        # compute probabilities for multinomial distribution
+        probabilites = {}
+        for state in possible_next_states:
+            probabilites[state] = self._probability_for_next_state(state, competing_risk_model, sample_covariates,
+                                                                   t_entry_to_current_state)
+
+        # when no transition after t_entry_to_current_state was seen
+        if all(value == 0 for value in probabilites.values()):
+            return None
+
+        mult = np.random.multinomial(1, list(probabilites.values()))
+        next_state = possible_next_states[mult.argmax()]
+        return next_state
 
     def _sample_time_to_next_state(self, current_state: int, next_state: int, sample_covariates,
                                    t_entry_to_current_state: int) -> float:
-        pass
+        competing_risk_model = self.state_specific_models[current_state]
+        unique_event_times = competing_risk_model.unique_event_times(next_state)
+
+        # ensure discrete variables are sampled from the next time unit
+        if self._time_is_discrete:
+            mask = (unique_event_times > np.floor(t_entry_to_current_state+1))
+        else:
+            mask = (unique_event_times > t_entry_to_current_state)
+        unique_event_times = unique_event_times[mask]
+
+        # hazard for the failure type corresponding to 'state'
+        hazard = competing_risk_model.hazard_at_unique_event_times(sample_covariates, next_state)
+        hazard = hazard[mask]
+
+        # overall survival function evaluated at time of failures corresponding to 'state'
+        survival = competing_risk_model.survival_function(unique_event_times, sample_covariates)
+
+        probability_for_each_t = (hazard*survival).cumsum()
+        probability_for_each_t_given_next_state = probability_for_each_t/probability_for_each_t.max()
+
+        # take the first event time whose probability is less than or equal to eps
+        # if we drew a very small eps, use the minimum observed time
+        eps = np.random.uniform(size=1)
+        possible_times = np.concatenate((unique_event_times[probability_for_each_t_given_next_state <= eps],
+                                         [unique_event_times[0]]))
+        time_to_next_state = possible_times.max()
+        time_to_next_state = time_to_next_state - t_entry_to_current_state
+
+        return time_to_next_state

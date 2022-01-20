@@ -468,7 +468,7 @@ class CompetingRisksModel:
         failure_type: int,
         time_passed: float = 0,
     ) -> np.ndarray:
-        """computes the failure-type-specific cumulative incidence function, given that 'time_passed' time  has passed (default is 0). Returns the predicted cumulative incidence values for the given sample_covariates at times predict_at_t
+        """computes the failure-type-specific cumulative incidence function, given that 'time_passed' time  has passed (default is 0)
 
         Parameters
         ----------
@@ -484,7 +484,7 @@ class CompetingRisksModel:
         Returns
         -------
         np.ndarray
-            CIF
+            Returns the predicted cumulative incidence values for the given sample_covariates at times predict_at_t
         """
 
         # Obtain CIF step function (interp1d function)

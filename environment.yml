@@ -1,7 +1,7 @@
 name: pymsm
 channels:
-  - conda-forge
   - anaconda
+  - conda-forge
   - defaults
 dependencies:
   - alabaster=0.7.12=py_0
@@ -146,6 +146,31 @@ dependencies:
   - zlib=1.2.11=h7f8727e_4
   - zstd=1.4.9=haebb681_0
   - pip:
+    - bleach==4.1.0
+    - defusedxml==0.7.1
+    - dnspython==2.2.0
+    - docopt==0.6.2
+    - fett==0.3.2
+    - ipython-genutils==0.2.0
+    - jsonschema==4.4.0
+    - jupyterlab-pygments==0.1.2
+    - mistune==0.8.4
+    - nbclient==0.5.10
+    - nbconvert==6.4.0
+    - nbformat==5.1.3
+    - nbsphinx==0.8.8
+    - networkx==2.6.3
+    - pandocfilters==1.5.0
+    - pymongo==3.12.3
+    - pyrsistent==0.18.1
+    - python-jsonrpc-server==0.3.4
+    - pyyaml==5.4.1
+    - snooty-lextudio==1.11.6
+    - sphinx-rtd-theme==1.0.0
     - src==0.0.0
+    - testpath==0.5.0
+    - ujson==1.35
+    - watchdog==1.0.2
+    - webencodings==0.5.1
 prefix: /home/hagair/anaconda3/envs/pymsm
 

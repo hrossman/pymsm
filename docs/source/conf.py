@@ -5,7 +5,8 @@ import sys
 # sys.path.insert(0, pathlib.Path(__file__).parents[2].resolve().as_posix())
 import os
 sys.path.insert(0, os.path.abspath('../../pymsm/'))
-import pymsm
+sys.path.insert(0, os.path.abspath('../../'))
+
 
 # -- Project information
 

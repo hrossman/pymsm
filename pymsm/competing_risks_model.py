@@ -238,9 +238,9 @@ class CompetingRisksModel:
         Parameters
         ----------
         sample_covariates : np.ndarray
-            Covariates used to build CIF
+            covariates used to build CIF
         failure_type : int
-            failure typpe of interest
+            failure type of interest
 
         Returns
         -------
@@ -261,9 +261,9 @@ class CompetingRisksModel:
         Parameters
         ----------
         sample_covariates : np.ndarray
-            Covariates used to build CIF
+            covariates
         failure_type : int
-            failure typpe of interest
+            failure type of interest
 
         Returns
         -------
@@ -305,26 +305,74 @@ class CompetingRisksModel:
         )
 
     def _baseline_hazard(self, failure_type: int) -> np.ndarray:
-        """
-        the baseline hazard is given as a non-paramateric function, whose values are given at the times of observed events
-        the cumulative hazard is the sum of hazards at times of events, the hazards are then the diffs
+        """Get baseline hazard for specific failure type
+
+        Parameters
+        ----------
+        failure_type : int
+            failure type of interest
+
+        Returns
+        -------
+        np.ndarray
+            baseline hazard for specific failure type
         """
         return self.event_specific_models[failure_type].baseline_hazard
 
     def _partial_hazard(
         self, failure_type: int, sample_covariates: np.ndarray
     ) -> np.ndarray:
+        """Get partial hazard for specific failure type and set of covariates
+
+        Parameters
+        ----------
+        failure_type : int
+            failure type of interest
+        sample_covariates : np.ndarray
+            covariates
+
+        Returns
+        -------
+        np.ndarray
+            partial hazard for specific failure type and set of covariates
+        """
         # simply e^x_dot_beta for the chosen failure type's coefficients
         coefs = self.event_specific_models[failure_type].coefficients
         x_dot_beta = np.dot(sample_covariates, coefs)
         return np.exp(x_dot_beta)
 
     def unique_event_times(self, failure_type: int) -> np.ndarray:
+        """Fetch unique event times for specific failure type
+
+        Parameters
+        ----------
+        failure_type : int
+            failure type of interest
+
+        Returns
+        -------
+        np.ndarray
+            unique event times for specific failure type
+        """
         return self.event_specific_models[failure_type].unique_event_times
 
     def survival_function(
         self, t: np.ndarray, sample_covariates: np.ndarray
     ) -> np.ndarray:
+        """Calculate survival function for a specific set of covariates at times t
+
+        Parameters
+        ----------
+        t : np.ndarray
+            times in which to calculate survival function
+        sample_covariates : np.ndarray
+            covariates
+
+        Returns
+        -------
+        np.ndarray
+            survival function for a specific set of covariates at times t
+        """
         # simply: exp( sum of cumulative hazards of all types )
         exponent = np.zeros_like(t)
         for type in self.failure_types:
@@ -351,29 +399,30 @@ class CompetingRisksModel:
         epsilon_max: float = 0.0001,
         verbose: int = 1,
     ) -> None:
-        """This method fits a cox proportional hazards model for each failure type, treating others as censoring events.
-        Tied event times are dealt with by adding an epsilon to tied event times.
+        """Fit a cox proportional hazards model for each failure type, treating others as censoring events. Tied event times are dealt with by adding an epsilon to tied event times.
 
-        :param df: A pandas DataFrame contaning all relevant columns, must have duration and event columns. Optional to have clester and weight columns. All other columns other than these 4 will be treated as covariate columns
-        :type df: pd.DataFrame
-        :param duration_col: the name of the column in DataFrame that contains the subjects lifetimes, defaults to "T"
-        :type duration_col: str, optional
-        :param event_col: the name of the column in DataFrame that contains the subjects death observation, defaults to "E"
-        :type event_col: str, optional
-        :param cluster_col: specifies what column has unique identifiers for clustering covariances. Using this forces the sandwich estimator (robust variance estimator) to be used, defaults to None
-        :type cluster_col: str, optional
-        :param weights_col: an optional column in the DataFrame, df, that denotes the weight per subject. This column is expelled and not used as a covariate, but as a weight in the final regression. Default weight is 1. This can be used for case-weights. For example, a weight of 2 means there were two subjects with identical observations. This can be used for sampling weights. In that case, use robust=True to get more accurate standard errors, defaults to None
-        :type weights_col: str, optional
-        :param entry_col: a column denoting when a subject entered the study, i.e. left-truncation, defaults to None
-        :type entry_col: str, optional
-        :param break_ties: Break event ties by adding epsilon, defaults to True
-        :type break_ties: bool, optional
-        :param epsilon_min: epsilon is added to events with identical times to break ties. These values should be chosen so that they do not change the order of the events, defaults to 0.0
-        :type epsilon_min: float, optional
-        :param epsilon_max: epsilon is added to events with identical times to break ties. These values should be chosen so that they do not change the order of the events, defaults to 0.0001
-        :type epsilon_max: float, optional
-        :param verbose: verbosity, defaults to 1
-        :type verbose: int, optional
+        Parameters
+        ----------
+        df : pd.DataFrame
+            A pandas DataFrame contaning all relevant columns, must have duration and event columns. Optional to have clester and weight columns. All other columns other than these 4 will be treated as covariate columns.
+        duration_col : str, optional
+            the name of the column in DataFrame that contains the subjects lifetimes, defaults to "T", by default None
+        event_col : str, optional
+            the name of the column in DataFrame that contains the subjects death observation, defaults to "E", by default None
+        cluster_col : str, optional
+            specifies what column has unique identifiers for clustering covariances. Using this forces the sandwich estimator (robust variance estimator) to be used, defaults to None, by default None
+        weights_col : str, optional
+            an optional column in the DataFrame, df, that denotes the weight per subject. This column is expelled and not used as a covariate, but as a weight in the final regression. Default weight is 1. This can be used for case-weights. For example, a weight of 2 means there were two subjects with identical observations. This can be used for sampling weights. In that case, use robust=True to get more accurate standard errors, by default None
+        entry_col : str, optional
+            a column denoting when a subject entered the study, i.e. left-truncation, by default None
+        break_ties : bool, optional
+            Break event ties by adding epsilon, by default True
+        epsilon_min : float, optional
+            minimum value, by default 0.0
+        epsilon_max : float, optional
+            maximum value, by default 0.0001
+        verbose : int, optional
+            verbosity, by default 1
         """
 
         self.assert_valid_dataset(df, duration_col, event_col, cluster_col, weights_col)
@@ -388,7 +437,10 @@ class CompetingRisksModel:
         failure_types = failure_types[
             failure_types > 0
         ]  # Do not include censoring as failure_type
+
+        # Save failure type
         self.failure_types = failure_types
+
         for event_of_interest in failure_types:
             # Fit cox model for specific event
             cox_model = self.fit_event_specific_model(
@@ -416,14 +468,25 @@ class CompetingRisksModel:
         failure_type: int,
         time_passed: float = 0,
     ) -> np.ndarray:
-        """This method computes the failure-type-specific cumulative incidence function, given that 'time_passed' time  has passed (default is 0). Returns the predicted cumulative incidence values for the given sample_covariates at times predict_at_t.
-        
-        :param predict_at_t: np.ndarray, times at which the cif will be computed
-        :param sample_covariates: np.ndarray, an array of same length as the covariate matrix the model was fit to.
-        :param failure_type: integer corresponing to the failure type, as given when fitting the model
-        :param time_passed: float, optional, [description], defaults to 0
-        :return: np.ndarray, compute the cif conditioned on the fact that this amount of time has already passed.
+        """computes the failure-type-specific cumulative incidence function, given that 'time_passed' time  has passed (default is 0). Returns the predicted cumulative incidence values for the given sample_covariates at times predict_at_t
+
+        Parameters
+        ----------
+        predict_at_t : np.ndarray
+            times at which the cif will be computed
+        sample_covariates : np.ndarray
+            covariates array of same length as the covariate matrix the model was fit to
+        failure_type : int
+            integer corresponing to the failure type, as given when fitting the model
+        time_passed : float, optional
+            compute the cif conditioned on the fact that this amount of time has already passed, by default 0
+
+        Returns
+        -------
+        np.ndarray
+            CIF
         """
+
         # Obtain CIF step function (interp1d function)
         cif_function = self._compute_cif_function(sample_covariates, failure_type)
         # Predict at t

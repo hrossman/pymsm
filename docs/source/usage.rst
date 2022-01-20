@@ -20,6 +20,8 @@ The ``CompetingRisksModel`` class
     :members:
     :undoc-members:
 
+    .. method:: fit()
+
 
 The ``MultiStateModel`` class
 *********************************

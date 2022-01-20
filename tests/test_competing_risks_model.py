@@ -1,6 +1,4 @@
 import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
 from pymsm.competing_risks_model import CompetingRisksModel
 from pymsm.examples.crm_example_utils import create_test_data
 

@@ -16,6 +16,5 @@ Contents
 .. toctree::
 
    usage
-   api
-
-   examples/first_example
+   
+   notebooks/first_example

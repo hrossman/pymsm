@@ -165,7 +165,7 @@ class MultiStateModel:
         return self._competing_risk_dataset
 
     def _fit_state_specific_model(self, state: int, verbose: int = 1):
-        state_specific_df = self._competing_risk_dataset[self._competing_risk_dataset['origin_state'] == state]
+        state_specific_df = self._competing_risk_dataset[self._competing_risk_dataset['origin_state'] == state].copy()
         state_specific_df.drop(['origin_state'], axis=1, inplace=True)
         state_specific_df.reset_index(drop=True, inplace=True)
         crm = CompetingRisksModel()

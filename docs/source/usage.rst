@@ -8,3 +8,8 @@ CompetingRisksModel
     .. method:: fit()
 
     .. method:: predict_CIF()
+
+
+.. autoclass:: pymsm.multi_state_competing_risks_model.MultiStateModel
+    :members:
+    :undoc-members:

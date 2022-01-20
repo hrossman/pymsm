@@ -10,7 +10,7 @@ To use PyMSM, first install it using pip:
 
 .. code-block:: console
 
-   $ pip install PyMSM
+    pip install pymsm
 
 
 

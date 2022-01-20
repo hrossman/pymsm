@@ -13,16 +13,12 @@ To use PyMSM, first install it using pip:
     pip install pymsm
 
 
-
-CompetingRisksModel
---------------------------------------
+The ``CompetingRisksModel`` class
+*********************************
 .. autoclass:: pymsm.competing_risks_model.CompetingRisksModel
     :members:
     :undoc-members:
-
-    .. method:: fit()
-
-    .. method:: predict_CIF()
+    :show-inheritance:
 
 MultiStateModel
 --------------------------------------

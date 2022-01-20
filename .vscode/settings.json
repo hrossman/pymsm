@@ -1,5 +1,0 @@
-{
-    "python.formatting.provider": "black",
-    "restructuredtext.confPath": "",
-    "autoDocstring.docstringFormat": "numpy"
-}

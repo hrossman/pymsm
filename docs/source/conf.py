@@ -2,9 +2,9 @@
 
 # -- Project information
 
-project = 'Lumache'
-copyright = '2021, Graziella'
-author = 'Graziella'
+project = 'PyMSM'
+copyright = '2021, Rossman & Kehset'
+author = 'Hagai Rossman, Ayya Keshet'
 
 release = '0.1'
 version = '0.1.0'

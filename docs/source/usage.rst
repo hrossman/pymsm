@@ -10,7 +10,8 @@ To use PyMSM, first install it using pip:
 
 .. code-block:: console
 
-$ pip install PyMSM
+   $ pip install PyMSM
+
 
 
 CompetingRisksModel
@@ -18,7 +19,10 @@ CompetingRisksModel
 .. autoclass:: pymsm.competing_risks_model.CompetingRisksModel
     :members:
     :undoc-members:
-    
+
+    .. method:: fit()
+
+    .. method:: predict_CIF()
 
 MultiStateModel
 --------------------------------------

@@ -15,8 +15,7 @@ RIGHT_CENSORING = 0
 
 
 class PathObject:
-    """
-    This class holds sample of a single path through the multi state model.
+    """This class holds sample of a single path through the multi state model.
 
     Attributes
     ----------
@@ -55,8 +54,7 @@ class PathObject:
 
 
 class MultiStateModel:
-    """
-    This class fits a competing risks model per state, that is, it treats all state transitions as competing risks.
+    """This class fits a competing risks model per state, that is, it treats all state transitions as competing risks.
     See the CompetingRisksModel class
 
     Attributes
@@ -100,8 +98,7 @@ class MultiStateModel:
         self._assert_valid_input()
 
     def fit(self, verbose: int = 1) -> None:
-        """
-        Fit a CompetingRiskModel for each state
+        """Fit a CompetingRiskModel for each state
         Parameters
         ----------
         verbose : int, optional
@@ -118,8 +115,7 @@ class MultiStateModel:
             self.state_specific_models[state] = model
 
     def _assert_valid_input(self) -> None:
-        """
-        Checks that the dataset is valid for running the multi state competing risk model
+        """Checks that the dataset is valid for running the multi state competing risk model
         """
         # Check the number os time is either equal or one less than the number of states
         for obj in self.dataset:
@@ -151,8 +147,7 @@ class MultiStateModel:
         assert(len(self.covariate_names) == len(self.dataset[0].covariates))
 
     def _get_covariate_names(self, covariate_names):
-        """
-        This functions sets the covariate names that will be used in prints.
+        """This functions sets the covariate names that will be used in prints.
         Names are taken either from the given covariate names provided by the user,
         or if None provided - from the named pandas Series of covariates of the PathObject in the dataset
 
@@ -166,8 +161,7 @@ class MultiStateModel:
         return self.dataset[0].covariates.index.to_list()
 
     def _check_if_time_is_discrete(self) -> bool:
-        """
-        This function check whether the time in the dataset is discrete
+        """This function check whether the time in the dataset is discrete
         """
         times = self._competing_risk_dataset['time_entry_to_origin'].values.tolist() + \
                 self._competing_risk_dataset['time_transition_to_target'].values.tolist()
@@ -176,8 +170,7 @@ class MultiStateModel:
         return False
 
     def _prepare_dataset_for_competing_risks_fit(self) -> DataFrame:
-        """
-        This function converts the given dataset (list of PathObjects) to a pandas DataFrame that will be used when
+        """This function converts the given dataset (list of PathObjects) to a pandas DataFrame that will be used when
         fitting the CompetingRiskModel class
         """
         self._competing_risk_dataset = DataFrame()
@@ -217,8 +210,7 @@ class MultiStateModel:
         return self._competing_risk_dataset
 
     def _fit_state_specific_model(self, state: int, verbose: int = 1):
-        """
-        Fit a CompetingRiskModel for a specific given state
+        """Fit a CompetingRiskModel for a specific given state
         Parameters
         ----------
         state: int
@@ -236,8 +228,7 @@ class MultiStateModel:
 
     def run_monte_carlo_simulation(self, sample_covariates, origin_state: int, current_time: int = 0,
                                     n_random_samples: int = 100, max_transitions: int = 10) -> List[PathObject]:
-        """
-        This function samples random paths using Monte Carlo simulation.
+        """This function samples random paths using Monte Carlo simulation.
         These paths will be used for prediction for a single sample.
         Initial sample covariates, along with the sample’s current state are supplied.
         The next states are sequentially sampled via the model parameters.
@@ -269,8 +260,7 @@ class MultiStateModel:
 
     def _one_monte_carlo_run(self, sample_covariates, origin_state: int, max_transitions: int,
                              current_time: int = 0) -> PathObject:
-        """
-        This function create one path using Monte Carlo Simulations.
+        """This function create one path using Monte Carlo Simulations.
         See documentation of run_monte_carlo_simulation.
         """
         run = PathObject(states=list(), time_at_each_state=list())
@@ -301,8 +291,7 @@ class MultiStateModel:
 
     def _probability_for_next_state(self, next_state: int, competing_risks_model: CompetingRisksModel, sample_covariates,
                                     t_entry_to_current_state: int = 0):
-        """
-        This function calculates the probability of transition to the next state, using the competing_risks_model
+        """This function calculates the probability of transition to the next state, using the competing_risks_model
         model parameters
         """
         unique_event_times = competing_risks_model.unique_event_times(next_state)
@@ -322,8 +311,7 @@ class MultiStateModel:
         return probability_for_state
 
     def _sample_next_state(self, current_state: int, sample_covariates, t_entry_to_current_state: int) -> Optional[int]:
-        """
-        This function samples the next state, according to a multinomial distribution, using probabilites defines
+        """This function samples the next state, according to a multinomial distribution, using probabilites defines
         by _probability_for_next_state function.
         """
         competing_risk_model = self.state_specific_models[current_state]
@@ -345,8 +333,7 @@ class MultiStateModel:
 
     def _sample_time_to_next_state(self, current_state: int, next_state: int, sample_covariates,
                                    t_entry_to_current_state: int) -> float:
-        """
-        This function samples the time of transition to the next state, using the hazard and survival provided by
+        """This function samples the time of transition to the next state, using the hazard and survival provided by
         the competing risk model of the current_state
         """
         competing_risk_model = self.state_specific_models[current_state]

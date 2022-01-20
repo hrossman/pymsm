@@ -3,7 +3,7 @@
 # -- Project information
 
 project = 'PyMSM'
-copyright = '2021, Rossman & Kehset'
+copyright = '2022, Rossman & Keshet'
 author = 'Hagai Rossman, Ayya Keshet'
 
 release = '0.1'

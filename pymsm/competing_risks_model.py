@@ -10,6 +10,9 @@ from pymsm.utils import stepfunc
 
 
 class EventSpecificModel:
+    """Event specific model, holding attributes needed for later calculations
+    """
+
     failure_type: int
     cox_model: CoxPHFitter
     coefficients: Optional[np.ndarray]
@@ -18,17 +21,16 @@ class EventSpecificModel:
     cumulative_baseline_hazard_function: Optional[np.ndarray]
 
     def __init__(self, failure_type=None, cox_model=None):
+        """Event specific model, holding attributes needed for later calculations
+
+        Parameters
+        ----------
+        failure_type : int, optional
+            failure_type, by default None
+        cox_model : CoxPHFitter, optional
+            Cox model for the specific failuure_type, by default None
         """
-        Class EventSpecificModel will hold a cox model specific to event.
-        Each object of the class will have the following attributes:
-        :param failure_type:
-        :param cox_model:
-        Each object of the class will hold the additional following attribuites after the extract_necessary_attributes function is called:
-        1. coefficients
-        2. unique_event_times
-        3. baseline_hazard
-        4. cumulative_baseline_hazard_function
-        """
+
         self.failure_type = failure_type
         self.cox_model = cox_model
         self.coefficients = None
@@ -37,8 +39,7 @@ class EventSpecificModel:
         self.cumulative_baseline_hazard_function = None
 
     def extract_necessary_attributes(self) -> None:
-        """
-        Extract relevant arrays from cox_model
+        """Extract relevant arrays from event specific cox model
         """
         self.coefficients = self.cox_model.params_.values
         self.unique_event_times = self.cox_model.baseline_hazard_.index.values
@@ -49,6 +50,26 @@ class EventSpecificModel:
 
 
 class CompetingRisksModel:
+    """
+    This class implements fitting a Competing Risk model.
+
+    Examples
+    --------
+    .. code:: python
+        from pymsm.examples.crm_example_utils import create_test_data, stack_plot
+        from pymsm.competing_risks_model import CompetingRisksModel
+        crm = CompetingRisksModel()
+        data = create_test_data(N=1000)
+        crm.fit(df=data, duration_col='T', event_col='transition', cluster_col='id')
+    
+    Attributes
+    ----------
+    failure_types: list
+        The possible failure types of the model
+    event_specific_models: dict
+        A dictionary containing an instance of EventSpecificModel for each failure type.
+    """
+
     failure_types: List[int]
     event_specific_models: Dict[int, EventSpecificModel]
 
@@ -65,6 +86,23 @@ class CompetingRisksModel:
         weights_col: str = None,
         entry_col: str = None,
     ) -> None:
+        """Checks if a dataframe is valid for fitting a competing risks model
+
+        Parameters
+        ----------
+        df : pd.DataFrame
+            A pandas DataFrame contaning all relevant columns, must have duration and event columns. Optional to have clester and weight columns. All other columns other than these 4 will be treated as covariate columns.
+        duration_col : str, optional
+            the name of the column in DataFrame that contains the subjects lifetimes, defaults to "T", by default None
+        event_col : str, optional
+            the name of the column in DataFrame that contains the subjects death observation, defaults to "E", by default None
+        cluster_col : str, optional
+            specifies what column has unique identifiers for clustering covariances. Using this forces the sandwich estimator (robust variance estimator) to be used, defaults to None, by default None
+        weights_col : str, optional
+            an optional column in the DataFrame, df, that denotes the weight per subject. This column is expelled and not used as a covariate, but as a weight in the final regression. Default weight is 1. This can be used for case-weights. For example, a weight of 2 means there were two subjects with identical observations. This can be used for sampling weights. In that case, use robust=True to get more accurate standard errors, by default None
+        entry_col : str, optional
+            a column denoting when a subject entered the study, i.e. left-truncation, by default None
+        """
 
         assert df[duration_col].count() == df[event_col].count()
 
@@ -179,7 +217,9 @@ class CompetingRisksModel:
             "baseline cumulative hazard"
         ].values
 
-    def cumulative_baseline_hazard_step_function(self, cox_model: CoxPHFitter) -> interp1d:
+    def cumulative_baseline_hazard_step_function(
+        self, cox_model: CoxPHFitter
+    ) -> interp1d:
         return stepfunc(
             cox_model.baseline_hazard_.index.values,
             self.cumulative_baseline_hazard(cox_model),

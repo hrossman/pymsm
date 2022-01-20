@@ -11,6 +11,13 @@ from pymsm.utils import stepfunc
 
 class EventSpecificModel:
     """Event specific model, holding attributes needed for later calculations
+
+    Parameters
+    ----------
+    failure_type : int, optional
+        failure_type, by default None
+    cox_model : CoxPHFitter, optional
+        Cox model for the specific failuure_type, by default None
     """
 
     failure_type: int
@@ -21,16 +28,6 @@ class EventSpecificModel:
     cumulative_baseline_hazard_function: Optional[np.ndarray]
 
     def __init__(self, failure_type=None, cox_model=None):
-        """Event specific model, holding attributes needed for later calculations
-
-        Parameters
-        ----------
-        failure_type : int, optional
-            failure_type, by default None
-        cox_model : CoxPHFitter, optional
-            Cox model for the specific failuure_type, by default None
-        """
-
         self.failure_type = failure_type
         self.cox_model = cox_model
         self.coefficients = None
@@ -132,6 +129,22 @@ class CompetingRisksModel:
     def break_ties_by_adding_epsilon(
         t: np.ndarray, epsilon_min: float = 0.0, epsilon_max: float = 0.0001
     ) -> np.ndarray:
+        """Breaks ties in event times by adding a samll random number
+
+        Parameters
+        ----------
+        t : np.ndarray
+            array of event times
+        epsilon_min : float, optional
+            minimum value, by default 0.0
+        epsilon_max : float, optional
+            maximum value, by default 0.0001
+
+        Returns
+        -------
+        np.ndarray
+            array of event times with ties broken
+        """
         np.random.seed(42)
         _, inverse, count = np.unique(
             t, return_inverse=True, return_counts=True, axis=0
@@ -162,6 +175,32 @@ class CompetingRisksModel:
         verbose: int = 1,
         **coxph_kwargs,
     ) -> CoxPHFitter:
+        """Fits a Cox model for a specific event of interest. Applies censoring to other events
+
+        Parameters
+        ----------
+        event_of_interest : int
+            The event which is to be fitted
+        df : pd.DataFrame
+            A pandas DataFrame contaning all relevant columns, must have duration and event columns. Optional to have clester and weight columns. All other columns other than these 4 will be treated as covariate columns.
+        duration_col : str, optional
+            the name of the column in DataFrame that contains the subjects lifetimes, defaults to "T", by default None
+        event_col : str, optional
+            the name of the column in DataFrame that contains the subjects death observation, defaults to "E", by default None
+        cluster_col : str, optional
+            specifies what column has unique identifiers for clustering covariances. Using this forces the sandwich estimator (robust variance estimator) to be used, defaults to None, by default None
+        weights_col : str, optional
+            an optional column in the DataFrame, df, that denotes the weight per subject. This column is expelled and not used as a covariate, but as a weight in the final regression. Default weight is 1. This can be used for case-weights. For example, a weight of 2 means there were two subjects with identical observations. This can be used for sampling weights. In that case, use robust=True to get more accurate standard errors, by default None
+        entry_col : str, optional
+            a column denoting when a subject entered the study, i.e. left-truncation, by default None
+        verbose : int, optional
+            verbosity, by default 1
+
+        Returns
+        -------
+        CoxPHFitter
+             Cox model for a specific event of interest
+        """
 
         # Treat all 'failure_types' except 'event_of_interest' as censoring events
         is_event = df[event_col] == event_of_interest
@@ -194,6 +233,20 @@ class CompetingRisksModel:
     def _compute_cif_function(
         self, sample_covariates: np.ndarray, failure_type: int
     ) -> interp1d:
+        """Computes the Cumulative Incidince (step) Function for a given failure type and set of covariates
+
+        Parameters
+        ----------
+        sample_covariates : np.ndarray
+            Covariates used to build CIF
+        failure_type : int
+            failure typpe of interest
+
+        Returns
+        -------
+        interp1d
+            interpolation step function for the CIF
+        """
         cif_x = self.unique_event_times(failure_type)
         hazard = self.hazard_at_unique_event_times(sample_covariates, failure_type)
         survival_func = self.survival_function(cif_x, sample_covariates)
@@ -203,8 +256,21 @@ class CompetingRisksModel:
     def hazard_at_unique_event_times(
         self, sample_covariates: np.ndarray, failure_type: int
     ) -> np.ndarray:
-        # the hazard is given by multiplying the baseline hazard (which has value per unique event time)
-        # by the partial hazard
+        """Hazard at unique event times
+
+        Parameters
+        ----------
+        sample_covariates : np.ndarray
+            Covariates used to build CIF
+        failure_type : int
+            failure typpe of interest
+
+        Returns
+        -------
+        np.ndarray
+            hazard at unique event times
+        """
+        # the hazard is given by multiplying the baseline hazard (which has value per unique event time) by the partial hazard
         hazard = self._baseline_hazard(failure_type) * (
             self._partial_hazard(failure_type, sample_covariates)
         )
@@ -213,6 +279,7 @@ class CompetingRisksModel:
 
     @staticmethod
     def cumulative_baseline_hazard(cox_model: CoxPHFitter) -> np.ndarray:
+
         return cox_model.baseline_cumulative_hazard_[
             "baseline cumulative hazard"
         ].values
@@ -220,6 +287,18 @@ class CompetingRisksModel:
     def cumulative_baseline_hazard_step_function(
         self, cox_model: CoxPHFitter
     ) -> interp1d:
+        """Create interpolation step function for the cumulative baseline hazard
+
+        Parameters
+        ----------
+        cox_model : CoxPHFitter
+            cox model
+
+        Returns
+        -------
+        interp1d
+            interpolation step function for the cumulative baseline hazard
+        """
         return stepfunc(
             cox_model.baseline_hazard_.index.values,
             self.cumulative_baseline_hazard(cox_model),

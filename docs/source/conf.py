@@ -1,8 +1,10 @@
 # Configuration file for the Sphinx documentation builder.
 
 import sys
-import pathlib
-sys.path.insert(0, pathlib.Path(__file__).parents[2].resolve().as_posix())
+# import pathlib
+# sys.path.insert(0, pathlib.Path(__file__).parents[2].resolve().as_posix())
+import os
+sys.path.insert(0, os.path.abspath('../../pymsm/'))
 import pymsm
 
 # -- Project information

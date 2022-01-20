@@ -15,13 +15,15 @@ To use PyMSM, first install it using pip:
 
 The ``CompetingRisksModel`` class
 *********************************
+
 .. autoclass:: pymsm.competing_risks_model.CompetingRisksModel
     :members:
     :undoc-members:
-    :show-inheritance:
+
 
 The ``MultiStateModel`` class
 *********************************
+
 .. autoclass:: pymsm.multi_state_competing_risks_model.MultiStateModel
     :members:
     :undoc-members:

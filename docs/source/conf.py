@@ -1,11 +1,8 @@
 # Configuration file for the Sphinx documentation builder.
 
-import sys
-# import pathlib
-# sys.path.insert(0, pathlib.Path(__file__).parents[2].resolve().as_posix())
 import os
-sys.path.insert(0, os.path.abspath('../../pymsm/'))
-sys.path.insert(0, os.path.abspath('../../'))
+import sys
+sys.path.insert(0, os.path.abspath('../..'))
 
 
 # -- Project information
@@ -45,3 +42,5 @@ autodoc_default_flags = [
     "show-inheritance",
 ]
 autosummary_generate = True  # Make _autosummary files and include them
+
+autodoc_mock_imports = ['_tkinter']

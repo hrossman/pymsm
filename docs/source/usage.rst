@@ -16,7 +16,7 @@ To use PyMSM, first install it using pip:
 The ``CompetingRisksModel`` class
 *********************************
 
-.. autoclass:: pymsm.pymsm.competing_risks_model.CompetingRisksModel
+.. autoclass:: pymsm.competing_risks_model.CompetingRisksModel
     :members:
     :undoc-members:
 

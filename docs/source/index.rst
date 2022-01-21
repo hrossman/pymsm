@@ -17,5 +17,4 @@ Contents
 
    usage
    MultiStateModel
-   
    notebooks/first_example

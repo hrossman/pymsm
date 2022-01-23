@@ -72,7 +72,7 @@ class MultiStateModel:
     state_specific_models: dict
         After running the "fit" function this dictionary will hold a compering risk model for each state
     competing_risk_dataset: DataFrame
-        TODO
+        A pandas DataFrame that will be used when fitting the CompetingRiskModel class. Optional instead of dataset input
 
     Note
     ----------

@@ -2,6 +2,12 @@
 
 Python implemantation of a Multistate competing risk model
 
+## TODO
+- [ ] Option for custom fitters  
+- [ ] Data loaders  
+- [ ] Plots and summaries functio ns and examples
+- [ ] FInish EMBT example
+
 ## Dev setup
 create conda environment:  
 `conda create --name pymsm --file environment.yml`

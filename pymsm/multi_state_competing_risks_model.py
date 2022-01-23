@@ -71,6 +71,8 @@ class MultiStateModel:
         Optional list of covariate names to be used in prints
     state_specific_models: dict
         After running the "fit" function this dictionary will hold a compering risk model for each state
+    competing_risk_dataset: DataFrame
+        A pandas DataFrame that will be used when fitting the CompetingRiskModel class. Optional instead of dataset input
 
     Note
     ----------
@@ -83,19 +85,21 @@ class MultiStateModel:
     update_covariates_fn: Callable[[Series, int, int, float, float], Series]
     covariate_names: List[str]
     state_specific_models: Dict[int, CompetingRisksModel]
+    competing_risk_dataset: DataFrame
 
     def __init__(self, dataset, terminal_states, update_covariates_fn=default_update_covariates_function,
-                 covariate_names=None):
+                 covariate_names=None, competing_risk_dataset=None):
         self.dataset = dataset
         self.terminal_states = terminal_states
         self.update_covariates_fn = update_covariates_fn
         self.covariate_names = self._get_covariate_names(covariate_names)
         self.state_specific_models = dict()
         self._time_is_discrete = None
-        self._competing_risk_dataset = None
+        self._competing_risk_dataset = competing_risk_dataset
         self._samples_have_weights = False
 
-        self._assert_valid_input()
+        if self._competing_risk_dataset is None:
+            self._assert_valid_input()
 
     def fit(self, verbose: int = 1) -> None:
         """Fit a CompetingRiskModel for each state
@@ -104,7 +108,8 @@ class MultiStateModel:
         verbose : int, optional
             verbosity, by default 1
         """
-        self._competing_risk_dataset = self._prepare_dataset_for_competing_risks_fit()
+        if self._competing_risk_dataset is None:
+            self._competing_risk_dataset = self._prepare_dataset_for_competing_risks_fit()
         self._time_is_discrete = self._check_if_time_is_discrete()
 
         for state in self._competing_risk_dataset['origin_state'].unique():

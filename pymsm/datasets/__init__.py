@@ -1,5 +1,4 @@
 import pandas as pd
-import pathlib
 from pymsm.utils import get_categorical_columns
 from pkg_resources import resource_filename
 
@@ -18,7 +17,10 @@ def _load_dataset(filename, **kwargs):
         output: DataFrame
     """
     return pd.read_csv(
-        resource_filename("pymsm", "datasets/" + filename), engine="python", **kwargs
+        resource_filename("pymsm", "datasets/" + filename),
+        engine="python",
+        index_col=0,
+        **kwargs
     )
 
 

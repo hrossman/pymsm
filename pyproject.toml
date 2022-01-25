@@ -4,5 +4,5 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "PyMSM"
-authors = [{name = "Hagai Rossman, Ayya Kehset", email = "hagairossman@gmail.com"}]
+authors = [{name = "Hagai Rossman, Ayya Keshet", email = "hagairossman@gmail.com"}]
 dynamic = ["version", "description"]

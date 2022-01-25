@@ -45,6 +45,24 @@ def load_ebmt(data_format: str = None, **kwargs) -> pd.DataFrame:
     return data
 
 
+def load_aidssi(**kwargs) -> pd.DataFrame:
+    """Load AIDSSI dataset (from R mstate package)
+
+    Parameters
+    ----------
+    data_format : str, optional
+        options are "wide", "long"., by default None
+
+    Returns
+    -------
+    pd.DataFrame
+        [description]
+    """
+    data = _load_dataset("aidssi.csv", **kwargs)
+
+    return data
+
+
 def prep_ebmt_long():
     longdata = load_ebmt()
     longdata.loc[longdata["status"] == 0, "to"] = 0  # take care of right censoring
@@ -77,5 +95,7 @@ def prep_ebmt_long():
 
 
 if __name__ == "__main__":
-    competing_risk_dataset, covariate_cols = prep_ebmt_long()
-    print(competing_risk_dataset)
+    # competing_risk_dataset, covariate_cols = prep_ebmt_long()
+    # print(competing_risk_dataset)
+    data = load_aidssi()
+    print(data)

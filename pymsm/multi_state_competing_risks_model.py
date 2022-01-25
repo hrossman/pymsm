@@ -1,6 +1,6 @@
 # -- R source: https://github.com/JonathanSomer/covid-19-multi-state-model/blob/master/model/multi_state_competing_risks_model.R --#
 
-from typing import List, Callable, Optional, Dict
+from typing import List, Callable, Optional, Dict, Union
 from pandas import Series, DataFrame
 import numpy as np
 from pymsm.competing_risks_model import CompetingRisksModel
@@ -59,7 +59,7 @@ class MultiStateModel:
 
     Attributes
     ----------
-    dataset: list of PathObject
+    dataset: either a list of PathObject or a pandas data frame in the format used to fit the CompetingRiskModel class
         Dataset used to fit a competing risk model to each state
     terminal_states: list of ints
         States which a sample does not leave
@@ -71,8 +71,10 @@ class MultiStateModel:
         Optional list of covariate names to be used in prints
     state_specific_models: dict
         After running the "fit" function this dictionary will hold a compering risk model for each state
-    competing_risk_dataset: DataFrame
-        A pandas DataFrame that will be used when fitting the CompetingRiskModel class. Optional instead of dataset input
+    competing_risk_data_format: boolean, default False
+        A boolean indicating the format of the dataset parmeter, if False - the dataset is assumed to be a list of
+        PathObjects, if True - the dataset is assumed to be a dataframe which is compatible in format for fitting the
+        CompetingRiskModel class
 
     Note
     ----------
@@ -80,7 +82,7 @@ class MultiStateModel:
     types (in this order): pandas Series, int, int, float, float,
     and return a pandas Series.
     """
-    dataset: List[PathObject]
+    dataset: Union[List[PathObject], DataFrame]
     terminal_states: List[int]
     update_covariates_fn: Callable[[Series, int, int, float, float], Series]
     covariate_names: List[str]
@@ -88,17 +90,18 @@ class MultiStateModel:
     competing_risk_dataset: DataFrame
 
     def __init__(self, dataset, terminal_states, update_covariates_fn=default_update_covariates_function,
-                 covariate_names=None, competing_risk_dataset=None):
+                 covariate_names=None, competing_risk_data_format=False):
         self.dataset = dataset
         self.terminal_states = terminal_states
         self.update_covariates_fn = update_covariates_fn
         self.covariate_names = self._get_covariate_names(covariate_names)
         self.state_specific_models = dict()
         self._time_is_discrete = None
-        self._competing_risk_dataset = competing_risk_dataset
+        self._competing_risk_dataset = None
         self._samples_have_weights = False
+        self._competing_risk_data_format = competing_risk_data_format
 
-        if self._competing_risk_dataset is None:
+        if not self._competing_risk_data_format:
             self._assert_valid_input()
 
     def fit(self, verbose: int = 1) -> None:
@@ -108,8 +111,8 @@ class MultiStateModel:
         verbose : int, optional
             verbosity, by default 1
         """
-        if self._competing_risk_dataset is None:
-            self._competing_risk_dataset = self._prepare_dataset_for_competing_risks_fit()
+        self._competing_risk_dataset = self.dataset if self._competing_risk_data_format else \
+            self._prepare_dataset_for_competing_risks_fit()
         self._time_is_discrete = self._check_if_time_is_discrete()
 
         for state in self._competing_risk_dataset['origin_state'].unique():

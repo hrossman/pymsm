@@ -4,6 +4,7 @@ from typing import List, Callable, Optional, Dict, Union
 from pandas import Series, DataFrame
 import numpy as np
 from pymsm.competing_risks_model import CompetingRisksModel
+from pymsm.event_specific_fitter import EventSpecificFitter, CoxWrapper
 
 
 def default_update_covariates_function(covariates_entering_origin_state, origin_state=None, target_state=None,
@@ -71,6 +72,9 @@ class MultiStateModel:
         Optional list of covariate names to be used in prints
     state_specific_models: dict
         After running the "fit" function this dictionary will hold a compering risk model for each state
+    event_specific_fitter: EventSpecificFitter
+        This class holds the model that will be fitter inside the CompetingRisksModel.
+        The default is CoxWrapper that holds a CoxPHFitter
     competing_risk_data_format: boolean, default False
         A boolean indicating the format of the dataset parmeter, if False - the dataset is assumed to be a list of
         PathObjects, if True - the dataset is assumed to be a dataframe which is compatible in format for fitting the
@@ -90,7 +94,7 @@ class MultiStateModel:
     competing_risk_dataset: DataFrame
 
     def __init__(self, dataset, terminal_states, update_covariates_fn=default_update_covariates_function,
-                 covariate_names=None, competing_risk_data_format=False):
+                 covariate_names=None, event_specific_fitter=CoxWrapper, competing_risk_data_format=False):
         self.dataset = dataset
         self.terminal_states = terminal_states
         self.update_covariates_fn = update_covariates_fn
@@ -100,6 +104,7 @@ class MultiStateModel:
         self._competing_risk_dataset = None
         self._samples_have_weights = False
         self._competing_risk_data_format = competing_risk_data_format
+        self._event_specific_fitter = event_specific_fitter
 
         if not self._competing_risk_data_format:
             self._assert_valid_input()
@@ -229,7 +234,7 @@ class MultiStateModel:
         state_specific_df = self._competing_risk_dataset[self._competing_risk_dataset['origin_state'] == state].copy()
         state_specific_df.drop(['origin_state'], axis=1, inplace=True)
         state_specific_df.reset_index(drop=True, inplace=True)
-        crm = CompetingRisksModel()
+        crm = CompetingRisksModel(self._event_specific_fitter)
         crm.fit(state_specific_df, event_col='target_state', duration_col='time_transition_to_target',
                 cluster_col='sample_id', entry_col='time_entry_to_origin', verbose=verbose)
         return crm

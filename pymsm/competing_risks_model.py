@@ -4,7 +4,6 @@ import numpy as np
 import pandas as pd
 from scipy.interpolate import interp1d
 from typing import Dict, List, Optional
-from lifelines import CoxPHFitter
 from pandas.api.types import is_numeric_dtype
 from pymsm.utils import stepfunc
 from pymsm.event_specific_fitter import EventSpecificFitter

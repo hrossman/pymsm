@@ -5,23 +5,27 @@ import matplotlib.pyplot as plt
 from pytest import fail
 from pymsm.competing_risks_model import CompetingRisksModel
 from lifelines import AalenJohansenFitter
-from typing import List
+from typing import List, Dict
 
 
 def stackplot(
-    data,
-    duration_col: str = None,
-    event_col: str = None,
-    order_top: List = None,
-    order_bottom: List = None,
+    data: pd.DataFrame,
+    origin_state: int,
+    duration_col: str,
+    event_col: str,
+    order_top: List = [],
+    order_bottom: List = [],
     times: np.ndarray = None,
-    labels: List[str] = None,
+    labels: Dict = None,
+    fontsize: int = 18,
     ax=None,
 ):
     if times is None:
         times = np.sort(data[duration_col].unique())
 
-    fontsize=18
+    failure_types = np.sort(data[event_col].unique())
+    if labels is None:
+        labels = dict(zip(failure_types, [str(f) for f in failure_types]))
 
     if ax is None:
         fig, ax = plt.subplots(1, 1)
@@ -29,10 +33,7 @@ def stackplot(
         ax.set_xlim(0, times[-1])
         ax.set_ylabel("Probability", fontsize=fontsize)
         ax.set_xlabel("t", fontsize=fontsize)
-
-    failure_types = np.sort(data[event_col].unique())
-    if labels is None:
-        labels = dict(zip(failure_types, [str(f) for f in failure_types]))
+        ax.set_title(f"Starting from {labels[origin_state]}", fontsize=fontsize + 4)
 
     cumulative_densities = dict(zip(failure_types, ([0] * len(failure_types))))
     for failure_type in failure_types:
@@ -41,8 +42,6 @@ def stackplot(
         ajf = AalenJohansenFitter()
         ajf.fit(T, E, event_of_interest=failure_type)
         cumulative_densities[failure_type] = ajf.predict(times, interpolate=True)
-
-    
 
     cifs_top = []
     for i, failure_type in enumerate(order_top):

@@ -4,9 +4,9 @@ import numpy as np
 import pandas as pd
 from scipy.interpolate import interp1d
 from typing import Dict, List, Optional
-from lifelines import CoxPHFitter
 from pandas.api.types import is_numeric_dtype
 from pymsm.utils import stepfunc
+from pymsm.event_specific_fitter import EventSpecificFitter
 
 
 class EventSpecificModel:
@@ -16,20 +16,20 @@ class EventSpecificModel:
     ----------
     failure_type : int, optional
         failure_type, by default None
-    cox_model : CoxPHFitter, optional
+    model : CoxPHFitter, optional
         Cox model for the specific failuure_type, by default None
     """
 
     failure_type: int
-    cox_model: CoxPHFitter
+    model: EventSpecificFitter
     coefficients: Optional[np.ndarray]
     unique_event_times: Optional[np.ndarray]
     baseline_hazard: Optional[np.ndarray]
     cumulative_baseline_hazard_function: Optional[np.ndarray]
 
-    def __init__(self, failure_type=None, cox_model=None):
+    def __init__(self, failure_type=None, model=None):
         self.failure_type = failure_type
-        self.cox_model = cox_model
+        self.model = model
         self.coefficients = None
         self.unique_event_times = None
         self.baseline_hazard = None
@@ -38,11 +38,11 @@ class EventSpecificModel:
     def extract_necessary_attributes(self) -> None:
         """Extract relevant arrays from event specific cox model
         """
-        self.coefficients = self.cox_model.params_.values
-        self.unique_event_times = self.cox_model.baseline_hazard_.index.values
-        self.baseline_hazard = self.cox_model.baseline_hazard_["baseline hazard"].values
+        self.coefficients = self.model.get_coefficients()
+        self.unique_event_times = self.model.get_unique_event_times()
+        self.baseline_hazard = self.model.get_baseline_hazard()
         self.cumulative_baseline_hazard_function = (
-            self.cox_model.baseline_cumulative_hazard_
+            self.model.get_baseline_cumulative_hazard()
         )
 
 
@@ -55,7 +55,8 @@ class CompetingRisksModel:
     .. code:: python
         from pymsm.examples.crm_example_utils import create_test_data, stack_plot
         from pymsm.competing_risks_model import CompetingRisksModel
-        crm = CompetingRisksModel()
+        from pymsm.event_specific_fitter import CoxWrapper
+        crm = CompetingRisksModel(CoxWrapper)
         data = create_test_data(N=1000)
         crm.fit(df=data, duration_col='T', event_col='transition', cluster_col='id')
     
@@ -65,14 +66,18 @@ class CompetingRisksModel:
         The possible failure types of the model
     event_specific_models: dict
         A dictionary containing an instance of EventSpecificModel for each failure type.
+    event_specific_fitter: EventSpecificFitter
+        An event specific fitter class that will be used to fit an event specific model for each failure type.
     """
 
     failure_types: List[int]
     event_specific_models: Dict[int, EventSpecificModel]
+    event_specific_fitter: EventSpecificFitter
 
-    def __init__(self):
+    def __init__(self, event_specific_fitter):
         self.failure_types = []
         self.event_specific_models = {}
+        self.event_specific_fitter = event_specific_fitter
 
     @staticmethod
     def assert_valid_dataset(
@@ -163,8 +168,8 @@ class CompetingRisksModel:
         t_new[0] = t[0]
         return t_new
 
-    @staticmethod
     def fit_event_specific_model(
+        self,
         event_of_interest: int,
         df: pd.DataFrame,
         duration_col: str = "T",
@@ -173,9 +178,9 @@ class CompetingRisksModel:
         weights_col: str = None,
         entry_col: str = None,
         verbose: int = 1,
-        **coxph_kwargs,
-    ) -> CoxPHFitter:
-        """Fits a Cox model for a specific event of interest. Applies censoring to other events
+        **fitter_kwargs,
+    ) -> EventSpecificFitter:
+        """Fits a the model in EventSpecificFitter for a specific event of interest. Applies censoring to other events
 
         Parameters
         ----------
@@ -198,8 +203,8 @@ class CompetingRisksModel:
 
         Returns
         -------
-        CoxPHFitter
-             Cox model for a specific event of interest
+        EventSpecificFitter
+             fitted model for a specific event of interest
         """
 
         # Treat all 'failure_types' except 'event_of_interest' as censoring events
@@ -215,20 +220,20 @@ class CompetingRisksModel:
                 f">>> Fitting Transition to State: {event_of_interest}, n events: {np.sum(is_event)}"
             )
 
-        cox_model = CoxPHFitter()
-        cox_model.fit(
+        event_fitter = self.event_specific_fitter()
+        event_fitter.fit(
             df=event_df,
             duration_col=duration_col,
             event_col=event_col,
             weights_col=weights_col,
             cluster_col=cluster_col,
             entry_col=entry_col,
-            **coxph_kwargs,
+            **fitter_kwargs,
         )
 
         if verbose >= 2:
-            cox_model.print_summary()
-        return cox_model
+            event_fitter.print_summary()
+        return event_fitter
 
     def _compute_cif_function(
         self, sample_covariates: np.ndarray, failure_type: int
@@ -278,21 +283,15 @@ class CompetingRisksModel:
         return hazard
 
     @staticmethod
-    def cumulative_baseline_hazard(cox_model: CoxPHFitter) -> np.ndarray:
-
-        return cox_model.baseline_cumulative_hazard_[
-            "baseline cumulative hazard"
-        ].values
-
     def cumulative_baseline_hazard_step_function(
-        self, cox_model: CoxPHFitter
+            model: EventSpecificFitter
     ) -> interp1d:
         """Create interpolation step function for the cumulative baseline hazard
 
         Parameters
         ----------
-        cox_model : CoxPHFitter
-            cox model
+        model : EventSpecificFitter
+            event specific model
 
         Returns
         -------
@@ -300,8 +299,8 @@ class CompetingRisksModel:
             interpolation step function for the cumulative baseline hazard
         """
         return stepfunc(
-            cox_model.baseline_hazard_.index.values,
-            self.cumulative_baseline_hazard(cox_model),
+            model.get_unique_event_times(),
+            model.get_baseline_cumulative_hazard(),
         )
 
     def _baseline_hazard(self, failure_type: int) -> np.ndarray:
@@ -378,7 +377,7 @@ class CompetingRisksModel:
         for type in self.failure_types:
             exponent = exponent - (
                 self.cumulative_baseline_hazard_step_function(
-                    self.event_specific_models[type].cox_model
+                    self.event_specific_models[type].model
                 )(t)
                 * (self._partial_hazard(type, sample_covariates))
             )
@@ -443,7 +442,7 @@ class CompetingRisksModel:
 
         for event_of_interest in failure_types:
             # Fit cox model for specific event
-            cox_model = self.fit_event_specific_model(
+            event_fitted_model = self.fit_event_specific_model(
                 event_of_interest,
                 df,
                 duration_col,
@@ -455,7 +454,7 @@ class CompetingRisksModel:
             )
             # Save as instance of event_specific_model
             event_specific_model = EventSpecificModel(
-                failure_type=event_of_interest, cox_model=cox_model
+                failure_type=event_of_interest, model=event_fitted_model
             )
             event_specific_model.extract_necessary_attributes()
             # Add to event_specific_models dictionary

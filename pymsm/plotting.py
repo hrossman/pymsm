@@ -9,19 +9,18 @@ from typing import List
 
 
 def stackplot(
-    data,
-    duration_col: str = None,
-    event_col: str = None,
-    order_top: List = None,
-    order_bottom: List = None,
+    data: pd.DataFrame,
+    duration_col: str,
+    event_col: str,
+    order_top: List = [],
+    order_bottom: List = [],
     times: np.ndarray = None,
     labels: List[str] = None,
+    fontsize: int = 18,
     ax=None,
 ):
     if times is None:
         times = np.sort(data[duration_col].unique())
-
-    fontsize=18
 
     if ax is None:
         fig, ax = plt.subplots(1, 1)
@@ -41,8 +40,6 @@ def stackplot(
         ajf = AalenJohansenFitter()
         ajf.fit(T, E, event_of_interest=failure_type)
         cumulative_densities[failure_type] = ajf.predict(times, interpolate=True)
-
-    
 
     cifs_top = []
     for i, failure_type in enumerate(order_top):

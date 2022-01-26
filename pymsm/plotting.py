@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from pytest import fail
 from pymsm.competing_risks_model import CompetingRisksModel
 from lifelines import AalenJohansenFitter
-from typing import List
+from typing import List, Dict
 
 
 def stackplot(
@@ -15,7 +15,7 @@ def stackplot(
     order_top: List = [],
     order_bottom: List = [],
     times: np.ndarray = None,
-    labels: List[str] = None,
+    labels: Dict = None,
     fontsize: int = 18,
     ax=None,
 ):

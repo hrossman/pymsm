@@ -93,7 +93,16 @@ def prep_ebmt_long():
         [competing_risk_dataset, data[covariate_cols]], axis=1
     )
 
-    return competing_risk_dataset, covariate_cols
+    states_labels = {
+        1: "Transplant",
+        2: "Rec",
+        3: "AE",
+        4: "AE & Rec",
+        5: "Relapse",
+        6: "Death",
+    }
+
+    return competing_risk_dataset, covariate_cols, states_labels
 
 
 if __name__ == "__main__":

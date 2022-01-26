@@ -5,3 +5,5 @@ numpy
 pandas
 scipy
 lifelines
+scikit-learn
+matplotlib

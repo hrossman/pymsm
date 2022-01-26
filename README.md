@@ -4,11 +4,11 @@ Python implemantation of a Multistate competing risk model
 
 ## TODO
 - [ ] Option for custom fitters  
-- [ ] Data loaders  
-- [ ] Plots and summaries functio ns and examples
+- [x] Data loaders  
+- [ ] Plots and summaries functions and examples
 - [ ] Finish EMBT example
 - [ ] Find industry example
-- [ ] Pypi
+- [ ] Pypi setup
 
 ## Dev setup
 create conda environment:  

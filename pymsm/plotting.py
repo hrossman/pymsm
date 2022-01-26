@@ -10,6 +10,7 @@ from typing import List, Dict
 
 def stackplot(
     data: pd.DataFrame,
+    origin_state: int,
     duration_col: str,
     event_col: str,
     order_top: List = [],
@@ -22,16 +23,17 @@ def stackplot(
     if times is None:
         times = np.sort(data[duration_col].unique())
 
+    failure_types = np.sort(data[event_col].unique())
+    if labels is None:
+        labels = dict(zip(failure_types, [str(f) for f in failure_types]))
+
     if ax is None:
         fig, ax = plt.subplots(1, 1)
         ax.set_ylim(0, 1)
         ax.set_xlim(0, times[-1])
         ax.set_ylabel("Probability", fontsize=fontsize)
         ax.set_xlabel("t", fontsize=fontsize)
-
-    failure_types = np.sort(data[event_col].unique())
-    if labels is None:
-        labels = dict(zip(failure_types, [str(f) for f in failure_types]))
+        ax.set_title(f"Starting from {labels[origin_state]}", fontsize=fontsize + 4)
 
     cumulative_densities = dict(zip(failure_types, ([0] * len(failure_types))))
     for failure_type in failure_types:

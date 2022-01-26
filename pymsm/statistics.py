@@ -44,6 +44,65 @@ def plot_total_times_ecdf(paths: List[PathObject], states: List[int], ax=None):
         fig, ax = plt.subplots()
     ecdfplot(x=total_times, ax=ax)
 
+
+def make_states_at_timestep_array(
+    states: List,
+    time_at_each_state: List,
+    max_timestep: int,
+    start_time: float = 0,
+    rounding: bool = True,
+):
+    time_at_each_state = np.array(time_at_each_state) - start_time
+
+    # rounding procedure, works on cumsum
+    if rounding:
+        time_at_each_state = np.diff(
+            np.round(np.cumsum(time_at_each_state)), prepend=0
+        ).astype(int)
+
+    # only repeat non-terminal states
+    num_nonterminal_states = len(time_at_each_state)
+    if num_nonterminal_states != len(states):
+        ended_with_terminal_state = True
+        nonterminal_path_states = states[:num_nonterminal_states]
+        terminal_path_state = states[num_nonterminal_states]
+        # make repeated array
+        states_at_timestep_full = np.repeat(nonterminal_path_states, time_at_each_state)
+        # add terminal state at the end
+        states_at_timestep_full = np.concatenate(
+            [states_at_timestep_full, np.array([terminal_path_state])]
+        )
+    else:
+        ended_with_terminal_state = False
+        nonterminal_path_states = states
+        # make repeated array
+        states_at_timestep_full = np.repeat(nonterminal_path_states, time_at_each_state)
+
+    # clip to inculde only max time step
+    states_at_timestep = states_at_timestep_full[:max_timestep]
+    # fill up to max timestep
+    if len(states_at_timestep) < max_timestep:
+        fill_shape = max_timestep - len(states_at_timestep)
+        if ended_with_terminal_state:
+            fill_value = states_at_timestep[-1]
+        else:
+            fill_value = 0
+        states_at_timestep = np.concatenate(
+            [states_at_timestep, np.full(fill_shape, fill_value)]
+        )
+    # print(states_at_timestep)
+
+    return states_at_timestep
+
+
+def path_to_timstep_array(
+    path: PathObject, max_timestep: int, start_time: float = 0, rounding: bool = True
+):
+    return make_states_at_timestep_array(
+        path.states, path.time_at_each_state, max_timestep, start_time, rounding
+    )
+
+
 if __name__ == "__main__":
     pass
 

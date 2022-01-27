@@ -1,6 +1,6 @@
 import numpy as np
 from pymsm.multi_state_competing_risks_model import PathObject
-from typing import List
+from typing import List, Dict
 from seaborn import ecdfplot
 
 
@@ -115,6 +115,23 @@ def paths_to_timestep_matrix(
             for path in paths
         ]
     )
+
+
+def get_state_timestep_probs(timestep_matrix: np.ndarray) -> Dict:
+    state_timestep_probs = {}
+    censored_counts = 0
+    for state in np.unique(timestep_matrix):
+        mask = timestep_matrix == state
+        counts = mask.sum(axis=0)  # sum in each timestep
+        if state == 0:
+            censored_counts = mask.sum(axis=0)
+            continue
+        probs = counts / (
+            len(timestep_matrix) - censored_counts
+        )  # exclude censored counts
+        state_timestep_probs[state] = probs
+
+    return state_timestep_probs
 
 
 if __name__ == "__main__":

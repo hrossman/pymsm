@@ -1,5 +1,3 @@
-# -- R source: https://github.com/JonathanSomer/covid-19-multi-state-model/blob/master/model/multi_state_competing_risks_model.R --#
-
 from typing import List, Callable, Optional, Dict, Union
 from pandas import Series, DataFrame
 import numpy as np

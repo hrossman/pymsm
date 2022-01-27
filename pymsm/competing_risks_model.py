@@ -1,5 +1,3 @@
-# -- R source: https://github.com/JonathanSomer/covid-19-multi-state-model/blob/master/model/competing_risks_model.R --#
-
 import numpy as np
 import pandas as pd
 from scipy.interpolate import interp1d

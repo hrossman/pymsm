@@ -1,35 +1,122 @@
-from pathlib import Path
 import numpy as np
 from pymsm.multi_state_competing_risks_model import PathObject
 from typing import List
+from seaborn import ecdfplot
 
 
 def prob_visited_state(paths: List[PathObject], state: int):
     return np.mean([int(state in path.states) for path in paths])
 
 
-def prob_visited_states(paths: List[PathObject], states: List):
+def prob_visited_states(paths: List[PathObject], states: List[int]):
     states = set(states)
     return np.mean([len(states.intersection(set(path.states))) > 0 for path in paths])
 
 
-# time_at_hospital = function(monte_carlo_run) {
-#   states = monte_carlo_run$states
-#   time_at_each_state = monte_carlo_run$time_at_each_state
-  
-#   if (length(states) > length(time_at_each_state)){
-#     states = head(states, -1)
-#   }
-  
-#   return(sum(time_at_each_state[states != RECOVERED_OR_OOHQ]))
-# }
+def path_total_time_at_states(path: PathObject, states: List[int]):
+    # take care and drop terminal states
+    num_nonterminal_states = len(path.time_at_each_state)
+    nonterminal_path_states = path.states[:num_nonterminal_states]
+    idx = np.isin(nonterminal_path_states, states)
+    relevant_times = np.array(path.time_at_each_state)[idx]
+    return np.sum(relevant_times)
 
+
+def stats_total_time_at_states(
+    paths: List[PathObject], states: List[int], quantiles=[0.1, 0.25, 0.75, 0.9]
+):
+    total_times = [path_total_time_at_states(path, states) for path in paths]
+    stats = {
+        "time_in_state_mean": np.mean(total_times),
+        "time_in_state_std": np.std(total_times),
+        "time_in_state_median": np.median(total_times),
+        "time_in_state_min": np.min(total_times),
+        "time_in_state_max": np.max(total_times),
+    }
+    for q in quantiles:
+        stats[f"time_in_state_quantile_{q}"] = np.quantile(total_times, q)
+    return stats
+
+
+def plot_total_times_ecdf(paths: List[PathObject], states: List[int], ax=None):
+    total_times = np.array([path_total_time_at_states(path, states) for path in paths])
+    if ax is None:
+        fig, ax = plt.subplots()
+    ecdfplot(x=total_times, ax=ax)
+
+
+def make_states_at_timestep_array(
+    states: List,
+    time_at_each_state: List,
+    max_timestep: int,
+    start_time: float = 0,
+    rounding: bool = True,
+):
+    time_at_each_state = np.array(time_at_each_state) - start_time
+
+    # rounding procedure, works on cumsum
+    if rounding:
+        time_at_each_state = np.diff(
+            np.round(np.cumsum(time_at_each_state)), prepend=0
+        ).astype(int)
+
+    # only repeat non-terminal states
+    num_nonterminal_states = len(time_at_each_state)
+    if num_nonterminal_states != len(states):
+        ended_with_terminal_state = True
+        nonterminal_path_states = states[:num_nonterminal_states]
+        terminal_path_state = states[num_nonterminal_states]
+        # make repeated array
+        states_at_timestep_full = np.repeat(nonterminal_path_states, time_at_each_state)
+        # add terminal state at the end
+        states_at_timestep_full = np.concatenate(
+            [states_at_timestep_full, np.array([terminal_path_state])]
+        )
+    else:
+        ended_with_terminal_state = False
+        nonterminal_path_states = states
+        # make repeated array
+        states_at_timestep_full = np.repeat(nonterminal_path_states, time_at_each_state)
+
+    # clip to inculde only max time step
+    states_at_timestep = states_at_timestep_full[:max_timestep]
+    # fill up to max timestep
+    if len(states_at_timestep) < max_timestep:
+        fill_shape = max_timestep - len(states_at_timestep)
+        if ended_with_terminal_state:
+            fill_value = states_at_timestep[-1]
+        else:
+            fill_value = 0
+        states_at_timestep = np.concatenate(
+            [states_at_timestep, np.full(fill_shape, fill_value)]
+        )
+    # print(states_at_timestep)
+
+    return states_at_timestep
+
+
+def path_to_timestep_array(
+    path: PathObject, max_timestep: int, start_time: float = 0, rounding: bool = True
+):
+    return make_states_at_timestep_array(
+        path.states, path.time_at_each_state, max_timestep, start_time, rounding
+    )
+
+
+def paths_to_timestep_matrix(
+    paths: List[PathObject],
+    max_timestep: int,
+    start_time: float = 0,
+    rounding: bool = True,
+):
+    return np.concatenate(
+        [
+            [path_to_timestep_array(path, max_timestep, start_time, rounding)]
+            for path in paths
+        ]
+    )
 
 
 if __name__ == "__main__":
-    a = [1, 2]
-    times = [3, 2]
-
-    arr = np.repeat(a, times)
-    print(arr)
+    pass
 

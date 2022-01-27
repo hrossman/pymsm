@@ -95,11 +95,25 @@ def make_states_at_timestep_array(
     return states_at_timestep
 
 
-def path_to_timstep_array(
+def path_to_timestep_array(
     path: PathObject, max_timestep: int, start_time: float = 0, rounding: bool = True
 ):
     return make_states_at_timestep_array(
         path.states, path.time_at_each_state, max_timestep, start_time, rounding
+    )
+
+
+def paths_to_timestep_matrix(
+    paths: List[PathObject],
+    max_timestep: int,
+    start_time: float = 0,
+    rounding: bool = True,
+):
+    return np.concatenate(
+        [
+            [path_to_timestep_array(path, max_timestep, start_time, rounding)]
+            for path in paths
+        ]
     )
 
 

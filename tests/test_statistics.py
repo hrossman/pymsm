@@ -2,14 +2,14 @@ import numpy as np
 from pymsm.statistics import *
 
 
-def main():
+def test_make_states_at_timestep_array():
     states = [1, 2, 3]
     time_at_each_state = [1, 2, 3]
     max_timestep = 5
     states_at_timestep = make_states_at_timestep_array(
         states, time_at_each_state, max_timestep, 0, True
     )
-    assert (states_at_timestep == np.array([1, 2, 2, 3, 3])).all()
+    np.testing.assert_equal(states_at_timestep, np.array([1, 2, 2, 3, 3]))
 
     states = [1, 2, 3]
     time_at_each_state = [1, 2, 3]
@@ -17,7 +17,7 @@ def main():
     states_at_timestep = make_states_at_timestep_array(
         states, time_at_each_state, max_timestep, 0, True
     )
-    assert (states_at_timestep == np.array([1, 2, 2, 3, 3, 3, 0])).all()
+    np.testing.assert_equal(states_at_timestep, np.array([1, 2, 2, 3, 3, 3, 0]))
 
     states = [1]
     time_at_each_state = [3]
@@ -25,7 +25,7 @@ def main():
     states_at_timestep = make_states_at_timestep_array(
         states, time_at_each_state, max_timestep, 0, True
     )
-    assert (states_at_timestep == np.array([1, 1, 1, 0, 0])).all()
+    np.testing.assert_equal(states_at_timestep, np.array([1, 1, 1, 0, 0]))
 
     states = [1, 2, 5]
     time_at_each_state = [1, 2]
@@ -33,7 +33,7 @@ def main():
     states_at_timestep = make_states_at_timestep_array(
         states, time_at_each_state, max_timestep, 0, True
     )
-    assert (states_at_timestep == np.array([1, 2, 2, 5, 5, 5, 5])).all()
+    np.testing.assert_equal(states_at_timestep, np.array([1, 2, 2, 5, 5, 5, 5]))
 
     states = [1, 2, 3]
     time_at_each_state = [1.4, 1.7, 2.6]
@@ -41,8 +41,21 @@ def main():
     states_at_timestep = make_states_at_timestep_array(
         states, time_at_each_state, max_timestep, 0, True
     )
-    assert (states_at_timestep == np.array([1, 2, 2, 3, 3, 3, 0])).all()
+    np.testing.assert_equal(states_at_timestep, np.array([1, 2, 2, 3, 3, 3, 0]))
+
+
+def test_paths_to_timestep_matrix():
+    test_paths = [
+        PathObject(states=[1, 2, 3], time_at_each_state=[1, 2, 1]),
+        PathObject(states=[1, 2, 3], time_at_each_state=[2, 2, 1]),
+        PathObject(states=[1, 5], time_at_each_state=[2]),
+    ]
+    true_timestep_matrix = np.array([[1, 2, 2, 3, 0], [1, 1, 2, 2, 3], [1, 1, 5, 5, 5]])
+    max_timestep = 5
+    timestep_matrix = paths_to_timestep_matrix(test_paths, max_timestep)
+    np.testing.assert_equal(timestep_matrix, true_timestep_matrix)
 
 
 if __name__ == "__main__":
-    main()
+    test_make_states_at_timestep_array()
+    test_paths_to_timestep_matrix()

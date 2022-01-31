@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from src.pymsm.utils import plot_stackplot
 
 
 def create_test_data(N=100):

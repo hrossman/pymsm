@@ -1,4 +1,4 @@
-from src.pymsm.statistics import *
+from pymsm.statistics import *
 
 
 def test_make_states_at_timestep_array():

@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from src.pymsm.multi_state_competing_risks_model import PathObject
-from src.pymsm.statistics import paths_to_timestep_matrix, get_state_timestep_probs
+from pymsm.multi_state_competing_risks_model import PathObject
+from pymsm.statistics import paths_to_timestep_matrix, get_state_timestep_probs
 from lifelines import AalenJohansenFitter
 from typing import List, Dict
 

@@ -1,6 +1,5 @@
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 from typing import List
 from scipy.interpolate import interp1d
 from sklearn.preprocessing import OneHotEncoder
@@ -17,4 +16,3 @@ def get_categorical_columns(df: pd.DataFrame, cat_cols: List) -> pd.DataFrame:
     new_df = pd.DataFrame(encoder.fit_transform(df[cat_cols]), dtype=int)
     new_df.columns = encoder.get_feature_names_out(cat_cols)
     return new_df
-

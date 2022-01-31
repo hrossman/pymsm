@@ -1,5 +1,6 @@
 ![PyPI](https://img.shields.io/pypi/v/pymsm)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/pymsm)
+[![Run tests](https://github.com/hrossman/pymsm/actions/workflows/tests.yml/badge.svg)](https://github.com/hrossman/pymsm/actions/workflows/tests.yml)  
 
 # PyMSM
 Python implemantation of Multistate competing risk models.

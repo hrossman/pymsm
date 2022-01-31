@@ -1,7 +1,7 @@
 import numpy as np
 from pymsm.multi_state_competing_risks_model import PathObject
 from typing import List, Dict
-from seaborn import ecdfplot
+# from seaborn import ecdfplot
 
 
 def prob_visited_state(paths: List[PathObject], state: int):
@@ -42,7 +42,8 @@ def plot_total_times_ecdf(paths: List[PathObject], states: List[int], ax=None):
     total_times = np.array([path_total_time_at_states(path, states) for path in paths])
     if ax is None:
         fig, ax = plt.subplots()
-    ecdfplot(x=total_times, ax=ax)
+    # ecdfplot(x=total_times, ax=ax)
+    pass # TODO
 
 
 def make_states_at_timestep_array(

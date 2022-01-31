@@ -18,3 +18,4 @@ Contents
    usage
    MultiStateModel
    notebooks/first_example
+   notebooks/ebmt

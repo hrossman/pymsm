@@ -6,7 +6,7 @@ Usage
 Installation
 ------------
 
-To use PyMSM, first install it using pip:
+To use pymsm, first install it using pip:
 
 .. code-block:: console
 

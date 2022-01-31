@@ -1,5 +1,5 @@
 import pandas as pd
-from src.pymsm.utils import get_categorical_columns
+from pymsm.utils import get_categorical_columns
 from pkg_resources import resource_filename
 
 

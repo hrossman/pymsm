@@ -1,4 +1,4 @@
-from pymsm.multi_state_competing_risks_model import PathObject
+from src.pymsm.multi_state_competing_risks_model import PathObject
 import numpy as np
 from pandas import Series
 from typing import List

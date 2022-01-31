@@ -1,5 +1,5 @@
 import numpy as np
-from pymsm.multi_state_competing_risks_model import PathObject
+from src.pymsm.multi_state_competing_risks_model import PathObject
 from typing import List, Dict
 from seaborn import ecdfplot
 

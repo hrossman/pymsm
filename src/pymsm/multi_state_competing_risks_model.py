@@ -1,8 +1,8 @@
 from typing import List, Callable, Optional, Dict, Union
 from pandas import Series, DataFrame
 import numpy as np
-from pymsm.competing_risks_model import CompetingRisksModel
-from pymsm.event_specific_fitter import EventSpecificFitter, CoxWrapper
+from src.pymsm.competing_risks_model import CompetingRisksModel
+from src.pymsm.event_specific_fitter import EventSpecificFitter, CoxWrapper
 
 
 def default_update_covariates_function(covariates_entering_origin_state, origin_state=None, target_state=None,

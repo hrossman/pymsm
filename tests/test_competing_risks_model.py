@@ -1,6 +1,6 @@
 import numpy as np
-from pymsm.competing_risks_model import CompetingRisksModel
-from pymsm.examples.crm_example_utils import create_test_data
+from src.pymsm.competing_risks_model import CompetingRisksModel
+from src.pymsm.examples.crm_example_utils import create_test_data
 
 
 def test_assert_valid_dataset(crm=None):

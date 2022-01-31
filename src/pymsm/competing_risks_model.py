@@ -3,8 +3,8 @@ import pandas as pd
 from scipy.interpolate import interp1d
 from typing import Dict, List, Optional
 from pandas.api.types import is_numeric_dtype
-from pymsm.utils import stepfunc
-from pymsm.event_specific_fitter import EventSpecificFitter
+from src.pymsm.utils import stepfunc
+from src.pymsm.event_specific_fitter import EventSpecificFitter
 
 
 class EventSpecificModel:

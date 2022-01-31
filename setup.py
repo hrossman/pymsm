@@ -13,7 +13,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     author='Hagai Rossman, Ayya Keshet',
     author_email='hagairossman@gmail.com',
-    url='https://github.com/hrossman/PyMSM',
+    url='https://github.com/hrossman/pymsm',
     project_urls={'Documentation': 'https://pymsm.readthedocs.io/'},
     install_requires=[
         'numpy',

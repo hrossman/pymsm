@@ -4,8 +4,8 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name='PyMSM',
-    version='0.0.2',
+    name='pymsm',
+    version='0.0.1',
     package_dir={"": "src"},
     packages=setuptools.find_packages(where="src"),
     description='Python implementation of a Multi-state competing risk model',
@@ -13,7 +13,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     author='Hagai Rossman, Ayya Keshet',
     author_email='hagairossman@gmail.com',
-    url='https://github.com/hrossman/PyMSM',
+    url='https://github.com/hrossman/pymsm',
     project_urls={'Documentation': 'https://pymsm.readthedocs.io/'},
     install_requires=[
         'numpy',

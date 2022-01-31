@@ -7,7 +7,7 @@ sys.path.insert(0, os.path.abspath('../..'))
 
 # -- Project information
 
-project = 'PyMSM'
+project = 'pymsm'
 copyright = '2022, Rossman & Keshet'
 author = 'Hagai Rossman, Ayya Keshet'
 

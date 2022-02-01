@@ -22,26 +22,18 @@ class EventSpecificModel:
     model: EventSpecificFitter
     coefficients: Optional[np.ndarray]
     unique_event_times: Optional[np.ndarray]
-    baseline_hazard: Optional[np.ndarray]
-    cumulative_baseline_hazard_function: Optional[np.ndarray]
 
     def __init__(self, failure_type=None, model=None):
         self.failure_type = failure_type
         self.model = model
         self.coefficients = None
         self.unique_event_times = None
-        self.baseline_hazard = None
-        self.cumulative_baseline_hazard_function = None
 
     def extract_necessary_attributes(self) -> None:
         """Extract relevant arrays from event specific cox model
         """
         self.coefficients = self.model.get_coefficients()
         self.unique_event_times = self.model.get_unique_event_times()
-        self.baseline_hazard = self.model.get_baseline_hazard()
-        self.cumulative_baseline_hazard_function = (
-            self.model.get_baseline_cumulative_hazard()
-        )
 
 
 class CompetingRisksModel:
@@ -57,7 +49,7 @@ class CompetingRisksModel:
         crm = CompetingRisksModel(CoxWrapper)
         data = create_test_data(N=1000)
         crm.fit(df=data, duration_col='T', event_col='transition', cluster_col='id')
-    
+
     Attributes
     ----------
     failure_types: list
@@ -273,70 +265,9 @@ class CompetingRisksModel:
         np.ndarray
             hazard at unique event times
         """
-        # the hazard is given by multiplying the baseline hazard (which has value per unique event time) by the partial hazard
-        hazard = self._baseline_hazard(failure_type) * (
-            self._partial_hazard(failure_type, sample_covariates)
-        )
+        hazard = self.event_specific_models[failure_type].model.get_hazard(sample_covariates)
         assert len(hazard) == len(self.unique_event_times(failure_type))
         return hazard
-
-    @staticmethod
-    def cumulative_baseline_hazard_step_function(
-            model: EventSpecificFitter
-    ) -> interp1d:
-        """Create interpolation step function for the cumulative baseline hazard
-
-        Parameters
-        ----------
-        model : EventSpecificFitter
-            event specific model
-
-        Returns
-        -------
-        interp1d
-            interpolation step function for the cumulative baseline hazard
-        """
-        return stepfunc(
-            model.get_unique_event_times(),
-            model.get_baseline_cumulative_hazard(),
-        )
-
-    def _baseline_hazard(self, failure_type: int) -> np.ndarray:
-        """Get baseline hazard for specific failure type
-
-        Parameters
-        ----------
-        failure_type : int
-            failure type of interest
-
-        Returns
-        -------
-        np.ndarray
-            baseline hazard for specific failure type
-        """
-        return self.event_specific_models[failure_type].baseline_hazard
-
-    def _partial_hazard(
-        self, failure_type: int, sample_covariates: np.ndarray
-    ) -> np.ndarray:
-        """Get partial hazard for specific failure type and set of covariates
-
-        Parameters
-        ----------
-        failure_type : int
-            failure type of interest
-        sample_covariates : np.ndarray
-            covariates
-
-        Returns
-        -------
-        np.ndarray
-            partial hazard for specific failure type and set of covariates
-        """
-        # simply e^x_dot_beta for the chosen failure type's coefficients
-        coefs = self.event_specific_models[failure_type].coefficients
-        x_dot_beta = np.dot(sample_covariates, coefs)
-        return np.exp(x_dot_beta)
 
     def unique_event_times(self, failure_type: int) -> np.ndarray:
         """Fetch unique event times for specific failure type
@@ -374,10 +305,7 @@ class CompetingRisksModel:
         exponent = np.zeros_like(t)
         for type in self.failure_types:
             exponent = exponent - (
-                self.cumulative_baseline_hazard_step_function(
-                    self.event_specific_models[type].model
-                )(t)
-                * (self._partial_hazard(type, sample_covariates))
+                self.event_specific_models[type].model.get_cumulative_hazard(t, sample_covariates)
             )
         survival_function_at_t = np.exp(exponent)
         assert len(survival_function_at_t) == len(t)

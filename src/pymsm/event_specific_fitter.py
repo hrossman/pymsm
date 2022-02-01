@@ -2,6 +2,7 @@ from lifelines import CoxPHFitter
 from typing import Optional
 import numpy as np
 import pandas as pd
+from pymsm.utils import stepfunc
 
 
 class EventSpecificFitter:
@@ -56,25 +57,39 @@ class EventSpecificFitter:
         """
         raise NotImplementedError('subclasses must override unique_event_times!')
 
-    def get_baseline_hazard(self) -> np.ndarray:
+    def get_hazard(self, sample_covariates: np.ndarray) -> np.ndarray:
         """
-        Get baseline hazard
-        Returns
-        -------
-        np.ndarray
-            baseline hazard from the fitted model
-        """
-        raise NotImplementedError('subclasses must override baseline_hazard!')
+        Get hazard for an individual with sample covariates
+        Parameters
+        ----------
+        sample_covariates: np.ndarray
+            covariates of the individual to calculate hazard for
 
-    def get_baseline_cumulative_hazard(self) -> np.ndarray:
-        """
-        Get baseline cumulative hazard
         Returns
         -------
         np.ndarray
-            baseline cumulative hazard of the fitted model
+            hazard values for a specific individual, at the unique event times that were encountered when fitting the
+            model
         """
-        raise NotImplementedError('subclasses must override baseline_cumulative_hazard!')
+        raise NotImplementedError('subclasses must override get_hazard!')
+
+    def get_cumulative_hazard(self, t: np.ndarray, sample_covariates: np.ndarray) -> np.ndarray:
+        """
+
+        Parameters
+        ----------
+        t: np.ndarray
+            times in which to get cumulative hazard in
+        sample_covariates: np.ndarray
+            individual covariates
+
+        Returns
+        -------
+        np.ndarray
+            cumulative hazard values for a specific individual, at the unique event times that were encountered
+            when fitting the model
+        """
+        raise NotImplementedError('subclasses must override get_cumulative_hazard!')
 
     def print_summary(self):
         """
@@ -98,11 +113,26 @@ class CoxWrapper(EventSpecificFitter):
     def get_unique_event_times(self) -> np.ndarray:
         return self._model.baseline_hazard_.index.values
 
-    def get_baseline_hazard(self) -> np.ndarray:
-        return self._model.baseline_hazard_["baseline hazard"].values
+    def _partial_hazard(self, sample_covariates):
+        coefs = self.get_coefficients()
+        x_dot_beta = np.dot(sample_covariates, coefs)
+        return np.exp(x_dot_beta)
 
-    def get_baseline_cumulative_hazard(self) -> np.ndarray:
-        return self._model.baseline_cumulative_hazard_["baseline cumulative hazard"].values
+    def get_hazard(self, sample_covariates) -> np.ndarray:
+        # the hazard is given by multiplying the baseline hazard (which has value per unique event time)
+        # by the partial hazard
+        partial_hazard = self._partial_hazard(sample_covariates)
+        baseline_hazard = self._model.baseline_hazard_["baseline hazard"].values
+        hazard = baseline_hazard * partial_hazard
+        return hazard
+
+    def get_cumulative_hazard(self, t, sample_covariates) -> np.ndarray:
+        baseline_cumulative_hazard = self._model.baseline_cumulative_hazard_["baseline cumulative hazard"].values
+        cumulative_baseline_hazard_stepfunc = stepfunc(self.get_unique_event_times(),
+                                                       baseline_cumulative_hazard)
+        cumulative_baseline_hazard = cumulative_baseline_hazard_stepfunc(t)
+        partial_hazard = self._partial_hazard(sample_covariates)
+        return cumulative_baseline_hazard * partial_hazard
 
     def print_summary(self):
         self._model.print_summary()

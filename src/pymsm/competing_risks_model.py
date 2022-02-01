@@ -22,26 +22,18 @@ class EventSpecificModel:
     model: EventSpecificFitter
     coefficients: Optional[np.ndarray]
     unique_event_times: Optional[np.ndarray]
-    baseline_hazard: Optional[np.ndarray]
-    cumulative_baseline_hazard_function: Optional[np.ndarray]
 
     def __init__(self, failure_type=None, model=None):
         self.failure_type = failure_type
         self.model = model
         self.coefficients = None
         self.unique_event_times = None
-        self.baseline_hazard = None
-        self.cumulative_baseline_hazard_function = None
 
     def extract_necessary_attributes(self) -> None:
         """Extract relevant arrays from event specific cox model
         """
         self.coefficients = self.model.get_coefficients()
         self.unique_event_times = self.model.get_unique_event_times()
-        self.baseline_hazard = self.model.get_baseline_hazard()
-        self.cumulative_baseline_hazard_function = (
-            self.model.get_baseline_cumulative_hazard()
-        )
 
 
 class CompetingRisksModel:
@@ -57,7 +49,7 @@ class CompetingRisksModel:
         crm = CompetingRisksModel(CoxWrapper)
         data = create_test_data(N=1000)
         crm.fit(df=data, duration_col='T', event_col='transition', cluster_col='id')
-    
+
     Attributes
     ----------
     failure_types: list
@@ -79,12 +71,12 @@ class CompetingRisksModel:
 
     @staticmethod
     def assert_valid_dataset(
-        df: pd.DataFrame,
-        duration_col: str = None,
-        event_col: str = None,
-        cluster_col: str = None,
-        weights_col: str = None,
-        entry_col: str = None,
+            df: pd.DataFrame,
+            duration_col: str = None,
+            event_col: str = None,
+            cluster_col: str = None,
+            weights_col: str = None,
+            entry_col: str = None,
     ) -> None:
         """Checks if a dataframe is valid for fitting a competing risks model
 
@@ -112,7 +104,7 @@ class CompetingRisksModel:
         # failure types should be integers from 0 to m, not necessarily consecutive
         assert df[event_col].dtypes == int, "event column needs to be of type int"
         assert (
-            df[event_col].min() >= 0
+                df[event_col].min() >= 0
         ), "Failure types need to zero or positive integers"
 
         # covariates should all be numerical
@@ -130,7 +122,7 @@ class CompetingRisksModel:
 
     @staticmethod
     def break_ties_by_adding_epsilon(
-        t: np.ndarray, epsilon_min: float = 0.0, epsilon_max: float = 0.0001
+            t: np.ndarray, epsilon_min: float = 0.0, epsilon_max: float = 0.0001
     ) -> np.ndarray:
         """Breaks ties in event times by adding a samll random number
 
@@ -167,16 +159,16 @@ class CompetingRisksModel:
         return t_new
 
     def fit_event_specific_model(
-        self,
-        event_of_interest: int,
-        df: pd.DataFrame,
-        duration_col: str = "T",
-        event_col: str = "E",
-        cluster_col: str = None,
-        weights_col: str = None,
-        entry_col: str = None,
-        verbose: int = 1,
-        **fitter_kwargs,
+            self,
+            event_of_interest: int,
+            df: pd.DataFrame,
+            duration_col: str = "T",
+            event_col: str = "E",
+            cluster_col: str = None,
+            weights_col: str = None,
+            entry_col: str = None,
+            verbose: int = 1,
+            **fitter_kwargs,
     ) -> EventSpecificFitter:
         """Fits a the model in EventSpecificFitter for a specific event of interest. Applies censoring to other events
 
@@ -234,7 +226,7 @@ class CompetingRisksModel:
         return event_fitter
 
     def _compute_cif_function(
-        self, sample_covariates: np.ndarray, failure_type: int
+            self, sample_covariates: np.ndarray, failure_type: int
     ) -> interp1d:
         """Computes the Cumulative Incidince (step) Function for a given failure type and set of covariates
 
@@ -257,7 +249,7 @@ class CompetingRisksModel:
         return stepfunc(cif_x, cif_y)
 
     def hazard_at_unique_event_times(
-        self, sample_covariates: np.ndarray, failure_type: int
+            self, sample_covariates: np.ndarray, failure_type: int
     ) -> np.ndarray:
         """Hazard at unique event times
 
@@ -273,70 +265,9 @@ class CompetingRisksModel:
         np.ndarray
             hazard at unique event times
         """
-        # the hazard is given by multiplying the baseline hazard (which has value per unique event time) by the partial hazard
-        hazard = self._baseline_hazard(failure_type) * (
-            self._partial_hazard(failure_type, sample_covariates)
-        )
+        hazard = self.event_specific_models[failure_type].model.get_hazard(sample_covariates)
         assert len(hazard) == len(self.unique_event_times(failure_type))
         return hazard
-
-    @staticmethod
-    def cumulative_baseline_hazard_step_function(
-            model: EventSpecificFitter
-    ) -> interp1d:
-        """Create interpolation step function for the cumulative baseline hazard
-
-        Parameters
-        ----------
-        model : EventSpecificFitter
-            event specific model
-
-        Returns
-        -------
-        interp1d
-            interpolation step function for the cumulative baseline hazard
-        """
-        return stepfunc(
-            model.get_unique_event_times(),
-            model.get_baseline_cumulative_hazard(),
-        )
-
-    def _baseline_hazard(self, failure_type: int) -> np.ndarray:
-        """Get baseline hazard for specific failure type
-
-        Parameters
-        ----------
-        failure_type : int
-            failure type of interest
-
-        Returns
-        -------
-        np.ndarray
-            baseline hazard for specific failure type
-        """
-        return self.event_specific_models[failure_type].baseline_hazard
-
-    def _partial_hazard(
-        self, failure_type: int, sample_covariates: np.ndarray
-    ) -> np.ndarray:
-        """Get partial hazard for specific failure type and set of covariates
-
-        Parameters
-        ----------
-        failure_type : int
-            failure type of interest
-        sample_covariates : np.ndarray
-            covariates
-
-        Returns
-        -------
-        np.ndarray
-            partial hazard for specific failure type and set of covariates
-        """
-        # simply e^x_dot_beta for the chosen failure type's coefficients
-        coefs = self.event_specific_models[failure_type].coefficients
-        x_dot_beta = np.dot(sample_covariates, coefs)
-        return np.exp(x_dot_beta)
 
     def unique_event_times(self, failure_type: int) -> np.ndarray:
         """Fetch unique event times for specific failure type
@@ -354,7 +285,7 @@ class CompetingRisksModel:
         return self.event_specific_models[failure_type].unique_event_times
 
     def survival_function(
-        self, t: np.ndarray, sample_covariates: np.ndarray
+            self, t: np.ndarray, sample_covariates: np.ndarray
     ) -> np.ndarray:
         """Calculate survival function for a specific set of covariates at times t
 
@@ -374,27 +305,24 @@ class CompetingRisksModel:
         exponent = np.zeros_like(t)
         for type in self.failure_types:
             exponent = exponent - (
-                self.cumulative_baseline_hazard_step_function(
-                    self.event_specific_models[type].model
-                )(t)
-                * (self._partial_hazard(type, sample_covariates))
+                self.event_specific_models[type].model.get_cumulative_hazard(t, sample_covariates)
             )
         survival_function_at_t = np.exp(exponent)
         assert len(survival_function_at_t) == len(t)
         return survival_function_at_t
 
     def fit(
-        self,
-        df: pd.DataFrame,
-        duration_col: str = "T",
-        event_col: str = "E",
-        cluster_col: str = None,
-        weights_col: str = None,
-        entry_col: str = None,
-        break_ties: bool = True,
-        epsilon_min: float = 0.0,
-        epsilon_max: float = 0.0001,
-        verbose: int = 1,
+            self,
+            df: pd.DataFrame,
+            duration_col: str = "T",
+            event_col: str = "E",
+            cluster_col: str = None,
+            weights_col: str = None,
+            entry_col: str = None,
+            break_ties: bool = True,
+            epsilon_min: float = 0.0,
+            epsilon_max: float = 0.0001,
+            verbose: int = 1,
     ) -> None:
         """Fit a cox proportional hazards model for each failure type, treating others as censoring events. Tied event times are dealt with by adding an epsilon to tied event times.
 
@@ -433,7 +361,7 @@ class CompetingRisksModel:
         failure_types = df[event_col].unique()
         failure_types = failure_types[
             failure_types > 0
-        ]  # Do not include censoring as failure_type
+            ]  # Do not include censoring as failure_type
 
         # Save failure type
         self.failure_types = failure_types
@@ -459,11 +387,11 @@ class CompetingRisksModel:
             self.event_specific_models[event_of_interest] = event_specific_model
 
     def predict_CIF(
-        self,
-        predict_at_t: np.ndarray,
-        sample_covariates: np.ndarray,
-        failure_type: int,
-        time_passed: float = 0,
+            self,
+            predict_at_t: np.ndarray,
+            sample_covariates: np.ndarray,
+            failure_type: int,
+            time_passed: float = 0,
     ) -> np.ndarray:
         """computes the failure-type-specific cumulative incidence function, given that 'time_passed' time  has passed (default is 0)
 
@@ -492,7 +420,7 @@ class CompetingRisksModel:
         # re-normalize the probability to account for the time passed
         if time_passed > 0:
             predictions = (
-                predictions - cif_function(time_passed)
-            ) / self.survival_function(np.array([time_passed]), sample_covariates)
+                                  predictions - cif_function(time_passed)
+                          ) / self.survival_function(np.array([time_passed]), sample_covariates)
 
         return predictions

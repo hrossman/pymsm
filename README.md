@@ -10,7 +10,7 @@ Python implemantation of Multistate competing risk models.
 
 ## Usage examples
 [First example](https://github.com/hrossman/pymsm/blob/main/src/pymsm/examples/first_example.ipynb)  
-[EBMT example](https://github.com/hrossman/pymsm/blob/main/src/pymsm/examples/embt.ipynb)
+[EBMT example](https://github.com/hrossman/pymsm/blob/main/src/pymsm/examples/ebmt.ipynb)
 
 
 ## Resources  

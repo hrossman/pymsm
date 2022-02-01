@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name='pymsm',
-    version='0.0.1',
+    version='0.0.2',
     package_dir={"": "src"},
     packages=setuptools.find_packages(where="src"),
     description='Python implementation of a Multi-state competing risk model',
@@ -20,5 +20,6 @@ setuptools.setup(
         'pandas',
         'scipy',
         'lifelines',
+        'scikit-learn'
     ],
 )

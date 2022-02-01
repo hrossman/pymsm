@@ -104,7 +104,7 @@ class CompetingRisksModel:
         # failure types should be integers from 0 to m, not necessarily consecutive
         assert df[event_col].dtypes == int, "event column needs to be of type int"
         assert (
-                df[event_col].min() >= 0
+            df[event_col].min() >= 0
         ), "Failure types need to zero or positive integers"
 
         # covariates should all be numerical
@@ -122,7 +122,7 @@ class CompetingRisksModel:
 
     @staticmethod
     def break_ties_by_adding_epsilon(
-            t: np.ndarray, epsilon_min: float = 0.0, epsilon_max: float = 0.0001
+        t: np.ndarray, epsilon_min: float = 0.0, epsilon_max: float = 0.0001
     ) -> np.ndarray:
         """Breaks ties in event times by adding a samll random number
 
@@ -159,16 +159,16 @@ class CompetingRisksModel:
         return t_new
 
     def fit_event_specific_model(
-            self,
-            event_of_interest: int,
-            df: pd.DataFrame,
-            duration_col: str = "T",
-            event_col: str = "E",
-            cluster_col: str = None,
-            weights_col: str = None,
-            entry_col: str = None,
-            verbose: int = 1,
-            **fitter_kwargs,
+        self,
+        event_of_interest: int,
+        df: pd.DataFrame,
+        duration_col: str = "T",
+        event_col: str = "E",
+        cluster_col: str = None,
+        weights_col: str = None,
+        entry_col: str = None,
+        verbose: int = 1,
+        **fitter_kwargs,
     ) -> EventSpecificFitter:
         """Fits a the model in EventSpecificFitter for a specific event of interest. Applies censoring to other events
 
@@ -226,7 +226,7 @@ class CompetingRisksModel:
         return event_fitter
 
     def _compute_cif_function(
-            self, sample_covariates: np.ndarray, failure_type: int
+        self, sample_covariates: np.ndarray, failure_type: int
     ) -> interp1d:
         """Computes the Cumulative Incidince (step) Function for a given failure type and set of covariates
 
@@ -249,7 +249,7 @@ class CompetingRisksModel:
         return stepfunc(cif_x, cif_y)
 
     def hazard_at_unique_event_times(
-            self, sample_covariates: np.ndarray, failure_type: int
+        self, sample_covariates: np.ndarray, failure_type: int
     ) -> np.ndarray:
         """Hazard at unique event times
 
@@ -285,7 +285,7 @@ class CompetingRisksModel:
         return self.event_specific_models[failure_type].unique_event_times
 
     def survival_function(
-            self, t: np.ndarray, sample_covariates: np.ndarray
+        self, t: np.ndarray, sample_covariates: np.ndarray
     ) -> np.ndarray:
         """Calculate survival function for a specific set of covariates at times t
 
@@ -312,17 +312,17 @@ class CompetingRisksModel:
         return survival_function_at_t
 
     def fit(
-            self,
-            df: pd.DataFrame,
-            duration_col: str = "T",
-            event_col: str = "E",
-            cluster_col: str = None,
-            weights_col: str = None,
-            entry_col: str = None,
-            break_ties: bool = True,
-            epsilon_min: float = 0.0,
-            epsilon_max: float = 0.0001,
-            verbose: int = 1,
+        self,
+        df: pd.DataFrame,
+        duration_col: str = "T",
+        event_col: str = "E",
+        cluster_col: str = None,
+        weights_col: str = None,
+        entry_col: str = None,
+        break_ties: bool = True,
+        epsilon_min: float = 0.0,
+        epsilon_max: float = 0.0001,
+        verbose: int = 1,
     ) -> None:
         """Fit a cox proportional hazards model for each failure type, treating others as censoring events. Tied event times are dealt with by adding an epsilon to tied event times.
 
@@ -361,7 +361,7 @@ class CompetingRisksModel:
         failure_types = df[event_col].unique()
         failure_types = failure_types[
             failure_types > 0
-            ]  # Do not include censoring as failure_type
+        ]  # Do not include censoring as failure_type
 
         # Save failure type
         self.failure_types = failure_types
@@ -387,11 +387,11 @@ class CompetingRisksModel:
             self.event_specific_models[event_of_interest] = event_specific_model
 
     def predict_CIF(
-            self,
-            predict_at_t: np.ndarray,
-            sample_covariates: np.ndarray,
-            failure_type: int,
-            time_passed: float = 0,
+        self,
+        predict_at_t: np.ndarray,
+        sample_covariates: np.ndarray,
+        failure_type: int,
+        time_passed: float = 0,
     ) -> np.ndarray:
         """computes the failure-type-specific cumulative incidence function, given that 'time_passed' time  has passed (default is 0)
 
@@ -420,7 +420,7 @@ class CompetingRisksModel:
         # re-normalize the probability to account for the time passed
         if time_passed > 0:
             predictions = (
-                                  predictions - cif_function(time_passed)
-                          ) / self.survival_function(np.array([time_passed]), sample_covariates)
+                predictions - cif_function(time_passed)
+            ) / self.survival_function(np.array([time_passed]), sample_covariates)
 
         return predictions

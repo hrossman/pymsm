@@ -57,30 +57,37 @@ class EventSpecificFitter:
         """
         raise NotImplementedError('subclasses must override unique_event_times!')
 
-    def get_hazard(self, sample_covariates) -> np.ndarray:
+    def get_hazard(self, sample_covariates: np.ndarray) -> np.ndarray:
         """
-
+        Get hazard for an individual with sample covariates
         Parameters
         ----------
-        sample_covariates
+        sample_covariates: np.ndarray
+            covariates of the individual to calculate hazard for
 
         Returns
         -------
-
+        np.ndarray
+            hazard values for a specific individual, at the unique event times that were encountered when fitting the
+            model
         """
         raise NotImplementedError('subclasses must override get_hazard!')
 
-    def get_cumulative_hazard(self, t, sample_covariates) -> np.ndarray:
+    def get_cumulative_hazard(self, t: np.ndarray, sample_covariates: np.ndarray) -> np.ndarray:
         """
 
         Parameters
         ----------
-        t
-        sample_covariates
+        t: np.ndarray
+            times in which to get cumulative hazard in
+        sample_covariates: np.ndarray
+            individual covariates
 
         Returns
         -------
-
+        np.ndarray
+            cumulative hazard values for a specific individual, at the unique event times that were encountered
+            when fitting the model
         """
         raise NotImplementedError('subclasses must override get_cumulative_hazard!')
 

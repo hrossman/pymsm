@@ -71,12 +71,12 @@ class CompetingRisksModel:
 
     @staticmethod
     def assert_valid_dataset(
-            df: pd.DataFrame,
-            duration_col: str = None,
-            event_col: str = None,
-            cluster_col: str = None,
-            weights_col: str = None,
-            entry_col: str = None,
+        df: pd.DataFrame,
+        duration_col: str = None,
+        event_col: str = None,
+        cluster_col: str = None,
+        weights_col: str = None,
+        entry_col: str = None,
     ) -> None:
         """Checks if a dataframe is valid for fitting a competing risks model
 

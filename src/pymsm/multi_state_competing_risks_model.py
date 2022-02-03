@@ -237,7 +237,7 @@ class MultiStateModel:
                 cluster_col='sample_id', entry_col='time_entry_to_origin', verbose=verbose)
         return crm
 
-    def run_monte_carlo_simulation(self, sample_covariates, origin_state: int, current_time: int = 0,
+    def run_monte_carlo_simulation(self, sample_covariates: np.ndarray, origin_state: int, current_time: int = 0,
                                     n_random_samples: int = 100, max_transitions: int = 10) -> List[PathObject]:
         """This function samples random paths using Monte Carlo simulation.
         These paths will be used for prediction for a single sample.
@@ -269,7 +269,7 @@ class MultiStateModel:
             runs.append(self._one_monte_carlo_run(sample_covariates, origin_state, max_transitions, current_time))
         return runs
 
-    def _one_monte_carlo_run(self, sample_covariates, origin_state: int, max_transitions: int,
+    def _one_monte_carlo_run(self, sample_covariates: np.ndarray, origin_state: int, max_transitions: int,
                              current_time: int = 0) -> PathObject:
         """This function create one path using Monte Carlo Simulations.
         See documentation of run_monte_carlo_simulation.
@@ -300,8 +300,8 @@ class MultiStateModel:
 
         return run
 
-    def _probability_for_next_state(self, next_state: int, competing_risks_model: CompetingRisksModel, sample_covariates,
-                                    t_entry_to_current_state: int = 0):
+    def _probability_for_next_state(self, next_state: int, competing_risks_model: CompetingRisksModel,
+                                    sample_covariates: np.ndarray, t_entry_to_current_state: int = 0):
         """This function calculates the probability of transition to the next state, using the competing_risks_model
         model parameters
         """
@@ -321,7 +321,8 @@ class MultiStateModel:
         probability_for_state = (hazard*survival).sum()
         return probability_for_state
 
-    def _sample_next_state(self, current_state: int, sample_covariates, t_entry_to_current_state: int) -> Optional[int]:
+    def _sample_next_state(self, current_state: int, sample_covariates: np.ndarray,
+                           t_entry_to_current_state: int) -> Optional[int]:
         """This function samples the next state, according to a multinomial distribution, using probabilites defines
         by _probability_for_next_state function.
         """
@@ -342,7 +343,7 @@ class MultiStateModel:
         next_state = possible_next_states[mult.argmax()]
         return next_state
 
-    def _sample_time_to_next_state(self, current_state: int, next_state: int, sample_covariates,
+    def _sample_time_to_next_state(self, current_state: int, next_state: int, sample_covariates: np.ndarray,
                                    t_entry_to_current_state: int) -> float:
         """This function samples the time of transition to the next state, using the hazard and survival provided by
         the competing risk model of the current_state

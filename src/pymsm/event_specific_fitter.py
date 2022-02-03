@@ -1,4 +1,6 @@
 from lifelines import CoxPHFitter
+from sksurv.tree import SurvivalTree
+from autograd import elementwise_grad as egrad
 from typing import Optional
 import numpy as np
 import pandas as pd
@@ -36,16 +38,6 @@ class EventSpecificFitter:
 
         """
         raise NotImplementedError('subclasses must override fit!')
-
-    def get_coefficients(self) -> np.ndarray:
-        """
-        Get fitted model coefficients
-        Returns
-        -------
-        np.ndarray
-            fitted model coefficients
-        """
-        raise NotImplementedError('subclasses must override coefficients!')
 
     def get_unique_event_times(self) -> np.ndarray:
         """
@@ -107,14 +99,14 @@ class CoxWrapper(EventSpecificFitter):
         self._model.fit(df=df, duration_col=duration_col, event_col=event_col, weights_col=weights_col,
                         cluster_col=cluster_col, entry_col=entry_col, **fitter_kwargs)
 
-    def get_coefficients(self) -> np.ndarray:
+    def _get_coefficients(self) -> np.ndarray:
         return self._model.params_.values
 
     def get_unique_event_times(self) -> np.ndarray:
         return self._model.baseline_hazard_.index.values
 
     def _partial_hazard(self, sample_covariates):
-        coefs = self.get_coefficients()
+        coefs = self._get_coefficients()
         x_dot_beta = np.dot(sample_covariates, coefs)
         return np.exp(x_dot_beta)
 
@@ -136,3 +128,32 @@ class CoxWrapper(EventSpecificFitter):
 
     def print_summary(self):
         self._model.print_summary()
+
+
+class SurvivalTreeWrapper(EventSpecificFitter):
+    def __init__(self):
+        self._model = SurvivalTree()
+
+    def fit(self, df: pd.DataFrame, duration_col: Optional[str], event_col: Optional[str], weights_col: Optional[str],
+            cluster_col: Optional[str], entry_col: str, **fitter_kwargs):
+        # TODO - how to use cluster_col and event_col
+        covariate_cols = [col for col in df.columns if col not in [duration_col, event_col, cluster_col, entry_col]]
+        X = df[covariate_cols].copy()
+        y_df = df[[event_col, duration_col]].copy()
+        y_df[event_col] = y_df[event_col].astype(bool)
+        y = np.asarray(y_df.to_records(index=False))
+        self._model.fit(X, y, sample_weight=weights_col)
+
+    def get_unique_event_times(self) -> np.ndarray:
+        return self._model.event_times_
+
+    def get_hazard(self, sample_covariates) -> np.ndarray:
+        return egrad(self.get_cumulative_hazard(self.get_unique_event_times(), sample_covariates), argnum=1)
+
+    def get_cumulative_hazard(self, t, sample_covariates) -> np.ndarray:
+        cumulative_hazard_stepfunc = self._model.predict_cumulative_hazard_function(sample_covariates.reshape(1, -1))[0]
+        return cumulative_hazard_stepfunc(t)
+
+    def print_summary(self):
+        # TODO - print some summary of the tree
+        return

@@ -69,7 +69,7 @@ class MultiStateModel:
     covariate_names: list of strings
         Optional list of covariate names to be used in prints
     state_specific_models: dict
-        After running the "fit" function this dictionary will hold a compering risk model for each state
+        After running the "fit" function this dictionary will hold a competing risk model for each state
     event_specific_fitter: EventSpecificFitter
         This class holds the model that will be fitter inside the CompetingRisksModel.
         The default is CoxWrapper that holds a CoxPHFitter

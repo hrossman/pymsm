@@ -10,6 +10,26 @@ from pymsm.multi_state_competing_risks_model import (
 
 
 class MultiStateSimulator(MultiStateModel):
+    """This class configures a multi-state model simulator from predefined model parts. It inherents from the MultiStateModel class, but instead of being fitted to data, it is configured based on predefined models.
+
+    Attributes
+    ----------
+    competing_risks_models_list: A list of dictionaries, each of which contains the following keys:
+        origin_state: The state from which the simulation starts.
+        target_states: A list of states to which the simulation transitions.
+        model_defs: A dictionary containing the following keys:
+            coefs: A list of coefficients for the competing risks model.
+            baseline_hazard: A list of baseline hazards for the competing risks model.
+    terminal_states: A list of states that are terminal states.
+    update_covariates_fn: A function that takes in a covariate dataframe and returns a covariate dataframe.
+    covariate_names: A list of covariate names. 
+
+    Note
+    ----------
+    The update_covariates_fn could be any function you choose to write, but it needs to have the following parameter
+    types (in this order): pandas Series, int, int, float, float,
+    and return a pandas Series.
+    """
 
     competing_risks_models_list: List[Dict]
     terminal_states: List[int]
@@ -39,11 +59,18 @@ class MultiStateSimulator(MultiStateModel):
             self._configure_competing_risks_model(competing_risks_model_dict)
 
     def _configure_competing_risks_model(self, competing_risks_model_dict):
+        """Helper function to configure a competing risks model from a dictionary containing the following keys:
+        origin_state: The state from which the simulation starts.
+        target_states: A list of states to which the simulation transitions.
+        model_defs: A dictionary containing the following keys:
+            coefs: A list of coefficients for the competing risks model.
+            baseline_hazard: A list of baseline hazards for the competing risks model.
+        """
         origin_state = competing_risks_model_dict["origin_state"]
         crm = CompetingRisksModel(event_specific_fitter=ManualCoxWrapper)
         self.state_specific_models[origin_state] = crm
         self.state_specific_models[origin_state].failure_types = []
-        for i, failure_type in enumerate(competing_risks_model_dict["target_states"]):
+        for failure_type in competing_risks_model_dict["target_states"]:
             coefs, baseline_hazard = (
                 competing_risks_model_dict["model_defs"]["coefs"],
                 competing_risks_model_dict["model_defs"]["baseline_hazard"],
@@ -67,17 +94,7 @@ class MultiStateSimulator(MultiStateModel):
         n_random_samples: int = 100,
         max_transitions: int = 10,
     ):
-        paths = []
-        for idx, covariates in self.covariate_data.iterrows():
-            path = self.run_monte_carlo_simulation(
-                covariates,
-                origin_state,
-                current_time,
-                n_random_samples,
-                max_transitions,
-            )
-            paths.append(path)
-        return paths
+        pass
 
 
 def test_on_rossi():

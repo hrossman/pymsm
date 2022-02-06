@@ -138,9 +138,17 @@ class CoxWrapper(EventSpecificFitter):
 
 
 class ManualCoxWrapper(EventSpecificFitter):
-    """Cox model, but derived from manual entry of parameters and baseline hazard. No fit available"""
+    """Cox model, but derived from manual entry of parameters and baseline hazard. No fit available
+
+    Note
+    ---------
+    coefs is an array of cox coefficients, one per covariate. Can be a numpy array or pandas Series. baselin_hazard is a pandas Series with unique event times as index and baseline hazard as values.
+    """
     def __init__(self, coefs: pd.Series, baseline_hazard: pd.Series):
-        self.coefs = coefs.values
+        if isinstance(coefs, pd.Series):
+            coefs = coefs.values
+        self.coefs = coefs
+        assert isinstance(baseline_hazard, pd.Series)
         self.baseline_hazard = baseline_hazard.values
         self.unique_event_times = baseline_hazard.index.values
 

@@ -352,6 +352,7 @@ class MultiStateModel:
             )
             if next_state is None:
                 run.stopped_early = True
+                return run
 
             time_to_next_state = self._sample_time_to_next_state(
                 current_state, next_state, sample_covariates, current_time

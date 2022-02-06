@@ -182,4 +182,5 @@ class ManualCoxWrapper(EventSpecificFitter):
         return cumulative_baseline_hazard * partial_hazard
 
     def print_summary(self):
-        raise NotImplementedError()
+        print('Manual cox model')
+        print(f"Coefficients: {self.coefs}")

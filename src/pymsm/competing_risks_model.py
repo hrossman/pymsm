@@ -4,7 +4,7 @@ from scipy.interpolate import interp1d
 from typing import Dict, List, Optional
 from pandas.api.types import is_numeric_dtype
 from pymsm.utils import stepfunc
-from pymsm.event_specific_fitter import EventSpecificFitter
+from pymsm.event_specific_fitter import EventSpecificFitter, CoxWrapper
 
 
 class EventSpecificModel:
@@ -64,7 +64,7 @@ class CompetingRisksModel:
     event_specific_models: Dict[int, EventSpecificModel]
     event_specific_fitter: EventSpecificFitter
 
-    def __init__(self, event_specific_fitter):
+    def __init__(self, event_specific_fitter=CoxWrapper):
         self.failure_types = []
         self.event_specific_models = {}
         self.event_specific_fitter = event_specific_fitter
@@ -265,7 +265,9 @@ class CompetingRisksModel:
         np.ndarray
             hazard at unique event times
         """
-        hazard = self.event_specific_models[failure_type].model.get_hazard(sample_covariates)
+        hazard = self.event_specific_models[failure_type].model.get_hazard(
+            sample_covariates
+        )
         assert len(hazard) == len(self.unique_event_times(failure_type))
         return hazard
 
@@ -305,7 +307,9 @@ class CompetingRisksModel:
         exponent = np.zeros_like(t)
         for type in self.failure_types:
             exponent = exponent - (
-                self.event_specific_models[type].model.get_cumulative_hazard(t, sample_covariates)
+                self.event_specific_models[type].model.get_cumulative_hazard(
+                    t, sample_covariates
+                )
             )
         survival_function_at_t = np.exp(exponent)
         assert len(survival_function_at_t) == len(t)
@@ -424,3 +428,9 @@ class CompetingRisksModel:
             ) / self.survival_function(np.array([time_passed]), sample_covariates)
 
         return predictions
+
+    def print_summary(self):
+        """Print summary of fitted models"""
+        for event_of_interest in self.failure_types:
+            print(f"Model for failure type {event_of_interest}:\n")
+            self.event_specific_models[event_of_interest].model.print_summary()

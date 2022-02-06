@@ -4,7 +4,7 @@ import numpy as np
 from pymsm.competing_risks_model import CompetingRisksModel
 from pymsm.event_specific_fitter import EventSpecificFitter, CoxWrapper
 from pymsm.multi_state_competing_risks_model import (
-    MultiStateCompetingRisksModel,
+    MultiStateModel,
     default_update_covariates_function,
 )
 
@@ -13,7 +13,7 @@ def dict_to_competing_risks_model(model_dict: Dict) -> CompetingRisksModel:
     pass
 
 
-class MultiStateSimulator(MultiStateCompetingRisksModel):
+class MultiStateSimulator(MultiStateModel):
 
     terminal_states: List[int]
     update_covariates_fn: Callable[[Series, int, int, float, float], Series]

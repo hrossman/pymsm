@@ -9,40 +9,40 @@ from pymsm.multi_state_competing_risks_model import (
 )
 
 
-def dict_to_competing_risks_model(
-    competing_risks_model_dict: Dict,
-) -> CompetingRisksModel:
-    pass
-
-
 class MultiStateSimulator(MultiStateModel):
-
-    terminal_states: List[int]
-    update_covariates_fn: Callable[[Series, int, int, float, float], Series]
-    covariate_names: List[str]
-    state_specific_models: Dict[int, CompetingRisksModel]
-    covariate_data: DataFrame
-
     def __init__(
         self,
-        terminal_states=[],
-        update_covariates_fn=default_update_covariates_function,
-        covariate_names=None,
-        state_specific_models=dict(),
-        covariate_data=None,
+        multistate_model_dict: Dict = {
+            "terminal_states": [],
+            "update_covariates_fn": default_update_covariates_function,
+            "covariate_names": [],
+            "competing_risks_models_list": [
+                {
+                    "origin_state": None,
+                    "target_states": [],
+                    "model_defs": {"coefs": None, "baseline_hazard": None},
+                }
+            ],
+        },
+        covariate_data: DataFrame = None,
     ):
+
+        # Configure the MSM
         super().__init__(
             dataset=None,
-            terminal_states=terminal_states,
-            update_covariates_fn=update_covariates_fn,
-            covariate_names=covariate_names,
-            event_specific_fitter=CoxWrapper,
-            competing_risk_data_format=False,
+            terminal_states=multistate_model_dict["terminal_states"],
+            update_covariates_fn=multistate_model_dict["update_covariates_fn"],
+            covariate_names=multistate_model_dict["covariate_names"],
+            event_specific_fitter=ManualCoxWrapper,
+            competing_risk_data_format=True,
         )
-        self.terminal_states = terminal_states
-        self.update_covariates_fn = update_covariates_fn
-        self.covariate_names = self._get_covariate_names(covariate_names)
-        self.state_specific_models = state_specific_models
+
+        # Configure each competing risks model
+        for competing_risks_model_dict in multistate_model_dict[
+            "competing_risks_models_list"
+        ]:
+            self._configure_competing_risks_model(competing_risks_model_dict)
+
         self.covariate_data = None
 
     def _configure_competing_risks_model(self, competing_risks_model_dict):
@@ -87,13 +87,26 @@ class MultiStateSimulator(MultiStateModel):
         return paths
 
 
-def main():
+def test_on_rossi():
+    # Load roossi dataset
     from pymsm.datasets import load_rossi_competing_risk_data
 
     rossi_competing_risk_data, covariate_names = load_rossi_competing_risk_data()
 
-    print(rossi_competing_risk_data.head())
+    # Define the full model
+    multistate_model_dict = {
+        "terminal_states": [2],
+        "update_covariates_fn": default_update_covariates_function,
+        "covariate_names": ["fin", "age", "race", "wexp", "mar", "paro", "prio"],
+        "competing_risks_models_list": [
+            {
+                "origin_state": 1,
+                "target_states": [2],
+                "model_defs": {"coefs": coefs, "baseline_hazard": baseline_hazard},
+            }
+        ],
+    }
 
 
 if __name__ == "__main__":
-    main()
+    test_on_rossi()

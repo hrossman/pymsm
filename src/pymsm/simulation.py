@@ -1,4 +1,4 @@
-from typing import List, Callable, Optional, Dict, Union
+from typing import List, Callable, Optional, Dict, Union, Tuple
 from pandas import Series, DataFrame
 import numpy as np
 from pymsm.competing_risks_model import CompetingRisksModel, EventSpecificModel
@@ -7,6 +7,40 @@ from pymsm.multi_state_competing_risks_model import (
     MultiStateModel,
     default_update_covariates_function,
 )
+
+
+def _extract_model_parts(
+    event_specific_model: EventSpecificModel,
+) -> Tuple[Series, Series]:
+    """Helper function for extracting (coefs, baseline_hazard) from an event specific model"""
+    coefs = event_specific_model.model._model.params_
+    baseline_hazard = event_specific_model.model._model.baseline_hazard_[
+        "baseline hazard"
+    ]
+    return coefs, baseline_hazard
+
+
+def extract_competing_risks_models_list_from_msm(
+    multi_state_model: MultiStateModel, verbose: bool = False
+) -> List[Dict]:
+    """Extract competing risks models list from a MultiStateModel"""
+    competing_risks_models_list = []
+    for origin_state, crm in multi_state_model.state_specific_models.items():
+        state_dict = {
+            "origin_state": origin_state,
+            "target_states": [],
+            "model_defs": [],
+        }
+        for target_state, event_specific_model in crm.event_specific_models.items():
+            if verbose:
+                print(origin_state, target_state, event_specific_model)
+            coefs, baseline_hazard = _extract_model_parts(event_specific_model)
+            state_dict["target_states"].append(target_state)
+            state_dict["model_defs"].append(
+                {"coefs": coefs, "baseline_hazard": baseline_hazard}
+            )
+        competing_risks_models_list.append(state_dict)
+    return competing_risks_models_list
 
 
 class MultiStateSimulator(MultiStateModel):
@@ -70,10 +104,10 @@ class MultiStateSimulator(MultiStateModel):
         crm = CompetingRisksModel(event_specific_fitter=ManualCoxWrapper)
         self.state_specific_models[origin_state] = crm
         self.state_specific_models[origin_state].failure_types = []
-        for failure_type in competing_risks_model_dict["target_states"]:
+        for i, failure_type in enumerate(competing_risks_model_dict["target_states"]):
             coefs, baseline_hazard = (
-                competing_risks_model_dict["model_defs"]["coefs"],
-                competing_risks_model_dict["model_defs"]["baseline_hazard"],
+                competing_risks_model_dict["model_defs"][i]["coefs"],
+                competing_risks_model_dict["model_defs"][i]["baseline_hazard"],
             )
             crm.event_specific_models = {
                 failure_type: EventSpecificModel(
@@ -118,7 +152,7 @@ def test_on_rossi():
         {
             "origin_state": 1,
             "target_states": [2],
-            "model_defs": {"coefs": coefs, "baseline_hazard": baseline_hazard},
+            "model_defs": [{"coefs": coefs, "baseline_hazard": baseline_hazard}],
         }
     ]
 
@@ -137,13 +171,8 @@ def test_on_rossi():
         current_time=0,
         n_random_samples=5,
         max_transitions=10,
+        print_paths=True,
     )
-    # Print paths
-    for mc_path in mc_paths:
-        states = mc_path.states
-        time_at_each_state = mc_path.time_at_each_state
-        print(states)
-        print(time_at_each_state)
 
 
 if __name__ == "__main__":

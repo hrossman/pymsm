@@ -78,7 +78,7 @@ class MultiStateSimulator(MultiStateModel):
         covariate_names=None,
     ):
 
-        # Configure the MSM
+        # Configure the MSM, dataset is not relevant
         super().__init__(
             dataset=None,
             terminal_states=terminal_states,
@@ -102,13 +102,13 @@ class MultiStateSimulator(MultiStateModel):
         """
         origin_state = competing_risks_model_dict["origin_state"]
 
-        # init CompetingRisksModel
+        # Init CompetingRisksModel
         crm = CompetingRisksModel(event_specific_fitter=ManualCoxWrapper)
         crm.event_specific_models = {}
         crm.failure_types = []
         self.state_specific_models[origin_state] = crm
 
-        # Iterate and configure event_specific_models for each origin_state
+        # Iterate and configure an EventSpecificModel for each origin_state
         for i, failure_type in enumerate(competing_risks_model_dict["target_states"]):
             coefs, baseline_hazard = (
                 competing_risks_model_dict["model_defs"][i]["coefs"],
@@ -124,15 +124,6 @@ class MultiStateSimulator(MultiStateModel):
                 failure_type
             ].extract_necessary_attributes()
             self.state_specific_models[origin_state].failure_types.append(failure_type)
-
-    def simulate_paths(
-        self,
-        origin_state: int,
-        current_time: int = 0,
-        n_random_samples: int = 100,
-        max_transitions: int = 10,
-    ):
-        pass
 
 
 def test_on_rossi():

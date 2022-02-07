@@ -2,6 +2,8 @@ from typing import List, Callable, Optional, Dict, Union
 from pandas import Series, DataFrame
 import numpy as np
 from tqdm import tqdm
+from joblib import Parallel, delayed
+
 from pymsm.competing_risks_model import CompetingRisksModel
 from pymsm.event_specific_fitter import EventSpecificFitter, CoxWrapper
 
@@ -298,6 +300,7 @@ class MultiStateModel:
         current_time: int = 0,
         n_random_samples: int = 100,
         max_transitions: int = 10,
+        n_jobs: int = -1,
         print_paths: bool = False,
     ) -> List[PathObject]:
         """This function samples random paths using Monte Carlo simulation.
@@ -319,6 +322,8 @@ class MultiStateModel:
             Number of random paths to create, default is 100
         max_transitions: int
             Max number of transitions to allow in the paths, default is 10
+        n_jobs: int
+            Number of parallel jobs to run, default is -1 (all available)
         print_paths: bool
             Whether to print the paths or not, default is False
 
@@ -327,13 +332,14 @@ class MultiStateModel:
         list of PathObject:
             list of length n_random_samples, contining the randomly create PathObjects
         """
-        runs = list()
-        for i in tqdm(range(0, n_random_samples)):
-            runs.append(
-                self._one_monte_carlo_run(
-                    sample_covariates, origin_state, max_transitions, current_time
-                )
+
+        runs = Parallel(n_jobs=n_jobs)(
+            delayed(self._one_monte_carlo_run)(
+                sample_covariates, origin_state, max_transitions, current_time
             )
+            for i in tqdm(range(0, n_random_samples))
+        )
+
         if print_paths:
             self._print_paths(runs)
         return runs

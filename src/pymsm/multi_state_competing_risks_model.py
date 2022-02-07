@@ -1,6 +1,7 @@
 from typing import List, Callable, Optional, Dict, Union
 from pandas import Series, DataFrame
 import numpy as np
+from tqdm import tqdm
 from pymsm.competing_risks_model import CompetingRisksModel
 from pymsm.event_specific_fitter import EventSpecificFitter, CoxWrapper
 
@@ -297,6 +298,7 @@ class MultiStateModel:
         current_time: int = 0,
         n_random_samples: int = 100,
         max_transitions: int = 10,
+        print_paths: bool = False,
     ) -> List[PathObject]:
         """This function samples random paths using Monte Carlo simulation.
         These paths will be used for prediction for a single sample.
@@ -317,6 +319,8 @@ class MultiStateModel:
             Number of random paths to create, default is 100
         max_transitions: int
             Max number of transitions to allow in the paths, default is 10
+        print_paths: bool
+            Whether to print the paths or not, default is False
 
         Returns
         -------
@@ -324,12 +328,14 @@ class MultiStateModel:
             list of length n_random_samples, contining the randomly create PathObjects
         """
         runs = list()
-        for i in range(0, n_random_samples):
+        for i in tqdm(range(0, n_random_samples)):
             runs.append(
                 self._one_monte_carlo_run(
                     sample_covariates, origin_state, max_transitions, current_time
                 )
             )
+        if print_paths:
+            self._print_paths(runs)
         return runs
 
     def _one_monte_carlo_run(
@@ -480,3 +486,11 @@ class MultiStateModel:
         time_to_next_state = time_to_next_state - t_entry_to_current_state
 
         return time_to_next_state
+
+    def _print_paths(self, mc_paths):
+        """Helper function for printing the paths of a Monte Carlo simulation"""
+        for mc_path in mc_paths:
+            states = mc_path.states
+            time_at_each_state = mc_path.time_at_each_state
+            print(states)
+            print(time_at_each_state)

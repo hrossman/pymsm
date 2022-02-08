@@ -20,19 +20,16 @@ class EventSpecificModel:
 
     failure_type: int
     model: EventSpecificFitter
-    coefficients: Optional[np.ndarray]
     unique_event_times: Optional[np.ndarray]
 
     def __init__(self, failure_type=None, model=None):
         self.failure_type = failure_type
         self.model = model
-        self.coefficients = None
         self.unique_event_times = None
 
     def extract_necessary_attributes(self) -> None:
         """Extract relevant arrays from event specific cox model
         """
-        self.coefficients = self.model.get_coefficients()
         self.unique_event_times = self.model.get_unique_event_times()
 
 
@@ -102,7 +99,7 @@ class CompetingRisksModel:
         assert (df[duration_col] >= 0).any(), "duration column has negative values"
 
         # failure types should be integers from 0 to m, not necessarily consecutive
-        assert df[event_col].dtypes == int, "event column needs to be of type int"
+        assert (pd.api.types.is_integer_dtype(df[event_col].dtypes)), "event column needs to be of type int"
         assert (
             df[event_col].min() >= 0
         ), "Failure types need to zero or positive integers"

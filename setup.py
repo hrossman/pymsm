@@ -20,6 +20,7 @@ setuptools.setup(
         'pandas',
         'scipy',
         'lifelines',
-        'scikit-learn'
+        'scikit-learn',
+        'scikit-survival'
     ],
 )

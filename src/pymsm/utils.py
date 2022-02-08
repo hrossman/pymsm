@@ -14,5 +14,5 @@ def stepfunc(xs: np.ndarray, ys: np.ndarray) -> interp1d:
 def get_categorical_columns(df: pd.DataFrame, cat_cols: List) -> pd.DataFrame:
     encoder = OneHotEncoder(drop="first", sparse=False)
     new_df = pd.DataFrame(encoder.fit_transform(df[cat_cols]), dtype=int)
-    new_df.columns = encoder.get_feature_names_out(cat_cols)
+    new_df.columns = encoder.get_feature_names(cat_cols)
     return new_df

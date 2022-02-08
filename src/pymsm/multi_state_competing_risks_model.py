@@ -295,7 +295,7 @@ class MultiStateModel:
 
     def run_monte_carlo_simulation(
         self,
-        sample_covariates,
+        sample_covariates: np.ndarray,
         origin_state: int,
         current_time: int = 0,
         n_random_samples: int = 100,
@@ -346,7 +346,7 @@ class MultiStateModel:
 
     def _one_monte_carlo_run(
         self,
-        sample_covariates,
+        sample_covariates: np.ndarray,
         origin_state: int,
         max_transitions: int,
         current_time: int = 0,
@@ -393,7 +393,7 @@ class MultiStateModel:
         self,
         next_state: int,
         competing_risks_model: CompetingRisksModel,
-        sample_covariates,
+        sample_covariates: np.ndarray,
         t_entry_to_current_state: int = 0,
     ):
         """This function calculates the probability of transition to the next state, using the competing_risks_model
@@ -416,11 +416,11 @@ class MultiStateModel:
             unique_event_times[mask], sample_covariates
         )
 
-        probability_for_state = (hazard * survival).sum()
+        probability_for_state = np.nansum(hazard * survival)
         return probability_for_state
 
     def _sample_next_state(
-        self, current_state: int, sample_covariates, t_entry_to_current_state: int
+        self, current_state: int, sample_covariates: np.ndarray, t_entry_to_current_state: int
     ) -> Optional[int]:
         """This function samples the next state, according to a multinomial distribution, using probabilites defines
         by _probability_for_next_state function.
@@ -447,7 +447,7 @@ class MultiStateModel:
         self,
         current_state: int,
         next_state: int,
-        sample_covariates,
+        sample_covariates: np.ndarray,
         t_entry_to_current_state: int,
     ) -> float:
         """This function samples the time of transition to the next state, using the hazard and survival provided by
@@ -474,7 +474,7 @@ class MultiStateModel:
             unique_event_times, sample_covariates
         )
 
-        probability_for_each_t = (hazard * survival).cumsum()
+        probability_for_each_t = np.nancumsum(hazard * survival)
         probability_for_each_t_given_next_state = (
             probability_for_each_t / probability_for_each_t.max()
         )

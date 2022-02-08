@@ -1,3 +1,6 @@
+numpy
+pandas
 lifelines
 scikit-learn
+scikit-survival
 tqdm

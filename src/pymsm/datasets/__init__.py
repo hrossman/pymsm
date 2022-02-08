@@ -1,6 +1,19 @@
 import pandas as pd
 from pymsm.utils import get_categorical_columns
 from pkg_resources import resource_filename
+from lifelines.datasets import load_rossi
+
+
+def load_rossi_competing_risk_data():
+    rossi = load_rossi()
+    covariate_names = ["fin", "age", "race", "wexp", "mar", "paro", "prio"]
+    rossi_competing_risk_data = rossi[covariate_names].copy()
+    rossi_competing_risk_data["sample_id"] = rossi_competing_risk_data.index.values
+    rossi_competing_risk_data["origin_state"] = 1
+    rossi_competing_risk_data["target_state"] = rossi["arrest"].replace({1: 2})
+    rossi_competing_risk_data["time_entry_to_origin"] = 0
+    rossi_competing_risk_data["time_transition_to_target"] = rossi["week"]
+    return rossi_competing_risk_data, covariate_names
 
 
 def _load_dataset(filename, **kwargs):

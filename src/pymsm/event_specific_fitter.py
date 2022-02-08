@@ -1,6 +1,5 @@
 from lifelines import CoxPHFitter
 from sksurv.tree import SurvivalTree
-from autograd import elementwise_grad as egrad
 from typing import Optional
 import numpy as np
 import pandas as pd
@@ -111,8 +110,7 @@ class CoxWrapper(EventSpecificFitter):
         return np.exp(x_dot_beta)
 
     def get_hazard(self, sample_covariates) -> np.ndarray:
-        # the hazard is given by multiplying the baseline hazard (which has value per unique event time)
-        # by the partial hazard
+        # the hazard is given by multiplying the baseline hazard (which has value per unique event time) by the partial hazard
         partial_hazard = self._partial_hazard(sample_covariates)
         baseline_hazard = self._model.baseline_hazard_["baseline hazard"].values
         hazard = baseline_hazard * partial_hazard
@@ -128,6 +126,55 @@ class CoxWrapper(EventSpecificFitter):
 
     def print_summary(self):
         self._model.print_summary()
+
+
+class ManualCoxWrapper(EventSpecificFitter):
+    """Cox model, but derived from manual entry of parameters and baseline hazard. No fit available
+
+    Note
+    ---------
+    coefs is an array of cox coefficients, one per covariate. Can be a numpy array or pandas Series. baselin_hazard is a pandas Series with unique event times as index and baseline hazard as values.
+    """
+    def __init__(self, coefs: pd.Series, baseline_hazard: pd.Series):
+        if isinstance(coefs, pd.Series):
+            coefs = coefs.values
+        self.coefs = coefs
+        assert isinstance(baseline_hazard, pd.Series)
+        self.baseline_hazard = baseline_hazard.values
+        self.unique_event_times = baseline_hazard.index.values
+
+    def fit(self):
+        raise NotImplementedError()
+
+    def get_coefficients(self) -> np.ndarray:
+        return self.coefs
+
+    def get_unique_event_times(self) -> np.ndarray:
+        return self.unique_event_times
+
+    def _partial_hazard(self, sample_covariates):
+        coefs = self.get_coefficients()
+        x_dot_beta = np.dot(sample_covariates, coefs)
+        return np.exp(x_dot_beta)
+
+    def get_hazard(self, sample_covariates) -> np.ndarray:
+        # the hazard is given by multiplying the baseline hazard (which has value per unique event time) by the partial hazard
+        partial_hazard = self._partial_hazard(sample_covariates)
+        baseline_hazard = self.baseline_hazard
+        hazard = baseline_hazard * partial_hazard
+        return hazard
+
+    def get_cumulative_hazard(self, t, sample_covariates) -> np.ndarray:
+        baseline_cumulative_hazard = self.baseline_hazard.cumsum()
+        cumulative_baseline_hazard_stepfunc = stepfunc(self.get_unique_event_times(),
+                                                       baseline_cumulative_hazard)
+        cumulative_baseline_hazard = cumulative_baseline_hazard_stepfunc(t)
+        partial_hazard = self._partial_hazard(sample_covariates)
+        return cumulative_baseline_hazard * partial_hazard
+
+    def print_summary(self):
+        print('Manual cox model')
+        print(f"Coefficients: {self.coefs}")
 
 
 class SurvivalTreeWrapper(EventSpecificFitter):

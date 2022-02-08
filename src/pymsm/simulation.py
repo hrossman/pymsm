@@ -78,7 +78,7 @@ class MultiStateSimulator(MultiStateModel):
         covariate_names=None,
     ):
 
-        # Configure the MSM
+        # Configure the MSM, dataset is not relevant
         super().__init__(
             dataset=None,
             terminal_states=terminal_states,
@@ -88,7 +88,7 @@ class MultiStateSimulator(MultiStateModel):
             competing_risk_data_format=True,
         )
 
-        # Configure each competing risks model
+        # Iterate and configure each competing risks model
         for competing_risks_model_dict in competing_risks_models_list:
             self._configure_competing_risks_model(competing_risks_model_dict)
 
@@ -101,34 +101,29 @@ class MultiStateSimulator(MultiStateModel):
             baseline_hazard: A list of baseline hazards for the competing risks model.
         """
         origin_state = competing_risks_model_dict["origin_state"]
+
+        # Init CompetingRisksModel
         crm = CompetingRisksModel(event_specific_fitter=ManualCoxWrapper)
+        crm.event_specific_models = {}
+        crm.failure_types = []
         self.state_specific_models[origin_state] = crm
-        self.state_specific_models[origin_state].failure_types = []
+
+        # Iterate and configure an EventSpecificModel for each origin_state
         for i, failure_type in enumerate(competing_risks_model_dict["target_states"]):
             coefs, baseline_hazard = (
                 competing_risks_model_dict["model_defs"][i]["coefs"],
                 competing_risks_model_dict["model_defs"][i]["baseline_hazard"],
             )
-            crm.event_specific_models = {
-                failure_type: EventSpecificModel(
-                    failure_type=failure_type,
-                    model=ManualCoxWrapper(coefs, baseline_hazard),
-                )
-            }
-
+            self.state_specific_models[origin_state].event_specific_models[
+                failure_type
+            ] = EventSpecificModel(
+                failure_type=failure_type,
+                model=ManualCoxWrapper(coefs, baseline_hazard),
+            )
             self.state_specific_models[origin_state].event_specific_models[
                 failure_type
             ].extract_necessary_attributes()
             self.state_specific_models[origin_state].failure_types.append(failure_type)
-
-    def simulate_paths(
-        self,
-        origin_state: int,
-        current_time: int = 0,
-        n_random_samples: int = 100,
-        max_transitions: int = 10,
-    ):
-        pass
 
 
 def test_on_rossi():

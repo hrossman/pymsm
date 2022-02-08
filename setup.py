@@ -21,6 +21,6 @@ setuptools.setup(
         'scipy',
         'lifelines',
         'scikit-learn',
-        'sksurv'
+        'scikit-survival'
     ],
 )

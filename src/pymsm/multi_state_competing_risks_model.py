@@ -318,7 +318,7 @@ class MultiStateModel:
         # overall survival function evaluated at time of failures corresponding to 'state'
         survival = competing_risks_model.survival_function(unique_event_times[mask], sample_covariates)
 
-        probability_for_state = (hazard*survival).sum()
+        probability_for_state = np.nansum(hazard*survival)
         return probability_for_state
 
     def _sample_next_state(self, current_state: int, sample_covariates: np.ndarray,
@@ -365,7 +365,7 @@ class MultiStateModel:
         # overall survival function evaluated at time of failures corresponding to 'state'
         survival = competing_risk_model.survival_function(unique_event_times, sample_covariates)
 
-        probability_for_each_t = (hazard*survival).cumsum()
+        probability_for_each_t = np.nancumsum(hazard*survival)
         probability_for_each_t_given_next_state = probability_for_each_t/probability_for_each_t.max()
 
         # take the first event time whose probability is less than or equal to eps

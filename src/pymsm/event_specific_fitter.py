@@ -148,11 +148,16 @@ class SurvivalTreeWrapper(EventSpecificFitter):
         return self._model.event_times_
 
     def get_hazard(self, sample_covariates) -> np.ndarray:
-        return egrad(self.get_cumulative_hazard(self.get_unique_event_times(), sample_covariates), argnum=1)
+        cumulative_hazard = self.get_cumulative_hazard(self.get_unique_event_times(), sample_covariates)
+        hazard_df = pd.DataFrame(cumulative_hazard).diff()
+        return hazard_df.values.ravel()
 
     def get_cumulative_hazard(self, t, sample_covariates) -> np.ndarray:
-        cumulative_hazard_stepfunc = self._model.predict_cumulative_hazard_function(sample_covariates.reshape(1, -1))[0]
-        return cumulative_hazard_stepfunc(t)
+        cumulative_hazard_at_times = self._model.predict_cumulative_hazard_function(sample_covariates.reshape(1, -1),
+                                                                                    return_array=True).ravel()
+        times = self.get_unique_event_times()
+        cum_hazard_stepfunc = stepfunc(times, cumulative_hazard_at_times)
+        return cum_hazard_stepfunc(t)
 
     def print_summary(self):
         # TODO - print some summary of the tree

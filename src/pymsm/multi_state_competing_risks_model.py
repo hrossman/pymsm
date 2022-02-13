@@ -300,7 +300,7 @@ class MultiStateModel:
         current_time: int = 0,
         n_random_samples: int = 100,
         max_transitions: int = 10,
-        n_jobs: int = -1,
+        n_jobs: int = None,
         print_paths: bool = False,
     ) -> List[PathObject]:
         """This function samples random paths using Monte Carlo simulation.
@@ -332,13 +332,21 @@ class MultiStateModel:
         list of PathObject:
             list of length n_random_samples, contining the randomly create PathObjects
         """
-
-        runs = Parallel(n_jobs=n_jobs)(
-            delayed(self._one_monte_carlo_run)(
-                sample_covariates, origin_state, max_transitions, current_time
+        if n_jobs is None:  # no parallelization
+            runs = []
+            for i in tqdm(range(0, n_random_samples)):
+                runs.append(
+                    self._one_monte_carlo_run(
+                        sample_covariates, origin_state, max_transitions, current_time
+                    )
+                )
+        else:  # Run parallel jobs
+            runs = Parallel(n_jobs=n_jobs)(
+                delayed(self._one_monte_carlo_run)(
+                    sample_covariates, origin_state, max_transitions, current_time
+                )
+                for i in tqdm(range(0, n_random_samples))
             )
-            for i in tqdm(range(0, n_random_samples))
-        )
 
         if print_paths:
             self._print_paths(runs)
@@ -420,7 +428,10 @@ class MultiStateModel:
         return probability_for_state
 
     def _sample_next_state(
-        self, current_state: int, sample_covariates: np.ndarray, t_entry_to_current_state: int
+        self,
+        current_state: int,
+        sample_covariates: np.ndarray,
+        t_entry_to_current_state: int,
     ) -> Optional[int]:
         """This function samples the next state, according to a multinomial distribution, using probabilites defines
         by _probability_for_next_state function.

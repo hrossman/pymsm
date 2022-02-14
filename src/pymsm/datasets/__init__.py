@@ -160,10 +160,3 @@ def prep_rotterdam():
         3: "Death"
     }
     return dataset, states_labels
-
-
-if __name__ == "__main__":
-    # competing_risk_dataset, covariate_cols = prep_ebmt_long()
-    # print(competing_risk_dataset)
-    data = load_rotterdam()
-    print(data)

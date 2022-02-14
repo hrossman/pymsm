@@ -5,7 +5,6 @@ from typing import Optional
 from pymsm.utils import stepfunc
 import numpy as np
 import pandas as pd
-import sys
 
 
 class EventSpecificFitter:

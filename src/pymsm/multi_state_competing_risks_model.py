@@ -124,7 +124,7 @@ class MultiStateModel:
         self.covariate_names = self._get_covariate_names(covariate_names)
         self.state_specific_models = dict()
         self._time_is_discrete = None
-        self._competing_risk_dataset = None
+        self.competing_risk_dataset = None
         self._samples_have_weights = False
         self._competing_risk_data_format = competing_risk_data_format
         self._event_specific_fitter = event_specific_fitter
@@ -139,14 +139,14 @@ class MultiStateModel:
         verbose : int, optional
             verbosity, by default 1
         """
-        self._competing_risk_dataset = (
+        self.competing_risk_dataset = (
             self.dataset
             if self._competing_risk_data_format
             else self._prepare_dataset_for_competing_risks_fit()
         )
         self._time_is_discrete = self._check_if_time_is_discrete()
 
-        for state in self._competing_risk_dataset["origin_state"].unique():
+        for state in self.competing_risk_dataset["origin_state"].unique():
             if verbose >= 1:
                 print("Fitting Model at State: {}".format(state))
 
@@ -205,8 +205,8 @@ class MultiStateModel:
         """This function check whether the time in the dataset is discrete
         """
         times = (
-            self._competing_risk_dataset["time_entry_to_origin"].values.tolist()
-            + self._competing_risk_dataset["time_transition_to_target"].values.tolist()
+            self.competing_risk_dataset["time_entry_to_origin"].values.tolist()
+            + self.competing_risk_dataset["time_transition_to_target"].values.tolist()
         )
         if all(isinstance(t, int) for t in times):
             return True
@@ -216,7 +216,7 @@ class MultiStateModel:
         """This function converts the given dataset (list of PathObjects) to a pandas DataFrame that will be used when
         fitting the CompetingRiskModel class
         """
-        self._competing_risk_dataset = DataFrame()
+        self.competing_risk_dataset = DataFrame()
         for obj in self.dataset:
             origin_state = obj.states[0]
             covs_entering_origin = Series(
@@ -228,7 +228,7 @@ class MultiStateModel:
                 time_in_origin = obj.time_at_each_state[i]
                 time_transition_to_target = time_entry_to_origin + time_in_origin
                 target_state = (
-                    obj.states[i + 1] if i + 1 <= len(obj.states) else RIGHT_CENSORING
+                    obj.states[i + 1] if i + 1 < len(obj.states) else RIGHT_CENSORING
                 )
 
                 # append row corresponding to this transition
@@ -240,7 +240,7 @@ class MultiStateModel:
                 transition_row["time_entry_to_origin"] = time_entry_to_origin
                 transition_row["time_transition_to_target"] = time_transition_to_target
                 transition_row.update(covs_entering_origin.to_dict())
-                self._competing_risk_dataset = self._competing_risk_dataset.append(
+                self.competing_risk_dataset = self.competing_risk_dataset.append(
                     transition_row, ignore_index=True
                 )
 
@@ -257,16 +257,16 @@ class MultiStateModel:
                     origin_state = target_state
                     time_entry_to_origin = time_transition_to_target
 
-        self._competing_risk_dataset["sample_id"] = self._competing_risk_dataset[
+        self.competing_risk_dataset["sample_id"] = self.competing_risk_dataset[
             "sample_id"
         ].astype(int)
-        self._competing_risk_dataset["origin_state"] = self._competing_risk_dataset[
+        self.competing_risk_dataset["origin_state"] = self.competing_risk_dataset[
             "origin_state"
         ].astype(int)
-        self._competing_risk_dataset["target_state"] = self._competing_risk_dataset[
+        self.competing_risk_dataset["target_state"] = self.competing_risk_dataset[
             "target_state"
         ].astype(int)
-        return self._competing_risk_dataset
+        return self.competing_risk_dataset
 
     def _fit_state_specific_model(self, state: int, verbose: int = 1):
         """Fit a CompetingRiskModel for a specific given state
@@ -277,9 +277,9 @@ class MultiStateModel:
         verbose : int, optional
             verbosity, by default 1
         """
-        state_specific_df = self._competing_risk_dataset[
-            self._competing_risk_dataset["origin_state"] == state
-        ].copy()
+        state_specific_df = self.competing_risk_dataset[
+            self.competing_risk_dataset["origin_state"] == state
+            ].copy()
         state_specific_df.drop(["origin_state"], axis=1, inplace=True)
         state_specific_df.reset_index(drop=True, inplace=True)
         crm = CompetingRisksModel(self._event_specific_fitter)

@@ -1,4 +1,6 @@
 import pandas as pd
+
+from pymsm.multi_state_competing_risks_model import PathObject
 from pymsm.utils import get_categorical_columns
 from pkg_resources import resource_filename
 from lifelines.datasets import load_rossi
@@ -60,6 +62,17 @@ def load_ebmt(data_format: str = None, **kwargs) -> pd.DataFrame:
     return data
 
 
+def load_rotterdam() -> pd.DataFrame:
+    """Load rotterdam dataset (from R survival package). The rotterdam data set includes 2982 primary breast cancers patients whose data whose records were included in the Rotterdam tumor bank.
+
+    Returns
+    -------
+    pd.DataFrame
+    """
+    data = _load_dataset("rotterdam.csv")
+    return data.reset_index()
+
+
 def load_aidssi(**kwargs) -> pd.DataFrame:
     """Load AIDSSI dataset (from R mstate package)
 
@@ -118,8 +131,39 @@ def prep_ebmt_long():
     return competing_risk_dataset, covariate_cols, states_labels
 
 
+def prep_rotterdam():
+    rotterdam = load_rotterdam()
+    dataset = []
+    eps = 0.1
+    cov_cols = ['year', 'age', 'meno', 'grade', 'nodes', 'pgr', 'er', 'hormon', 'chemo']
+    for index, row in rotterdam.iterrows():
+        path = PathObject(covariates=row[cov_cols], sample_id=row['pid'])
+        if not row['recur'] and not row['death']:
+            path.states = [1]
+            path.time_at_each_state = [row['rtime']]
+        if row['recur'] and not row['death']:
+            path.states = [1, 2]
+            recur_time = eps if row['dtime'] - row['rtime'] == 0 else row['dtime'] - row['rtime']
+            path.time_at_each_state = [row['rtime'], recur_time]
+        if row['death'] and not row['recur']:
+            path.states = [1, 3]
+            path.time_at_each_state = [row['dtime']]
+        if row['recur'] and row['death']:
+            path.states = [1, 2, 3]
+            death_time = eps if row['dtime'] - row['rtime'] == 0 else row['dtime'] - row['rtime']
+            path.time_at_each_state = [row['rtime'], death_time]
+        dataset.append(path)
+
+    states_labels = {
+        1: "Primary surgery",
+        2: "Disease recurrence",
+        3: "Death"
+    }
+    return dataset, states_labels
+
+
 if __name__ == "__main__":
     # competing_risk_dataset, covariate_cols = prep_ebmt_long()
     # print(competing_risk_dataset)
-    data = load_aidssi()
+    data = load_rotterdam()
     print(data)

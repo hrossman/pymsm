@@ -1,9 +1,11 @@
 from lifelines import CoxPHFitter
+from lifelines.exceptions import ConvergenceError
 from sksurv.tree import SurvivalTree
 from typing import Optional
+from pymsm.utils import stepfunc
 import numpy as np
 import pandas as pd
-from pymsm.utils import stepfunc
+import sys
 
 
 class EventSpecificFitter:
@@ -95,8 +97,12 @@ class CoxWrapper(EventSpecificFitter):
 
     def fit(self, df: pd.DataFrame, duration_col: Optional[str], event_col: Optional[str], weights_col: Optional[str],
             cluster_col: Optional[str], entry_col: str, **fitter_kwargs):
-        self._model.fit(df=df, duration_col=duration_col, event_col=event_col, weights_col=weights_col,
-                        cluster_col=cluster_col, entry_col=entry_col, **fitter_kwargs)
+        try:
+            self._model.fit(df=df, duration_col=duration_col, event_col=event_col, weights_col=weights_col,
+                            cluster_col=cluster_col, entry_col=entry_col, **fitter_kwargs)
+        except ConvergenceError:
+            print('ERROR! Model did not converge. Number of transitions in the data might not be sufficient.')
+            raise
 
     def _get_coefficients(self) -> np.ndarray:
         return self._model.params_.values

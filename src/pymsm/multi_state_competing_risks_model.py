@@ -68,6 +68,13 @@ class PathObject:
         # This variable is used when simulating paths using monte carlo
         self.stopped_early = None
 
+    def print_path(self):
+        """Helper function for printing the paths of a Monte Carlo simulation"""
+        if self.sample_id is not None:
+            print(f"Sample id: {self.sample_id}")
+        print(f"States: {self.states}")
+        print(f"Times: {self.time_at_each_state}")
+
 
 class MultiStateModel:
     """This class fits a competing risks model per state, that is, it treats all state transitions as competing risks.
@@ -217,7 +224,7 @@ class MultiStateModel:
         fitting the CompetingRiskModel class
         """
         self.competing_risk_dataset = DataFrame()
-        for obj in self.dataset:
+        for obj in self.dataset:           
             origin_state = obj.states[0]
             covs_entering_origin = Series(
                 dict(zip(self.covariate_names, obj.covariates.values))
@@ -280,7 +287,7 @@ class MultiStateModel:
         state_specific_df = self.competing_risk_dataset[
             self.competing_risk_dataset["origin_state"] == state
             ].copy()
-        state_specific_df.drop(["origin_state"], axis=1, inplace=True)
+        state_specific_df.drop(["origin_state", "time_entry_to_origin"], axis=1, inplace=True)
         state_specific_df.reset_index(drop=True, inplace=True)
         crm = CompetingRisksModel(self._event_specific_fitter)
         crm.fit(
@@ -288,7 +295,7 @@ class MultiStateModel:
             event_col="target_state",
             duration_col="time_transition_to_target",
             cluster_col="sample_id",
-            entry_col="time_entry_to_origin",
+            entry_col=None, # TODO: check if this is correct, changed from: entry_col="time_entry_to_origin", also note this column is now dropped 8 lines above
             verbose=verbose,
         )
         return crm
@@ -300,7 +307,7 @@ class MultiStateModel:
         current_time: int = 0,
         n_random_samples: int = 100,
         max_transitions: int = 10,
-        n_jobs: int = None,
+        n_jobs: int = -1,
         print_paths: bool = False,
     ) -> List[PathObject]:
         """This function samples random paths using Monte Carlo simulation.
@@ -507,7 +514,5 @@ class MultiStateModel:
     def _print_paths(self, mc_paths):
         """Helper function for printing the paths of a Monte Carlo simulation"""
         for mc_path in mc_paths:
-            states = mc_path.states
-            time_at_each_state = mc_path.time_at_each_state
-            print(states)
-            print(time_at_each_state)
+            mc_path.print_path()
+            print("\n")

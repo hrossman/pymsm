@@ -226,7 +226,7 @@ class MultiStateModel:
         fitting the CompetingRiskModel class
         """
         self.competing_risk_dataset = DataFrame()
-        for obj in self.dataset:           
+        for obj in self.dataset:
             origin_state = obj.states[0]
             covs_entering_origin = Series(
                 dict(zip(self.covariate_names, obj.covariates.values))
@@ -288,8 +288,8 @@ class MultiStateModel:
         """
         state_specific_df = self.competing_risk_dataset[
             self.competing_risk_dataset["origin_state"] == state
-            ].copy()
-        state_specific_df.drop(["origin_state", "time_entry_to_origin"], axis=1, inplace=True)
+        ].copy()
+        state_specific_df.drop(["origin_state"], axis=1, inplace=True)
         state_specific_df.reset_index(drop=True, inplace=True)
         crm = CompetingRisksModel(self._event_specific_fitter)
         crm.fit(
@@ -297,9 +297,7 @@ class MultiStateModel:
             event_col="target_state",
             duration_col="time_transition_to_target",
             cluster_col="sample_id",
-            # TODO: check if this is correct, changed from: entry_col="time_entry_to_origin", also note this column is now dropped 8 lines above
-            # entry_col="time_entry_to_origin",
-            entry_col=None,
+            entry_col="time_entry_to_origin",
             verbose=verbose,
         )
         return crm
@@ -499,7 +497,7 @@ class MultiStateModel:
         probability_for_each_t = np.nancumsum(hazard * survival)
         probability_for_each_t_given_next_state = (
             probability_for_each_t / probability_for_each_t.max()
-        ) # TODO this raises warnings and we should create better error handling
+        )  # TODO this raises warnings and we should create better error handling
 
         # take the first event time whose probability is less than or equal to eps
         # if we drew a very small eps, use the minimum observed time

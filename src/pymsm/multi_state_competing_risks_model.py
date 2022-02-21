@@ -5,7 +5,9 @@ from tqdm import tqdm
 from joblib import Parallel, delayed
 
 from pymsm.competing_risks_model import CompetingRisksModel
-from pymsm.event_specific_fitter import EventSpecificFitter, CoxWrapper
+from pymsm.event_specific_fitter import CoxWrapper
+
+np.seterr(divide="ignore", invalid="ignore")  # TODO, see line 500
 
 
 def default_update_covariates_function(
@@ -67,6 +69,15 @@ class PathObject:
         self.sample_weight = weight
         # This variable is used when simulating paths using monte carlo
         self.stopped_early = None
+
+    def print_path(self):
+        """Helper function for printing the paths of a Monte Carlo simulation"""
+        if self.sample_id is not None:
+            print(f"Sample id: {self.sample_id}")
+        print(f"States: {self.states}")
+        print(f"Transition times: {self.time_at_each_state}")
+        if self.covariates is not None:
+            print(f"Covariates:\n{self.covariates}")
 
 
 class MultiStateModel:
@@ -163,7 +174,7 @@ class MultiStateModel:
             assert n_states == n_times or n_states == n_times + 1
 
             if n_states == 1 and obj.states[0] in self.terminal_states:
-                # TODO - do we want to add printing of the obj ?
+                obj.print_path()
                 exit(
                     "Error: encountered a sample with a single state that is a terminal state."
                 )
@@ -279,7 +290,7 @@ class MultiStateModel:
         """
         state_specific_df = self.competing_risk_dataset[
             self.competing_risk_dataset["origin_state"] == state
-            ].copy()
+        ].copy()
         state_specific_df.drop(["origin_state"], axis=1, inplace=True)
         state_specific_df.reset_index(drop=True, inplace=True)
         crm = CompetingRisksModel(self._event_specific_fitter)
@@ -300,7 +311,7 @@ class MultiStateModel:
         current_time: int = 0,
         n_random_samples: int = 100,
         max_transitions: int = 10,
-        n_jobs: int = None,
+        n_jobs: int = -1,
         print_paths: bool = False,
     ) -> List[PathObject]:
         """This function samples random paths using Monte Carlo simulation.
@@ -488,7 +499,7 @@ class MultiStateModel:
         probability_for_each_t = np.nancumsum(hazard * survival)
         probability_for_each_t_given_next_state = (
             probability_for_each_t / probability_for_each_t.max()
-        )
+        )  # TODO this raises warnings and we should create better error handling
 
         # take the first event time whose probability is less than or equal to eps
         # if we drew a very small eps, use the minimum observed time
@@ -507,7 +518,5 @@ class MultiStateModel:
     def _print_paths(self, mc_paths):
         """Helper function for printing the paths of a Monte Carlo simulation"""
         for mc_path in mc_paths:
-            states = mc_path.states
-            time_at_each_state = mc_path.time_at_each_state
-            print(states)
-            print(time_at_each_state)
+            mc_path.print_path()
+            print("\n")

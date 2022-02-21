@@ -1,7 +1,31 @@
 import numpy as np
+import pandas as pd
 from pymsm.multi_state_competing_risks_model import PathObject
 from typing import List, Dict
-# from seaborn import ecdfplot
+from collections import Counter
+
+
+def get_path_frequencies(paths: List[PathObject], states_labels: Dict = None):
+    """Get a dictionary of path frequencies for a given list of paths"""
+    states_list = []
+    for path in paths:
+        states_list.append(path.states)
+
+    # Change from numbers to labels
+    if states_labels is not None:
+        states_list = [[states_labels[y] for y in x] for x in states_list]
+
+    counter = Counter(tuple(x) for x in states_list)
+    path_freqs = {
+        str(k)
+        .replace(", ", "->")
+        .replace("(", "")
+        .replace(")", "")
+        .replace("'", "")
+        .replace(",", ""): v
+        for k, v in counter.items()
+    }
+    return pd.Series(path_freqs).sort_values(ascending=False)
 
 
 def prob_visited_state(paths: List[PathObject], state: int):
@@ -14,7 +38,7 @@ def prob_visited_states(paths: List[PathObject], states: List[int]):
 
 
 def path_total_time_at_states(path: PathObject, states: List[int]):
-    # take care and drop terminal states
+    #drop terminal states
     num_nonterminal_states = len(path.time_at_each_state)
     nonterminal_path_states = path.states[:num_nonterminal_states]
     idx = np.isin(nonterminal_path_states, states)
@@ -36,14 +60,6 @@ def stats_total_time_at_states(
     for q in quantiles:
         stats[f"time_in_state_quantile_{q}"] = np.quantile(total_times, q)
     return stats
-
-
-def plot_total_times_ecdf(paths: List[PathObject], states: List[int], ax=None):
-    total_times = np.array([path_total_time_at_states(path, states) for path in paths])
-    if ax is None:
-        fig, ax = plt.subplots()
-    # ecdfplot(x=total_times, ax=ax)
-    pass # TODO
 
 
 def make_states_at_timestep_array(

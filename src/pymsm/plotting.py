@@ -190,9 +190,12 @@ def stackplot_state_timesteps_from_paths(
     max_timestep: int,
     order_top: List,
     order_bottom: List,
+    labels: Dict = None,
     ax=None,
 ):
     timestep_matrix = paths_to_timestep_matrix(paths, max_timestep)
     state_timestep_probs = get_state_timestep_probs(timestep_matrix)
-    stackplot_state_timesteps(state_timestep_probs, order_top, order_bottom, ax=ax)
+    stackplot_state_timesteps(
+        state_timestep_probs, order_top, order_bottom, labels=labels, ax=ax
+    )
 

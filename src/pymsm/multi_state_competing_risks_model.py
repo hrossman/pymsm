@@ -5,7 +5,9 @@ from tqdm import tqdm
 from joblib import Parallel, delayed
 
 from pymsm.competing_risks_model import CompetingRisksModel
-from pymsm.event_specific_fitter import EventSpecificFitter, CoxWrapper
+from pymsm.event_specific_fitter import CoxWrapper
+
+np.seterr(divide="ignore", invalid="ignore")  # TODO, see line 500
 
 
 def default_update_covariates_function(

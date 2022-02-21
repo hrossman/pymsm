@@ -214,6 +214,11 @@ def prep_covid_hosp_data():
             states[-1] not in terminal_states
         ):
             time_at_each_state = np.append(time_at_each_state, np.array([0]))
+
+
+        # bug fix for zero transition times
+        time_at_each_state[time_at_each_state <= 0] = 0.5
+
         total_time = np.sum(time_at_each_state)
 
         if id_col is not None:

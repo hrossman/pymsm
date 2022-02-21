@@ -170,7 +170,7 @@ class MultiStateModel:
             assert n_states == n_times or n_states == n_times + 1
 
             if n_states == 1 and obj.states[0] in self.terminal_states:
-                # TODO - do we want to add printing of the obj ?
+                obj.print_path()
                 exit(
                     "Error: encountered a sample with a single state that is a terminal state."
                 )
@@ -295,7 +295,9 @@ class MultiStateModel:
             event_col="target_state",
             duration_col="time_transition_to_target",
             cluster_col="sample_id",
-            entry_col=None, # TODO: check if this is correct, changed from: entry_col="time_entry_to_origin", also note this column is now dropped 8 lines above
+            # TODO: check if this is correct, changed from: entry_col="time_entry_to_origin", also note this column is now dropped 8 lines above
+            # entry_col="time_entry_to_origin",
+            entry_col=None,
             verbose=verbose,
         )
         return crm

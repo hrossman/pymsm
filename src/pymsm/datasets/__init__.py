@@ -1,3 +1,4 @@
+from re import S
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
@@ -165,35 +166,35 @@ def prep_rotterdam():
 
 def prep_covid_hosp_data():
     """Covid hospitalization data from: https://github.com/JonathanSomer/covid-19-multi-state-model/blob/master/data/data_for_paper.csv"""
+    state_cols = [
+        "new_type0",
+        "new_type1",
+        "new_type2",
+        "new_type3",
+        "new_type4",
+        "new_type5",
+        "new_type6",
+        "new_type7",
+        "new_type8",
+        "new_type9",
+        "new_type10",
+    ]
+    time_cols = [
+        "new_time1",
+        "new_time2",
+        "new_time3",
+        "new_time4",
+        "new_time5",
+        "new_time6",
+        "new_time7",
+        "new_time8",
+        "new_time9",
+        "new_time10",
+    ]
 
     def parse_row(
-        row, id_col="id", covariate_cols=None, terminal_states=[5], verbose=False
+        row, id_col="id", covariate_cols=None, terminal_states=[4], verbose=False
     ):
-        state_cols = [
-            "new_type0",
-            "new_type1",
-            "new_type2",
-            "new_type3",
-            "new_type4",
-            "new_type5",
-            "new_type6",
-            "new_type7",
-            "new_type8",
-            "new_type9",
-            "new_type10",
-        ]
-        time_cols = [
-            "new_time1",
-            "new_time2",
-            "new_time3",
-            "new_time4",
-            "new_time5",
-            "new_time6",
-            "new_time7",
-            "new_time8",
-            "new_time9",
-            "new_time10",
-        ]
         states = row[state_cols].values.astype(int)
         time_at_each_state = row[time_cols].values.astype(float)
         first_nan = np.where(np.isnan(time_at_each_state))[0]  # find first nan
@@ -204,7 +205,9 @@ def prep_covid_hosp_data():
 
         total_transitions_time = np.sum(time_at_each_state)
         current_time = row["current_time"]
-        if current_time > total_transitions_time:
+        if (current_time > total_transitions_time) & (
+            states[-1] not in terminal_states
+        ):
             time_at_each_state = np.append(
                 time_at_each_state, current_time - total_transitions_time
             )
@@ -215,9 +218,8 @@ def prep_covid_hosp_data():
         ):
             time_at_each_state = np.append(time_at_each_state, np.array([0]))
 
-
-        # bug fix for zero transition times
-        time_at_each_state[time_at_each_state <= 0] = 0.5
+        # # bug fix for zero transition times TODO
+        # time_at_each_state[time_at_each_state == 0] = 0.5
 
         total_time = np.sum(time_at_each_state)
 
@@ -269,6 +271,12 @@ def prep_covid_hosp_data():
     df = pd.read_csv(resource_filename("pymsm", "datasets/covid_hosp_data.csv"))
     df["age"] = df["age_group"].map(age_mapper)
     df["is_male"] = df["sex"].map(sex_mapper)
+
+    # rename states
+    states_mapper = {0: 0, 16: 1, 23: 2, 4: 3, 5: 4}
+    states_labels = {0: "Censored", 1: "OOHQ", 2: "M&M", 3: "Severe", 4: "Deceased"}
+    for col in state_cols:
+        df[col] = df[col].map(states_mapper).astype(int)
 
     dataset = []
     for i, row in tqdm(df.iterrows(), total=len(df)):

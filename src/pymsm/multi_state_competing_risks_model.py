@@ -499,7 +499,7 @@ class MultiStateModel:
         probability_for_each_t = np.nancumsum(hazard * survival)
         probability_for_each_t_given_next_state = (
             probability_for_each_t / probability_for_each_t.max()
-        )
+        ) # TODO this raises warnings and we should create better error handling
 
         # take the first event time whose probability is less than or equal to eps
         # if we drew a very small eps, use the minimum observed time

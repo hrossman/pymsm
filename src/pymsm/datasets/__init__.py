@@ -164,7 +164,7 @@ def prep_rotterdam():
 
 
 def prep_covid_hosp_data():
-    """Covid hospitalization data from:L https://github.com/JonathanSomer/covid-19-multi-state-model/blob/master/data/data_for_paper.csv"""
+    """Covid hospitalization data from: https://github.com/JonathanSomer/covid-19-multi-state-model/blob/master/data/data_for_paper.csv"""
 
     def parse_row(
         row, id_col="id", covariate_cols=None, terminal_states=[5], verbose=False
@@ -226,7 +226,7 @@ def prep_covid_hosp_data():
         else:
             sample_id = None
         if covariate_cols is not None:
-            covariates = row[covariate_cols]
+            covariates = pd.to_numeric(row[covariate_cols])
         else:
             covariates = None
 

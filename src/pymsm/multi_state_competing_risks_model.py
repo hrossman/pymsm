@@ -73,7 +73,9 @@ class PathObject:
         if self.sample_id is not None:
             print(f"Sample id: {self.sample_id}")
         print(f"States: {self.states}")
-        print(f"Times: {self.time_at_each_state}")
+        print(f"Transition times: {self.time_at_each_state}")
+        if self.covariates is not None:
+            print(f"Covariates:\n{self.covariates}")
 
 
 class MultiStateModel:

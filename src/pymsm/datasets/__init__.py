@@ -192,9 +192,8 @@ def prep_covid_hosp_data():
         "new_time10",
     ]
 
-    def parse_row(
-        row, id_col="id", covariate_cols=None, terminal_states=[4], verbose=False
-    ):
+    def parse_row(row, verbose=False):
+        terminal_states = [4]
         states = row[state_cols].values.astype(int)
         time_at_each_state = row[time_cols].values.astype(float)
         first_nan = np.where(np.isnan(time_at_each_state))[0]  # find first nan
@@ -223,14 +222,13 @@ def prep_covid_hosp_data():
 
         total_time = np.sum(time_at_each_state)
 
-        if id_col is not None:
-            sample_id = row[id_col]
-        else:
-            sample_id = None
-        if covariate_cols is not None:
-            covariates = pd.to_numeric(row[covariate_cols])
-        else:
-            covariates = None
+        # add id
+        sample_id = row["id"]
+
+        # add covariates
+        covariates = pd.to_numeric(row[["is_male", "age"]])
+        covariates["was_severe"] = 0
+        # covariates["cum_hosp_time"] = 0
 
         if verbose:
             print("\n", sample_id)
@@ -283,9 +281,5 @@ def prep_covid_hosp_data():
         if row["id"] in invalid_path_ids:  # invalid paths
             continue
         else:
-            dataset.append(
-                parse_row(
-                    row, id_col="id", covariate_cols=["is_male", "age"], verbose=False
-                )
-            )
+            dataset.append(parse_row(row, verbose=False))
     return dataset

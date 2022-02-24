@@ -20,7 +20,7 @@ locations = "src", "tests", "noxfile.py"
 @nox.session(python=["3.8"])
 def tests(session):
     session.run("poetry", "install", external=True)
-    # session.run("pytest", "--cov")
+    session.run("pytest", "--cov")
 
 @nox.session(python="3.8")
 def black(session):

@@ -12,6 +12,8 @@ pandas = "^1.4.1"
 lifelines = "^0.26.4"
 matplotlib = "^3.5.1"
 joblib = "^1.1.0"
+tqdm = "^4.62.3"
+scikit-survival = "^0.17.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.0.1"

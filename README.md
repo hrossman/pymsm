@@ -1,5 +1,7 @@
 [![Read the Docs](https://readthedocs.org/projects/pymsm/badge/)](https://pymsm.readthedocs.io/)
 [![Tests](https://github.com/hrossman/pymsm/workflows/Tests/badge.svg)](https://github.com/hrossman/pymsm/actions?workflow=Tests)
+[![Codecov](https://codecov.io/gh/hrossman/pymsm/branch/master/graph/badge.svg)](https://codecov.io/gh/hrossman/pymsm)
+
 
 
 # PyMSM

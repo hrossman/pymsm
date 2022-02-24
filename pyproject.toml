@@ -22,6 +22,7 @@ coverage = {extras = ["toml"], version = "^6.3.2"}
 pytest-cov = "^3.0.0"
 mkdocs-material = "^8.2.1"
 mknotebooks = "^0.7.1"
+pre-commit = "^2.17.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

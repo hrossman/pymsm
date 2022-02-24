@@ -5,17 +5,17 @@ from nox.sessions import Session
 locations = "src", "tests", "noxfile.py"
 
 
-def install_with_constraints(session, *args, **kwargs):
-    with tempfile.NamedTemporaryFile() as requirements:
-        session.run(
-            "poetry",
-            "export",
-            "--dev",
-            "--format=requirements.txt",
-            f"--output={requirements.name}",
-            external=True,
-        )
-        session.install(f"--constraint={requirements.name}", *args, **kwargs)
+# def install_with_constraints(session, *args, **kwargs):
+#     with tempfile.NamedTemporaryFile() as requirements:
+#         session.run(
+#             "poetry",
+#             "export",
+#             "--dev",
+#             "--format=requirements.txt",
+#             f"--output={requirements.name}",
+#             external=True,
+#         )
+#         session.install(f"--constraint={requirements.name}", *args, **kwargs)
 
 @nox.session(python=["3.8"])
 def tests(session):

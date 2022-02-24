@@ -4,6 +4,8 @@
 # PyMSM
 Python implemantation of Multistate competing risk models.
 
+[Docs](https://hrossman.github.io/pymsm/)
+
 ## Installation
 `pip install pymsm`
 

@@ -22,6 +22,13 @@ def tests(session):
     session.run("poetry", "install", external=True)
     # session.run("pytest", "--cov")
 
+@nox.session(python="3.8")
+def black(session):
+    args = session.posargs or locations
+    session.install("black")
+    session.run("black", *args)
+
+
 
 # @nox.session(python=["3.8"])
 # def lint(session):
@@ -30,11 +37,6 @@ def tests(session):
 #     session.run("flake8", *args)
 
 
-@nox.session(python="3.8")
-def black(session):
-    args = session.posargs or locations
-    session.install("black")
-    session.run("black", *args)
 
 
 # @nox.session(python="3.8")

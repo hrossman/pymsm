@@ -18,4 +18,4 @@ Python implemantation of Multistate competing risk models.
 Based on: https://github.com/JonathanSomer/covid-19-multi-state-model  
   
   
-Hagai Rossman, Ayya Kehset, Malka Gorfine  2022
+Hagai Rossman, Ayya Kehset, Malka Gorfine  2022 

@@ -2,17 +2,18 @@
 
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../..'))
+
+sys.path.insert(0, os.path.abspath("../.."))
 
 
 # -- Project information
 
-project = 'pymsm'
-copyright = '2022, Rossman & Keshet'
-author = 'Hagai Rossman, Ayya Keshet'
+project = "pymsm"
+copyright = "2022, Rossman & Keshet"
+author = "Hagai Rossman, Ayya Keshet"
 
-release = '0.1'
-version = '0.1.0'
+release = "0.1"
+version = "0.1.0"
 
 # -- General configuration
 
@@ -25,14 +26,14 @@ extensions = [
     "nbsphinx",
 ]
 
-templates_path = ['_templates']
+templates_path = ["_templates"]
 
 # -- Options for HTML output
 
-html_theme = 'sphinx_rtd_theme'
+html_theme = "sphinx_rtd_theme"
 
 # -- Options for EPUB output
-epub_show_urls = 'footnote'
+epub_show_urls = "footnote"
 
 autoclass_content = "both"  # include both class docstring and __init__
 autodoc_default_flags = [
@@ -43,4 +44,4 @@ autodoc_default_flags = [
 ]
 autosummary_generate = True  # Make _autosummary files and include them
 
-autodoc_mock_imports = ['_tkinter']
+autodoc_mock_imports = ["_tkinter"]

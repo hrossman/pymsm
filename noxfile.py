@@ -17,10 +17,13 @@ locations = "src", "tests", "noxfile.py"
 #         )
 #         session.install(f"--constraint={requirements.name}", *args, **kwargs)
 
+
 @nox.session(python=["3.8"])
 def tests(session):
     session.run("poetry", "install", external=True)
-    session.run("pytest", "--cov")
+    session.run("pytest")
+    # session.run("pytest", "--cov")
+
 
 @nox.session(python="3.8")
 def black(session):
@@ -29,14 +32,11 @@ def black(session):
     session.run("black", *args)
 
 
-
 # @nox.session(python=["3.8"])
 # def lint(session):
 #     args = session.posargs or locations
 #     session.install("flake8")
 #     session.run("flake8", *args)
-
-
 
 
 # @nox.session(python="3.8")

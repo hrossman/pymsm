@@ -1,0 +1,38 @@
+site_name: PyMSM
+site_description: The documentation for the PyMSM software library.
+site_author: Hagai Rossman, Ayya Keshet
+
+repo_url: https://github.com/hrossman/pymsm/
+repo_name: hrossman/pymsm
+
+theme:
+    name: material
+    features:
+        - navigation.sections  # Sections are included in the navigation on the left.
+        - toc.integrate  # Table of contents is integrated on the left; does not appear separately on the right.
+        - header.autohide  # header disappears as you scroll
+    palette:
+        - scheme: default
+          primary: white
+          accent: amber
+          toggle:
+             icon: material/weather-night
+             name: Switch to dark mode
+        - scheme: slate
+          primary: black
+          accent: amber
+          toggle:
+             icon: material/weather-sunny
+             name: Switch to light mode
+
+edit_uri: ""  # No edit button, as some of our pages are in /docs and some in /examples via symlink, so it's impossible for them all to be accurate
+
+strict: true  # Don't allow warnings during the build process
+
+nav:
+  - Rotterdam_example.ipynb
+  - COVID_hospitalization_example.ipynb
+
+plugins:
+  - mknotebooks
+  - search  # default search plugin; needs manually re-enabling when using any other plugins

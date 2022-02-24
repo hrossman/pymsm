@@ -18,7 +18,21 @@ scikit-survival = "^0.17.0"
 [tool.poetry.dev-dependencies]
 pytest = "^7.0.1"
 ipykernel = "^6.9.1"
+coverage = {extras = ["toml"], version = "^6.3.2"}
+pytest-cov = "^3.0.0"
+mkdocs-material = "^8.2.1"
+mknotebooks = "^0.7.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.coverage.paths]
+source = ["src", "*/site-packages"]
+
+[tool.coverage.run]
+branch = true
+source = ["pymsm"]
+
+[tool.coverage.report]
+show_missing = true

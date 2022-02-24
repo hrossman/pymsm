@@ -17,10 +17,17 @@ class EventSpecificFitter:
     file "first_exmaple.ipynb"
     """
 
-    def fit(self,
-            df: pd.DataFrame, duration_col: Optional[str], event_col: Optional[str], weights_col: Optional[str],
-            cluster_col: Optional[str], entry_col: str, **fitter_kwargs):
-        """ Fit the model for a specific given state
+    def fit(
+        self,
+        df: pd.DataFrame,
+        duration_col: Optional[str],
+        event_col: Optional[str],
+        weights_col: Optional[str],
+        cluster_col: Optional[str],
+        entry_col: str,
+        **fitter_kwargs,
+    ):
+        """Fit the model for a specific given state
         Parameters
         ----------
         df : pd.DataFrame
@@ -37,7 +44,7 @@ class EventSpecificFitter:
             a column denoting when a subject entered the study, i.e. left-truncation, by default None
 
         """
-        raise NotImplementedError('subclasses must override fit!')
+        raise NotImplementedError("subclasses must override fit!")
 
     def get_unique_event_times(self) -> np.ndarray:
         """
@@ -47,7 +54,7 @@ class EventSpecificFitter:
         np.ndarray
             unique event times that were encountered when fitting the model
         """
-        raise NotImplementedError('subclasses must override unique_event_times!')
+        raise NotImplementedError("subclasses must override unique_event_times!")
 
     def get_hazard(self, sample_covariates: np.ndarray) -> np.ndarray:
         """
@@ -63,9 +70,11 @@ class EventSpecificFitter:
             hazard values for a specific individual, at the unique event times that were encountered when fitting the
             model
         """
-        raise NotImplementedError('subclasses must override get_hazard!')
+        raise NotImplementedError("subclasses must override get_hazard!")
 
-    def get_cumulative_hazard(self, t: np.ndarray, sample_covariates: np.ndarray) -> np.ndarray:
+    def get_cumulative_hazard(
+        self, t: np.ndarray, sample_covariates: np.ndarray
+    ) -> np.ndarray:
         """
 
         Parameters
@@ -81,26 +90,43 @@ class EventSpecificFitter:
             cumulative hazard values for a specific individual, at the unique event times that were encountered
             when fitting the model
         """
-        raise NotImplementedError('subclasses must override get_cumulative_hazard!')
+        raise NotImplementedError("subclasses must override get_cumulative_hazard!")
 
     def print_summary(self):
         """
         Prints summary of the model
         """
-        raise NotImplementedError('subclasses must override print_summary!')
+        raise NotImplementedError("subclasses must override print_summary!")
 
 
 class CoxWrapper(EventSpecificFitter):
     def __init__(self):
         self._model = CoxPHFitter()
 
-    def fit(self, df: pd.DataFrame, duration_col: Optional[str], event_col: Optional[str], weights_col: Optional[str],
-            cluster_col: Optional[str], entry_col: str, **fitter_kwargs):
+    def fit(
+        self,
+        df: pd.DataFrame,
+        duration_col: Optional[str],
+        event_col: Optional[str],
+        weights_col: Optional[str],
+        cluster_col: Optional[str],
+        entry_col: str,
+        **fitter_kwargs,
+    ):
         try:
-            self._model.fit(df=df, duration_col=duration_col, event_col=event_col, weights_col=weights_col,
-                            cluster_col=cluster_col, entry_col=entry_col, **fitter_kwargs)
+            self._model.fit(
+                df=df,
+                duration_col=duration_col,
+                event_col=event_col,
+                weights_col=weights_col,
+                cluster_col=cluster_col,
+                entry_col=entry_col,
+                **fitter_kwargs,
+            )
         except ConvergenceError:
-            print('ERROR! Model did not converge. Number of transitions in the data might not be sufficient.')
+            print(
+                "ERROR! Model did not converge. Number of transitions in the data might not be sufficient."
+            )
             raise
 
     def _get_coefficients(self) -> np.ndarray:
@@ -122,9 +148,12 @@ class CoxWrapper(EventSpecificFitter):
         return hazard
 
     def get_cumulative_hazard(self, t, sample_covariates) -> np.ndarray:
-        baseline_cumulative_hazard = self._model.baseline_cumulative_hazard_["baseline cumulative hazard"].values
-        cumulative_baseline_hazard_stepfunc = stepfunc(self.get_unique_event_times(),
-                                                       baseline_cumulative_hazard)
+        baseline_cumulative_hazard = self._model.baseline_cumulative_hazard_[
+            "baseline cumulative hazard"
+        ].values
+        cumulative_baseline_hazard_stepfunc = stepfunc(
+            self.get_unique_event_times(), baseline_cumulative_hazard
+        )
         cumulative_baseline_hazard = cumulative_baseline_hazard_stepfunc(t)
         partial_hazard = self._partial_hazard(sample_covariates)
         return cumulative_baseline_hazard * partial_hazard
@@ -140,6 +169,7 @@ class ManualCoxWrapper(EventSpecificFitter):
     ---------
     coefs is an array of cox coefficients, one per covariate. Can be a numpy array or pandas Series. baselin_hazard is a pandas Series with unique event times as index and baseline hazard as values.
     """
+
     def __init__(self, coefs: pd.Series, baseline_hazard: pd.Series):
         if isinstance(coefs, pd.Series):
             coefs = coefs.values
@@ -171,14 +201,15 @@ class ManualCoxWrapper(EventSpecificFitter):
 
     def get_cumulative_hazard(self, t, sample_covariates) -> np.ndarray:
         baseline_cumulative_hazard = self.baseline_hazard.cumsum()
-        cumulative_baseline_hazard_stepfunc = stepfunc(self.get_unique_event_times(),
-                                                       baseline_cumulative_hazard)
+        cumulative_baseline_hazard_stepfunc = stepfunc(
+            self.get_unique_event_times(), baseline_cumulative_hazard
+        )
         cumulative_baseline_hazard = cumulative_baseline_hazard_stepfunc(t)
         partial_hazard = self._partial_hazard(sample_covariates)
         return cumulative_baseline_hazard * partial_hazard
 
     def print_summary(self):
-        print('Manual cox model')
+        print("Manual cox model")
         print(f"Coefficients: {self.coefs}")
 
 
@@ -186,10 +217,22 @@ class SurvivalTreeWrapper(EventSpecificFitter):
     def __init__(self):
         self._model = SurvivalTree()
 
-    def fit(self, df: pd.DataFrame, duration_col: Optional[str], event_col: Optional[str], weights_col: Optional[str],
-            cluster_col: Optional[str], entry_col: str, **fitter_kwargs):
+    def fit(
+        self,
+        df: pd.DataFrame,
+        duration_col: Optional[str],
+        event_col: Optional[str],
+        weights_col: Optional[str],
+        cluster_col: Optional[str],
+        entry_col: str,
+        **fitter_kwargs,
+    ):
         # TODO - how to use cluster_col and event_col
-        covariate_cols = [col for col in df.columns if col not in [duration_col, event_col, cluster_col, entry_col]]
+        covariate_cols = [
+            col
+            for col in df.columns
+            if col not in [duration_col, event_col, cluster_col, entry_col]
+        ]
         X = df[covariate_cols].copy()
         y_df = df[[event_col, duration_col]].copy()
         y_df[event_col] = y_df[event_col].astype(bool)
@@ -200,13 +243,16 @@ class SurvivalTreeWrapper(EventSpecificFitter):
         return self._model.event_times_
 
     def get_hazard(self, sample_covariates) -> np.ndarray:
-        cumulative_hazard = self.get_cumulative_hazard(self.get_unique_event_times(), sample_covariates)
+        cumulative_hazard = self.get_cumulative_hazard(
+            self.get_unique_event_times(), sample_covariates
+        )
         hazard_df = pd.DataFrame(cumulative_hazard).diff()
         return hazard_df.values.ravel()
 
     def get_cumulative_hazard(self, t, sample_covariates) -> np.ndarray:
-        cumulative_hazard_at_times = self._model.predict_cumulative_hazard_function(sample_covariates.reshape(1, -1),
-                                                                                    return_array=True).ravel()
+        cumulative_hazard_at_times = self._model.predict_cumulative_hazard_function(
+            sample_covariates.reshape(1, -1), return_array=True
+        ).ravel()
         times = self.get_unique_event_times()
         cum_hazard_stepfunc = stepfunc(times, cumulative_hazard_at_times)
         return cum_hazard_stepfunc(t)

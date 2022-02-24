@@ -38,8 +38,8 @@ def plot_total_time_until_terminal_state(all_mcs, true_lambda, ax=None):
     if ax is None:
         fig, ax = plt.subplots()
     ax.hist(ts, bins=np.arange(1, 6.01, 0.25))
-    ax.axvline(true_lambda, color='r', alpha=0.8, label='True $\lambda$')
-    ax.axvline(np.mean(ts), color='k', alpha=0.8, label='Mean observed $\lambda$')
+    ax.axvline(true_lambda, color="r", alpha=0.8, label="True $\lambda$")
+    ax.axvline(np.mean(ts), color="k", alpha=0.8, label="Mean observed $\lambda$")
     ax.legend()
     ax.set_xlabel("t")
     ax.set_ylabel("density")

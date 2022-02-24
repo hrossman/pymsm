@@ -165,8 +165,7 @@ class MultiStateModel:
             self.state_specific_models[state] = model
 
     def _assert_valid_input(self) -> None:
-        """Checks that the dataset is valid for running the multi state competing risk model
-        """
+        """Checks that the dataset is valid for running the multi state competing risk model"""
         # Check the number os time is either equal or one less than the number of states
         for obj in self.dataset:
             n_states = len(obj.states)
@@ -213,8 +212,7 @@ class MultiStateModel:
         return self.dataset[0].covariates.index.to_list()
 
     def _check_if_time_is_discrete(self) -> bool:
-        """This function check whether the time in the dataset is discrete
-        """
+        """This function check whether the time in the dataset is discrete"""
         times = (
             self.competing_risk_dataset["time_entry_to_origin"].values.tolist()
             + self.competing_risk_dataset["time_transition_to_target"].values.tolist()

@@ -56,7 +56,7 @@ class MultiStateSimulator(MultiStateModel):
             baseline_hazard: A list of baseline hazards for the competing risks model.
     terminal_states: A list of states that are terminal states.
     update_covariates_fn: A function that takes in a covariate dataframe and returns a covariate dataframe.
-    covariate_names: A list of covariate names. 
+    covariate_names: A list of covariate names.
 
     Note
     ----------
@@ -173,4 +173,3 @@ def test_on_rossi():
 if __name__ == "__main__":
     test_on_rossi()
     print("done")
-

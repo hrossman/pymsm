@@ -38,7 +38,7 @@ def prob_visited_states(paths: List[PathObject], states: List[int]):
 
 
 def path_total_time_at_states(path: PathObject, states: List[int]):
-    #drop terminal states
+    # drop terminal states
     num_nonterminal_states = len(path.time_at_each_state)
     nonterminal_path_states = path.states[:num_nonterminal_states]
     idx = np.isin(nonterminal_path_states, states)
@@ -153,4 +153,3 @@ def get_state_timestep_probs(timestep_matrix: np.ndarray) -> Dict:
 
 if __name__ == "__main__":
     pass
-

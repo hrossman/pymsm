@@ -198,4 +198,3 @@ def stackplot_state_timesteps_from_paths(
     stackplot_state_timesteps(
         state_timestep_probs, order_top, order_bottom, labels=labels, ax=ax
     )
-

@@ -1,5 +1,3 @@
-![PyPI](https://img.shields.io/pypi/v/pymsm)
-![PyPI - Downloads](https://img.shields.io/pypi/dm/pymsm)
 [![Read the Docs](https://readthedocs.org/projects/pymsm/badge/)](https://pymsm.readthedocs.io/)
 
 

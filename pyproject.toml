@@ -1,11 +1,29 @@
-[build-system]
-requires = [
-    "setuptools>=42",
-    "wheel"
-]
-build-backend = "setuptools.build_meta"
+[tool.poetry]
+name = "pymsm"
+version = "0.1.0"
+description = "Multistate modelling on python"
+license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/hrossman/pymsm"
+repository = "https://github.com/hrossman/pymsm"
+keywords = ["Multistate models"]
+authors = ["Hagai Rossman, Ayya Keshet <hagairossman@gmail.com>"]
 
-[project]
-name = "PyMSM"
-authors = [{name = "Hagai Rossman, Ayya Keshet", email = "hagairossman@gmail.com"}]
-dynamic = ["version", "description"]
+[tool.poetry.dependencies]
+python = "^3.8"
+numpy = "^1.22.2"
+pandas = "^1.4.1"
+matplotlib = "^3.5.1"
+jupyter = "^1.0.0"
+lifelines = "^0.26.4"
+tqdm = "^4.62.3"
+ipykernel = "^6.9.1"
+joblib = "^1.1.0"
+scikit-learn = "^1.0.2"
+scikit-survival = "^0.17.0"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

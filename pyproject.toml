@@ -28,13 +28,3 @@ pytest = "^7.0.1"
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
-
-[tool.coverage.paths]
-source = ["src", "*/site-packages"]
-
-[tool.coverage.run]
-branch = true
-source = ["pymsm"]
-
-[tool.coverage.report]
-show_missing = true

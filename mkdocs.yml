@@ -30,7 +30,6 @@ edit_uri: ""  # No edit button, as some of our pages are in /docs and some in /e
 strict: true  # Don't allow warnings during the build process
 
 nav:
-  - "MultiStateModel": MultiStateModel.md
   - Rotterdam_example.ipynb
   - COVID_hospitalization_example.ipynb
 

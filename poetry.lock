@@ -29,6 +29,17 @@ six = "*"
 test = ["astroid", "pytest"]
 
 [[package]]
+name = "astunparse"
+version = "1.6.3"
+description = "An AST unparser for Python"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+six = ">=1.6.1,<2.0"
+
+[[package]]
 name = "atomicwrites"
 version = "1.4.0"
 description = "Atomic file writes."
@@ -208,6 +219,17 @@ description = "Distribution utilities"
 category = "dev"
 optional = false
 python-versions = "*"
+
+[[package]]
+name = "docstring-parser"
+version = "0.13"
+description = "\"Parse Python docstrings in reST, Google and Numpydoc format\""
+category = "dev"
+optional = false
+python-versions = ">=3.6"
+
+[package.extras]
+test = ["pytest", "black"]
 
 [[package]]
 name = "ecos"
@@ -674,6 +696,18 @@ watchdog = ">=2.0"
 i18n = ["babel (>=2.9.0)"]
 
 [[package]]
+name = "mkdocs-autorefs"
+version = "0.3.1"
+description = "Automatically link across pages in MkDocs."
+category = "dev"
+optional = false
+python-versions = ">=3.6.2,<4.0.0"
+
+[package.dependencies]
+Markdown = ">=3.3,<4.0"
+mkdocs = ">=1.1,<2.0"
+
+[[package]]
 name = "mkdocs-material"
 version = "8.2.1"
 description = "A Material Design theme for MkDocs"
@@ -696,6 +730,40 @@ description = "Extension pack for Python Markdown."
 category = "dev"
 optional = false
 python-versions = ">=3.6"
+
+[[package]]
+name = "mkdocstrings"
+version = "0.18.0"
+description = "Automatic documentation from sources, for MkDocs."
+category = "dev"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+Jinja2 = ">=2.11.1"
+Markdown = ">=3.3"
+MarkupSafe = ">=1.1"
+mkdocs = ">=1.2"
+mkdocs-autorefs = ">=0.3.1"
+mkdocstrings-python-legacy = ">=0.2"
+pymdown-extensions = ">=6.3"
+
+[package.extras]
+crystal = ["mkdocstrings-crystal (>=0.3.4)"]
+python = ["mkdocstrings-python (>=0.5.2)"]
+python-legacy = ["mkdocstrings-python-legacy (>=0.2.1)"]
+
+[[package]]
+name = "mkdocstrings-python-legacy"
+version = "0.2.2"
+description = "A legacy Python handler for mkdocstrings."
+category = "dev"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+mkdocstrings = ">=0.18"
+pytkdocs = ">=0.14"
 
 [[package]]
 name = "mknotebooks"
@@ -1094,6 +1162,21 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
 six = ">=1.5"
 
 [[package]]
+name = "pytkdocs"
+version = "0.16.0"
+description = "Load Python objects documentation."
+category = "dev"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+astunparse = {version = ">=1.6", markers = "python_version < \"3.9\""}
+docstring_parser = {version = ">=0.7", optional = true, markers = "extra == \"numpy-style\""}
+
+[package.extras]
+numpy-style = ["docstring_parser (>=0.7)"]
+
+[[package]]
 name = "pytz"
 version = "2021.3"
 description = "World timezone definitions, modern and historical"
@@ -1395,7 +1478,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "e7d7baf3cab85e77c034669080053575c6f9203b4f1aaaa8bf3271a31a8f0e78"
+content-hash = "e6320972e27b89396a1f7b59a16de9cc1943ef0b792272215f640c05b106408a"
 
 [metadata.files]
 appnope = [
@@ -1409,6 +1492,10 @@ astor = [
 asttokens = [
     {file = "asttokens-2.0.5-py2.py3-none-any.whl", hash = "sha256:0844691e88552595a6f4a4281a9f7f79b8dd45ca4ccea82e5e05b4bbdb76705c"},
     {file = "asttokens-2.0.5.tar.gz", hash = "sha256:9a54c114f02c7a9480d56550932546a3f1fe71d8a02f1bc7ccd0ee3ee35cf4d5"},
+]
+astunparse = [
+    {file = "astunparse-1.6.3-py2.py3-none-any.whl", hash = "sha256:c2652417f2c8b5bb325c885ae329bdf3f86424075c4fd1a128674bc6fba4b8e8"},
+    {file = "astunparse-1.6.3.tar.gz", hash = "sha256:5ad93a8456f0d084c3456d059fd9a92cce667963232cbf763eac3bc5b7940872"},
 ]
 atomicwrites = [
     {file = "atomicwrites-1.4.0-py2.py3-none-any.whl", hash = "sha256:6d1784dea7c0c8d4a5172b6c620f40b6e4cbfdf96d783691f2e1302a7b88e197"},
@@ -1602,6 +1689,9 @@ defusedxml = [
 distlib = [
     {file = "distlib-0.3.4-py2.py3-none-any.whl", hash = "sha256:6564fe0a8f51e734df6333d08b8b94d4ea8ee6b99b5ed50613f731fd4089f34b"},
     {file = "distlib-0.3.4.zip", hash = "sha256:e4b58818180336dc9c529bfb9a0b58728ffc09ad92027a3f30b7cd91e3458579"},
+]
+docstring-parser = [
+    {file = "docstring_parser-0.13.tar.gz", hash = "sha256:66dd7eac7232202bf220fd98a5f11491863c01f958a75fdd535c7eccac9ced78"},
 ]
 ecos = [
     {file = "ecos-2.0.10-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:533e1a0dec84e4e9a882b401a59b821da192f7fe4f32c6d65e400b6425858775"},
@@ -1865,6 +1955,10 @@ mkdocs = [
     {file = "mkdocs-1.2.3-py3-none-any.whl", hash = "sha256:a1fa8c2d0c1305d7fc2b9d9f607c71778572a8b110fb26642aa00296c9e6d072"},
     {file = "mkdocs-1.2.3.tar.gz", hash = "sha256:89f5a094764381cda656af4298727c9f53dc3e602983087e1fe96ea1df24f4c1"},
 ]
+mkdocs-autorefs = [
+    {file = "mkdocs-autorefs-0.3.1.tar.gz", hash = "sha256:12baad29359f468b44d980ed35b713715409097a1d8e3d0ef90962db95205eda"},
+    {file = "mkdocs_autorefs-0.3.1-py3-none-any.whl", hash = "sha256:f0fd7c115eaafda7fb16bf5ff5d70eda55d7c0599eac64f8b25eacf864312a85"},
+]
 mkdocs-material = [
     {file = "mkdocs-material-8.2.1.tar.gz", hash = "sha256:efcb3a24e1ef374268306cb8b4d3ba0db5d2c4ee4aa1fc4bcbd2087571b1d975"},
     {file = "mkdocs_material-8.2.1-py2.py3-none-any.whl", hash = "sha256:9496b26593c8a0f9bb18bda7f1b919c0bc16838217f38212dca47cc9006d7fe0"},
@@ -1872,6 +1966,14 @@ mkdocs-material = [
 mkdocs-material-extensions = [
     {file = "mkdocs-material-extensions-1.0.3.tar.gz", hash = "sha256:bfd24dfdef7b41c312ede42648f9eb83476ea168ec163b613f9abd12bbfddba2"},
     {file = "mkdocs_material_extensions-1.0.3-py3-none-any.whl", hash = "sha256:a82b70e533ce060b2a5d9eb2bc2e1be201cf61f901f93704b4acf6e3d5983a44"},
+]
+mkdocstrings = [
+    {file = "mkdocstrings-0.18.0-py3-none-any.whl", hash = "sha256:75e277f6a56a894a727efcf6d418d36cd43d4db7da9614c2dc23300e257d95ad"},
+    {file = "mkdocstrings-0.18.0.tar.gz", hash = "sha256:01d8ab962fc1f388c9b15cbf8c078b8738f92adf983b626d74135aaee2bce33a"},
+]
+mkdocstrings-python-legacy = [
+    {file = "mkdocstrings-python-legacy-0.2.2.tar.gz", hash = "sha256:f0e7ec6a19750581b752acb38f6b32fcd1efe006f14f6703125d2c2c9a5c6f02"},
+    {file = "mkdocstrings_python_legacy-0.2.2-py3-none-any.whl", hash = "sha256:379107a3a5b8db9b462efc4493c122efe21e825e3702425dbd404621302a563a"},
 ]
 mknotebooks = [
     {file = "mknotebooks-0.7.1.post0.dev98-py3-none-any.whl", hash = "sha256:4bda0a4931e06cd30625a9a485abcefbd98b825a63228dbb06ba090596684b1e"},
@@ -2129,6 +2231,10 @@ pytest-cov = [
 python-dateutil = [
     {file = "python-dateutil-2.8.2.tar.gz", hash = "sha256:0123cacc1627ae19ddf3c27a5de5bd67ee4586fbdd6440d9748f8abb483d3e86"},
     {file = "python_dateutil-2.8.2-py2.py3-none-any.whl", hash = "sha256:961d03dc3453ebbc59dbdea9e4e11c5651520a876d0f4db161e8674aae935da9"},
+]
+pytkdocs = [
+    {file = "pytkdocs-0.16.0-py3-none-any.whl", hash = "sha256:098405ff347797cfb887a4d78f161372109bfbfffa0f8ee8daa5e2b8a8caba4b"},
+    {file = "pytkdocs-0.16.0.tar.gz", hash = "sha256:274407bcefec58d7e411adb03b84da49120107912b1697d17d4a3aea0583f388"},
 ]
 pytz = [
     {file = "pytz-2021.3-py2.py3-none-any.whl", hash = "sha256:3672058bc3453457b622aab7a1c3bfd5ab0bdae451512f6cf25f64ed37f5b87c"},

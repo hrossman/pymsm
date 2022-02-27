@@ -4,10 +4,11 @@ authors:
   -
     family-names: Rossman, Keshet
     given-names: Hagai, Ayya
-cff-version: "0.1.1"
+cff-version: 1.2.0
 doi: "https://doi.org/10.5281/zenodo.6300873"
 license: MIT
 message: "If you use this software, please cite it using these metadata."
 repository-code: "https://github.com/hrossman/pymsm"
 title: PyMSM, Multistate modeling in Python
+date-released: 2022-02-27
 ...

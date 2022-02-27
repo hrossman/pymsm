@@ -51,7 +51,6 @@ nav:
     - Further details:
       - 'methods.md'
 
-
 plugins:
   - mknotebooks
   - search

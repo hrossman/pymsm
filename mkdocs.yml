@@ -45,10 +45,12 @@ markdown_extensions:
 
 nav:
     - 'index.md'
-    # - 'further_details/citation.md'
-    - Example:
+    - Examples:
       - Rotterdam_example.ipynb
       - COVID_hospitalization_example.ipynb
+    - Further details:
+      - 'methods.md'
+
 
 plugins:
   - mknotebooks

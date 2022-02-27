@@ -1,9 +1,12 @@
 # YAML 1.2
 ---
 authors:
-  -
-    family-names: {Rossman, Keshet, Gorfine}
-    given-names: {Hagai, Ayya, Malka}
+  - family-names: Rossman
+    given-names: Hagai
+  - family-names: Keshet
+    given-names: Ayya
+  - family-names: Gorfine
+    given-names: Malka
 cff-version: 1.2.0
 doi: "https://doi.org/10.5281/zenodo.6300873"
 license: MIT

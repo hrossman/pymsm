@@ -2,8 +2,7 @@
 ---
 authors:
   -
-    family-names: Rossman, Keshet
-    given-names: Hagai, Ayya
+    family-names: Rossman, Keshet, Gorfine
 cff-version: 1.2.0
 doi: "https://doi.org/10.5281/zenodo.6300873"
 license: MIT

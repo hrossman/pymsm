@@ -1,10 +1,3 @@
-site_name: PyMSM
-site_description: The documentation for the PyMSM software library.
-site_author: Hagai Rossman, Ayya Keshet
-
-repo_url: https://github.com/hrossman/pymsm/
-repo_name: hrossman/pymsm
-
 theme:
     name: material
     features:
@@ -28,13 +21,34 @@ theme:
       repo: fontawesome/brands/github  # GitHub logo in top right
       logo: material/graphql  # logo in top left
 
+site_name: PyMSM
+site_description: The documentation for the PyMSM software library.
+site_author: Hagai Rossman, Ayya Keshet
+
+repo_url: https://github.com/hrossman/pymsm/
+repo_name: hrossman/pymsm
 edit_uri: ""  # No edit button, as some of our pages are in /docs and some in /examples via symlink, so it's impossible for them all to be accurate
 
 strict: true  # Don't allow warnings during the build process
 
+markdown_extensions:
+    - pymdownx.arithmatex:  # Render LaTeX via MathJax
+        generic: true
+    - pymdownx.superfences  # Seems to enable syntax highlighting when used with the Material theme.
+    - pymdownx.details  # Allowing hidden expandable regions denoted by ???
+    - pymdownx.snippets:  # Include one Markdown file into another
+        base_path: docs
+    - admonition
+    - toc:
+        permalink: "¤"  # Adds a clickable permalink to each section heading
+        toc_depth: 4  # Prevents h5, h6 from showing up in the TOC.
+
 nav:
-  - Rotterdam_example.ipynb
-  - COVID_hospitalization_example.ipynb
+    - 'index.md'
+    # - 'further_details/citation.md'
+    - Example:
+      - Rotterdam_example.ipynb
+      - COVID_hospitalization_example.ipynb
 
 plugins:
   - mknotebooks

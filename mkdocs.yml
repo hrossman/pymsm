@@ -26,7 +26,7 @@ theme:
              name: Switch to light mode
     icon:
       repo: fontawesome/brands/github  # GitHub logo in top right
-      logo: "https://github.com/hrossman/pymsm/blob/main/pymsm_icon.drawio"  # logo in top left
+      logo: material/graphql  # logo in top left
 
 edit_uri: ""  # No edit button, as some of our pages are in /docs and some in /examples via symlink, so it's impossible for them all to be accurate
 
@@ -40,3 +40,6 @@ plugins:
   - mknotebooks
   - search
   - mkdocstrings
+
+extra:
+  copyright: Copyright &copy; 2022 Hagai Rossman, Ayya Keshet, Malka Gorfine

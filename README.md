@@ -2,7 +2,7 @@
 [![documentation](https://img.shields.io/badge/docs-mkdocs%20material-blue.svg?style=flat)](https://hrossman.github.io/pymsm)
 [![Tests](https://github.com/hrossman/pymsm/workflows/Tests/badge.svg)](https://github.com/hrossman/pymsm/actions?workflow=Tests)
 
-![PyMSM](pymsm_icon.drawio.svg)
+![PyMSM](docs/pymsm_icon.svg)
 Multistate competing risk models in Python.
 [Read the Docs](https://hrossman.github.io/pymsm/)
 
@@ -17,4 +17,4 @@ Multistate competing risk models in Python.
 
 Based on: https://github.com/JonathanSomer/covid-19-multi-state-model
 
-[Hagai Rossman](https://github.com/hrossman), [Ayya Kehset](https://github.com/ayya-keshet), Malka Gorfine  2022
+[Hagai Rossman](https://hrossman.github.io/), [Ayya Kehset](https://github.com/ayya-keshet), [Malka Gorfine](https://www.tau.ac.il/~gorfinem/) 2022

@@ -9,15 +9,12 @@ Multistate competing risk models in Python.
 ## Installation
 `pip install pymsm`
 
-## Usage examples
-[Toy example](https://github.com/hrossman/pymsm/blob/main/src/pymsm/examples/first_example.ipynb)
-[Rotterdam Illness-death example](https://github.com/hrossman/pymsm/blob/main/src/pymsm/examples/rotterdam.ipynb)
-[EBMT multistate example](https://github.com/hrossman/pymsm/blob/main/src/pymsm/examples/ebmt.ipynb)
-[COVID hospitalizations multistate example](https://github.com/hrossman/pymsm/blob/main/src/pymsm/examples/covid_hosp_example.ipynb)
-
-
-
-Based on: https://github.com/JonathanSomer/covid-19-multi-state-model
-
-
+## Usage examples  
+1. [Toy example](https://github.com/hrossman/pymsm/blob/main/src/pymsm/examples/first_example.ipynb)  
+2. [Rotterdam Illness-death example](https://github.com/hrossman/pymsm/blob/main/src/pymsm/examples/rotterdam.ipynb)  
+3. [EBMT multistate example](https://github.com/hrossman/pymsm/blob/main/src/pymsm/examples/ebmt.ipynb)  
+4. [COVID hospitalizations multistate example](https://github.com/hrossman/pymsm/blob/main/src/pymsm/examples/covid_hosp_example.ipynb)  
+  
+Based on: https://github.com/JonathanSomer/covid-19-multi-state-model  
+  
 Hagai Rossman, Ayya Kehset, Malka Gorfine  2022

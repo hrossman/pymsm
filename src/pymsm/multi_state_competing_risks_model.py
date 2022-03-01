@@ -5,9 +5,9 @@ from tqdm import tqdm
 from joblib import Parallel, delayed
 
 from pymsm.competing_risks_model import CompetingRisksModel
-from pymsm.event_specific_fitter import CoxWrapper
+from pymsm.event_specific_fitter import CoxWrapper, EventSpecificFitter
 
-np.seterr(divide="ignore", invalid="ignore")  # TODO, see line 500
+np.seterr(divide="ignore", invalid="ignore")  # TODO
 
 
 def default_update_covariates_function(
@@ -22,36 +22,16 @@ def default_update_covariates_function(
 
 RIGHT_CENSORING = 0
 
-"""This class holds sample of a single path through the multi state model.
-
-    Attributes
-    ----------
-    covariates: pandas Series
-
-    states: list of ints
-
-    time_at_each_state: list of ints
-        The possible failure types of the model
-    sample_id: int, optional
-        An identification of this sample
-    sample_weight: float, optional
-        Sample weight
-
-    Note
-    ----------
-
-    """
-
 
 class PathObject:
-    """This class holds sample of a single path through the multi state model.
+    """This class holds all necessary attributes of a single path for the multi state model.
 
     Args:
         covariates (Series, optional): Named pandas Series of sample covariates at the initial state. Defaults to None.
         states (List[int], optional): States visited (encoded as positive integers, 0 is saved for censoring), in the order visited. Defaults to None.
         time_at_each_state (List[float], optional): Time at each state. Defaults to None.
-        sample_id (int, optional): _description_. Defaults to None.
-        weight (float, optional): _description_. Defaults to None.
+        sample_id (int, optional): An identification of this sample. Defaults to None.
+        weight (float, optional): Sample weight. Defaults to None.
 
     Note:
         If the last state is a terminal state, then the vector of times should be shorter than the vector of
@@ -93,59 +73,47 @@ class MultiStateModel:
     """This class fits a competing risks model per state, that is, it treats all state transitions as competing risks.
     See the CompetingRisksModel class
 
-    Attributes
-    ----------
-    dataset: either a list of PathObject or a pandas data frame in the format used to fit the CompetingRiskModel class
+    Args:
+        dataset (Union[List[PathObject], DataFrame]): either a list of PathObject or a pandas data frame in the format used to fit the CompetingRiskModel class
         Dataset used to fit a competing risk model to each state
-    terminal_states: list of ints
-        States which a sample does not leave
-    update_covariates_fn: Callable
-        A state-transition function, which updates the time dependent variables.
+        terminal_states (List[int]): States which a sample does not leave
+        update_covariates_fn (Callable[ [Series, int, int, float, float], Series ], optional): A state-transition function, which updates the time dependent variables.
         This function is used in fitting the model so that the user doesn't have to manually compute the feautres at
-        each state, it is also used in the monte carlo method of predicting the survival curves per sample
-    covariate_names: list of strings
-        Optional list of covariate names to be used in prints
-    state_specific_models: dict
-        After running the "fit" function this dictionary will hold a competing risk model for each state
-    event_specific_fitter: EventSpecificFitter
-        This class holds the model that will be fitter inside the CompetingRisksModel.
-        The default is CoxWrapper that holds a CoxPHFitter
-    competing_risk_data_format: boolean, default False
-        A boolean indicating the format of the dataset parmeter, if False - the dataset is assumed to be a list of
+        each state, it is also used in the monte carlo method of predicting the survival curves per sample. Defaults to default_update_covariates_function.
+        covariate_names (List[str], optional): Optional list of covariate names to be used. Defaults to None.
+        event_specific_fitter (EventSpecificFitter, optional): This class holds the model that will be fitter inside the CompetingRisksModel.
+        The default is CoxWrapper that holds a CoxPHFitter. Defaults to CoxWrapper.
+        competing_risk_data_format (bool, optional): A boolean indicating the format of the dataset parmeter, if False - the dataset is assumed to be a list of
         PathObjects, if True - the dataset is assumed to be a dataframe which is compatible in format for fitting the
-        CompetingRiskModel class
+        CompetingRiskModel class. Defaults to False.
 
-    Note
-    ----------
-    The update_covariates_fn could be any function you choose to write, but it needs to have the following parameter
-    types (in this order): pandas Series, int, int, float, float,
-    and return a pandas Series.
+    Attributes:
+        state_specific_models (Dict[int, CompetingRisksModel]): A dictionary of CompetingRisksModel objects, one for each state. Available after running the "fit" function.
+
+    Note:
+        The update_covariates_fn could be any function you choose to write, but it needs to have the following parameter
+        types (in this order): pandas Series, int, int, float, float; and return a pandas Series.
     """
-
-    dataset: Union[List[PathObject], DataFrame]
-    terminal_states: List[int]
-    update_covariates_fn: Callable[[Series, int, int, float, float], Series]
-    covariate_names: List[str]
-    state_specific_models: Dict[int, CompetingRisksModel]
-    competing_risk_dataset: DataFrame
 
     def __init__(
         self,
-        dataset,
-        terminal_states,
-        update_covariates_fn=default_update_covariates_function,
-        covariate_names=None,
-        event_specific_fitter=CoxWrapper,
-        competing_risk_data_format=False,
+        dataset: Union[List[PathObject], DataFrame],
+        terminal_states: List[int],
+        update_covariates_fn: Callable[
+            [Series, int, int, float, float], Series
+        ] = default_update_covariates_function,
+        covariate_names: List[str] = None,
+        event_specific_fitter: EventSpecificFitter = CoxWrapper,
+        competing_risk_data_format: bool = False,
     ):
         self.dataset = dataset
         self.terminal_states = terminal_states
         self.update_covariates_fn = update_covariates_fn
         self.covariate_names = self._get_covariate_names(covariate_names)
-        self.state_specific_models = dict()
-        self._time_is_discrete = None
-        self.competing_risk_dataset = None
-        self._samples_have_weights = False
+        self.state_specific_models: Dict[int, CompetingRisksModel] = dict()
+        self._time_is_discrete: bool = None
+        self.competing_risk_dataset: DataFrame = None
+        self._samples_have_weights: bool = False
         self._competing_risk_data_format = competing_risk_data_format
         self._event_specific_fitter = event_specific_fitter
 
@@ -154,11 +122,11 @@ class MultiStateModel:
 
     def fit(self, verbose: int = 1) -> None:
         """Fit a CompetingRiskModel for each state
-        Parameters
-        ----------
-        verbose : int, optional
-            verbosity, by default 1
+
+        Args:
+            verbose (int, optional): verbosity, by default 1. Defaults to 1.
         """
+
         self.competing_risk_dataset = (
             self.dataset
             if self._competing_risk_data_format
@@ -206,16 +174,18 @@ class MultiStateModel:
             return
         assert len(self.covariate_names) == len(self.dataset[0].covariates)
 
-    def _get_covariate_names(self, covariate_names):
+    def _get_covariate_names(self, covariate_names: List[str]) -> List[str]:
         """This functions sets the covariate names that will be used in prints.
-        Names are taken either from the given covariate names provided by the user,
-        or if None provided - from the named pandas Series of covariates of the PathObject in the dataset
+            Names are taken either from the given covariate names provided by the user,
+            or if None provided - from the named pandas Series of covariates of the PathObject in the dataset
 
-        Parameters
-        ----------
-        covariate_names: list of strings
-            covariate names provided in class init
+        Args:
+            covariate_names (List[str], optional): covariate names provided in class init
+
+        Returns:
+            List: List of covariate names
         """
+
         if covariate_names is not None:
             return covariate_names
         return self.dataset[0].covariates.index.to_list()
@@ -286,15 +256,19 @@ class MultiStateModel:
         ].astype(int)
         return self.competing_risk_dataset
 
-    def _fit_state_specific_model(self, state: int, verbose: int = 1):
+    def _fit_state_specific_model(
+        self, state: int, verbose: int = 1
+    ) -> CompetingRisksModel:
         """Fit a CompetingRiskModel for a specific given state
-        Parameters
-        ----------
-        state: int
-            State to fit the model for
-        verbose : int, optional
-            verbosity, by default 1
+
+        Args:
+            state (int): State to fit the model for
+            verbose (int, optional): verbosity. Defaults to 1.
+
+        Returns:
+            CompetingRisksModel: state specific model
         """
+
         state_specific_df = self.competing_risk_dataset[
             self.competing_risk_dataset["origin_state"] == state
         ].copy()
@@ -322,34 +296,25 @@ class MultiStateModel:
         print_paths: bool = False,
     ) -> List[PathObject]:
         """This function samples random paths using Monte Carlo simulation.
-        These paths will be used for prediction for a single sample.
-        Initial sample covariates, along with the sample’s current state are supplied.
-        The next states are sequentially sampled via the model parameters.
-        The process concludes when the sample arrives at a terminal state or the number of transitions exceeds the
-        specified maximum.
+            These paths will be used for prediction for a single sample.
+            Initial sample covariates, along with the sample’s current state are supplied.
+            The next states are sequentially sampled via the model parameters.
+            The process concludes when the sample arrives at a terminal state or the number of transitions exceeds the
+            specified maximum.
 
-        Parameters
-        ----------
-        sample_covariates: np.ndarray
-            Initial sample covariates, when entering the origin state
-        origin_state: int
-            Initial state where the path begins from
-        current_time: int
-            Time when starting the sample path, default is 0
-        n_random_samples: int
-            Number of random paths to create, default is 100
-        max_transitions: int
-            Max number of transitions to allow in the paths, default is 10
-        n_jobs: int
-            Number of parallel jobs to run, default is -1 (all available)
-        print_paths: bool
-            Whether to print the paths or not, default is False
+        Args:
+            sample_covariates (np.ndarray): Initial sample covariates, when entering the origin state
+            origin_state (int): Initial state where the path begins from
+            current_time (int, optional): Time when starting the sample path. Defaults to 0.
+            n_random_samples (int, optional): Number of random paths to create. Defaults to 100.
+            max_transitions (int, optional): Max number of transitions to allow in the paths. Defaults to 10.
+            n_jobs (int, optional): Number of parallel jobs to run. Defaults to -1.
+            print_paths (bool, optional): Whether to print the paths or not. Defaults to False.
 
-        Returns
-        -------
-        list of PathObject:
-            list of length n_random_samples, contining the randomly create PathObjects
+        Returns:
+            List[PathObject]: list of length n_random_samples, contining the randomly create PathObjects
         """
+
         if n_jobs is None:  # no parallelization
             runs = []
             for i in tqdm(range(0, n_random_samples)):

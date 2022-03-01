@@ -31,7 +31,7 @@ repo_url: https://github.com/hrossman/pymsm/
 repo_name: hrossman/pymsm
 edit_uri: ""  # No edit button, as some of our pages are in /docs and some in /examples via symlink, so it's impossible for them all to be accurate
 
-strict: true  # Don't allow warnings during the build process
+strict: false  # Don't allow warnings during the build process
 
 markdown_extensions:
     - pymdownx.highlight:
@@ -55,6 +55,7 @@ nav:
       - COVID_hospitalization_example.ipynb
     - API:
       - 'api/multistate_model.md'
+      - 'api/pathobject.md'
     - Further details:
       - 'methods.md'
 

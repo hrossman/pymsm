@@ -1,1 +1,1 @@
-::: pymsm.multi_state_competing_risks_model.PathObject
+::: pymsm.multi_state_competing_risks_model.MultiStateModel

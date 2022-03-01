@@ -1,3 +1,5 @@
+# Lots of this config is taken from: https://docs.kidger.site/diffrax/.
+
 theme:
     name: material
     features:
@@ -32,6 +34,9 @@ edit_uri: ""  # No edit button, as some of our pages are in /docs and some in /e
 strict: true  # Don't allow warnings during the build process
 
 markdown_extensions:
+    - pymdownx.highlight:
+        anchor_linenums: true
+    - pymdownx.inlinehilite
     - pymdownx.arithmatex:  # Render LaTeX via MathJax
         generic: true
     - pymdownx.superfences  # Seems to enable syntax highlighting when used with the Material theme.
@@ -48,6 +53,8 @@ nav:
     - Examples:
       - Rotterdam_example.ipynb
       - COVID_hospitalization_example.ipynb
+    - API:
+      - 'api/multistate_model.md'
     - Further details:
       - 'methods.md'
 

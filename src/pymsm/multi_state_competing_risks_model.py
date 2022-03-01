@@ -22,16 +22,14 @@ def default_update_covariates_function(
 
 RIGHT_CENSORING = 0
 
-
-class PathObject:
-    """This class holds sample of a single path through the multi state model.
+"""This class holds sample of a single path through the multi state model.
 
     Attributes
     ----------
     covariates: pandas Series
-        Named pandas Series of sample covariates at the initial state
+
     states: list of ints
-        States visited (encoded as positive integers, 0 is saved for censoring), in the order visited
+
     time_at_each_state: list of ints
         The possible failure types of the model
     sample_id: int, optional
@@ -41,25 +39,36 @@ class PathObject:
 
     Note
     ----------
-    If the last state is a terminal state, then the vector of times should be shorter than the vector of
-    states by 1. Conversely, if the last state is not a terminal state, then the length of vector times should be
-    the same as that of the states.
+
     """
 
-    covariates: Series
-    states: List[int]
-    time_at_each_state: List[float]
-    sample_id: int
-    sample_weight: float
+
+class PathObject:
+    """This class holds sample of a single path through the multi state model.
+
+    Args:
+        covariates (Series, optional): Named pandas Series of sample covariates at the initial state. Defaults to None.
+        states (List[int], optional): States visited (encoded as positive integers, 0 is saved for censoring), in the order visited. Defaults to None.
+        time_at_each_state (List[float], optional): Time at each state. Defaults to None.
+        sample_id (int, optional): _description_. Defaults to None.
+        weight (float, optional): _description_. Defaults to None.
+
+    Note:
+        If the last state is a terminal state, then the vector of times should be shorter than the vector of
+        states by 1. Conversely, if the last state is not a terminal state, then the length of vector times should be
+        the same as that of the states.
+
+    """
 
     def __init__(
         self,
-        covariates=None,
-        states=None,
-        time_at_each_state=None,
-        sample_id=None,
-        weight=None,
+        covariates: Series = None,
+        states: List[int] = None,
+        time_at_each_state: List[float] = None,
+        sample_id: int = None,
+        weight: float = None,
     ):
+
         self.covariates = covariates
         self.states = list() if states is None else states
         self.time_at_each_state = (

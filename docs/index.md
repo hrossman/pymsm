@@ -28,7 +28,7 @@ Requires Python >=3.8
 
 ## Quick example
 
-```python
+```py linenums="1"
 # Load data
 from pymsm.datasets import prep_rotterdam
 dataset, states_labels = prep_rotterdam()

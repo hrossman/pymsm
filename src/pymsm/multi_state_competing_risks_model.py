@@ -231,6 +231,8 @@ class MultiStateModel:
                 self.competing_risk_dataset = self.competing_risk_dataset.append(
                     transition_row, ignore_index=True
                 )
+                # TODO change to concat due to:
+                # FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
 
                 if (
                     target_state == RIGHT_CENSORING
@@ -285,9 +287,31 @@ class MultiStateModel:
         )
         return crm
 
-    def run_monte_carlo_simulation(
+    def _assert_valid_simulation_input(
         self,
         sample_covariates: np.ndarray,
+        origin_state: int,
+        current_time: int,
+        n_random_samples: int,
+        max_transitions: int,
+        n_jobs: int,
+        print_paths: bool,
+    ):
+        """This function checks if the input to the simulation is valid."""
+
+        # TODO assert valid inputs for sample_covariates, origin_state
+        assert current_time >= 0
+        assert isinstance(n_random_samples, int)
+        assert n_random_samples > 0
+        assert isinstance(max_transitions, int)
+        assert max_transitions > 0
+        assert isinstance(n_jobs, int)
+        assert n_jobs >= -1
+        assert isinstance(print_paths, bool)
+
+    def run_monte_carlo_simulation(
+        self,
+        sample_covariates: np.ndarray,  # TODO change to np.ndarray OR pd.Series
         origin_state: int,
         current_time: int = 0,
         n_random_samples: int = 100,
@@ -314,6 +338,16 @@ class MultiStateModel:
         Returns:
             List[PathObject]: list of length n_random_samples, contining the randomly create PathObjects
         """
+        # Check input is valid
+        self._assert_valid_simulation_input(
+            sample_covariates,
+            origin_state,
+            current_time,
+            n_random_samples,
+            max_transitions,
+            n_jobs,
+            print_paths,
+        )
 
         if n_jobs is None:  # no parallelization
             runs = []

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pymsm"
-version = "0.1.1"
+version = "0.1.2"
 description = "Multstate modeling"
 authors = ["Hagai Rossman, Ayya Keshet"]
 license = "MIT"

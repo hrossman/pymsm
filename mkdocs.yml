@@ -55,6 +55,8 @@ nav:
     - Examples:
       - Rotterdam_example.ipynb
       - COVID_hospitalization_example.ipynb
+      - 'custom_fitters.md'
+      - 'Simulator.md'
     - API:
       - 'api/multistate_model.md'
       - 'api/multistate_simulator.md'

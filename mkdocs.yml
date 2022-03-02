@@ -70,3 +70,6 @@ plugins:
 
 extra:
   copyright: Copyright &copy; 2022 Hagai Rossman, Ayya Keshet, Malka Gorfine
+  analytics:
+    provider: google
+    property: G-4PXS01G51T

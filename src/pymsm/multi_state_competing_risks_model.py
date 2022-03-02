@@ -299,7 +299,7 @@ class MultiStateModel:
     ):
         """This function checks if the input to the simulation is valid."""
 
-        # TODO assert valid inputs for sample_covariates, origin_state
+        # TODO assert valid inputs for sample_covariates (Series or np.ndarray, and length), origin_state
         assert current_time >= 0
         assert isinstance(n_random_samples, int)
         assert n_random_samples > 0

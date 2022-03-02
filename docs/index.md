@@ -28,7 +28,7 @@ Requires Python >=3.8
 
 ## Quick example
 
-```python
+```py linenums="1"
 # Load data
 from pymsm.datasets import prep_rotterdam
 dataset, states_labels = prep_rotterdam()
@@ -53,7 +53,7 @@ all_mcs = multi_state_model.run_monte_carlo_simulation(
               origin_state = 1,
               current_time = 0,
               max_transitions = 2,
-              n_random_samples = 100)
+              n_random_samples = 10)
 ```
 
 

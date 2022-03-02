@@ -10,22 +10,18 @@ from pymsm.event_specific_fitter import EventSpecificFitter, CoxWrapper
 class EventSpecificModel:
     """Event specific model, holding attributes needed for later calculations
 
-    Parameters
-    ----------
-    failure_type : int, optional
-        failure_type, by default None
-    model : CoxPHFitter, optional
-        Cox model for the specific failuure_type, by default None
+    Args:
+        failure_type (int, optional): failure_type. Defaults to None.
+        model (EventSpecificFitter, optional): Model for the specific failuure_type. Defaults to None.
+
+    Attributes:
+        unique_event_times (np.ndarray, optional): Array of unique event times
     """
 
-    failure_type: int
-    model: EventSpecificFitter
-    unique_event_times: Optional[np.ndarray]
-
     def __init__(self, failure_type=None, model=None):
-        self.failure_type = failure_type
-        self.model = model
-        self.unique_event_times = None
+        self.failure_type: int = failure_type
+        self.model: EventSpecificFitter = model
+        self.unique_event_times: Optional[np.ndarray] = None
 
     def extract_necessary_attributes(self) -> None:
         """Extract relevant arrays from event specific cox model"""
@@ -33,34 +29,31 @@ class EventSpecificModel:
 
 
 class CompetingRisksModel:
-    """
-    This class implements fitting a Competing Risk model.
+    """This class implements fitting a Competing Risk model.
 
-    Examples
-    --------
-    .. code:: python
-        from pymsm.examples.crm_example_utils import create_test_data, stack_plot
-        from pymsm.competing_risks_model import CompetingRisksModel
-        from pymsm.event_specific_fitter import CoxWrapper
-        crm = CompetingRisksModel(CoxWrapper)
-        data = create_test_data(N=1000)
-        crm.fit(df=data, duration_col='T', event_col='transition', cluster_col='id')
+    Args:
+        event_specific_fitter (EventSpecificFitter, optional): The specified EventSpecificFitter. Defaults to CoxWrapper.
 
-    Attributes
-    ----------
-    failure_types: list
-        The possible failure types of the model
-    event_specific_models: dict
-        A dictionary containing an instance of EventSpecificModel for each failure type.
-    event_specific_fitter: EventSpecificFitter
-        An event specific fitter class that will be used to fit an event specific model for each failure type.
+
+    Example:
+        ```py linenums="1"
+
+            from pymsm.examples.crm_example_utils import create_test_data, stack_plot
+            from pymsm.competing_risks_model import CompetingRisksModel
+            from pymsm.event_specific_fitter import CoxWrapper
+            crm = CompetingRisksModel(CoxWrapper)
+            data = create_test_data(N=1000)
+            crm.fit(df=data, duration_col='T', event_col='transition', cluster_col='id')
+        ```
+    Attributes:
+        failure_types (list): The possible failure types of the model
+        event_specific_models (dict): A dictionary containing an instance of EventSpecificModel for each failure type.
     """
 
     failure_types: List[int]
     event_specific_models: Dict[int, EventSpecificModel]
-    event_specific_fitter: EventSpecificFitter
 
-    def __init__(self, event_specific_fitter=CoxWrapper):
+    def __init__(self, event_specific_fitter: EventSpecificFitter = CoxWrapper):
         self.failure_types = []
         self.event_specific_models = {}
         self.event_specific_fitter = event_specific_fitter
@@ -76,20 +69,13 @@ class CompetingRisksModel:
     ) -> None:
         """Checks if a dataframe is valid for fitting a competing risks model
 
-        Parameters
-        ----------
-        df : pd.DataFrame
-            A pandas DataFrame contaning all relevant columns, must have duration and event columns. Optional to have clester and weight columns. All other columns other than these 4 will be treated as covariate columns.
-        duration_col : str, optional
-            the name of the column in DataFrame that contains the subjects lifetimes, defaults to "T", by default None
-        event_col : str, optional
-            the name of the column in DataFrame that contains the subjects death observation, defaults to "E", by default None
-        cluster_col : str, optional
-            specifies what column has unique identifiers for clustering covariances. Using this forces the sandwich estimator (robust variance estimator) to be used, defaults to None, by default None
-        weights_col : str, optional
-            an optional column in the DataFrame, df, that denotes the weight per subject. This column is expelled and not used as a covariate, but as a weight in the final regression. Default weight is 1. This can be used for case-weights. For example, a weight of 2 means there were two subjects with identical observations. This can be used for sampling weights. In that case, use robust=True to get more accurate standard errors, by default None
-        entry_col : str, optional
-            a column denoting when a subject entered the study, i.e. left-truncation, by default None
+        Args:
+            df (pd.DataFrame): A pandas DataFrame contaning all relevant columns, must have duration and event columns. Optional to have clester and weight columns. All other columns other than these 4 will be treated as covariate columns.
+            duration_col (str, optional): the name of the column in DataFrame that contains the subjects lifetimes, defaults to "T". Defaults to None.
+            event_col (str, optional): the name of the column in DataFrame that contains the subjects death observation, defaults to "E". Defaults to None.
+            cluster_col (str, optional): specifies what column has unique identifiers for clustering covariances. Using this forces the sandwich estimator (robust variance estimator) to be used, defaults to None. Defaults to None.
+            weights_col (str, optional):  an optional column in the DataFrame, df, that denotes the weight per subject. This column is expelled and not used as a covariate, but as a weight in the final regression. Default weight is 1. This can be used for case-weights. For example, a weight of 2 means there were two subjects with identical observations. This can be used for sampling weights. In that case, use robust=True to get more accurate standard errors. Defaults to None.
+            entry_col (str, optional): a column denoting when a subject entered the study, i.e. left-truncation. Defaults to None.
         """
 
         assert df[duration_col].count() == df[event_col].count()

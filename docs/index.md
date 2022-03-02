@@ -1,5 +1,5 @@
 # PyMSM in a nutshell
-![PyMSM](pymsm_icon.svg)
+![PyMSM](pymsm_icon.svg)  
 [Hagai Rossman](https://hrossman.github.io/), [Ayya Kehset](https://github.com/ayya-keshet), [Malka Gorfine](https://www.tau.ac.il/~gorfinem/) 2022
 
 [![DOI](https://zenodo.org/badge/443028256.svg)](https://zenodo.org/badge/latestdoi/443028256)
@@ -75,6 +75,6 @@ If you found this library useful in academic research, please cite:
 
 Also consider starring the project [on GitHub](https://github.com/hrossman/pymsm)
 
-This project is based on methods first introduced by the authors of [Roimi et. al. 2021](https://academic.oup.com/jamia/article/28/6/1188/6105188).
+This project is based on methods first introduced by the authors of [Roimi et. al. 2021](https://academic.oup.com/jamia/article/28/6/1188/6105188).  
  Original R code by Jonathan Somer, Asaf Ben Arie, Rom Gutman, Uri Shalit & Malka Gorfine available [here](https://github.com/JonathanSomer/covid-19-multi-state-model).
  Also see [Rossman & Meir et. al. 2021](https://www.nature.com/articles/s41467-021-22214-z) for an application of this model.

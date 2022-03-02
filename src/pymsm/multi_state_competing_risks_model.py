@@ -70,22 +70,15 @@ class PathObject:
 
 
 class MultiStateModel:
-    """This class fits a competing risks model per state, that is, it treats all state transitions as competing risks.
-    See the CompetingRisksModel class
+    """This class fits a competing risks model per state, that is, it treats all state transitions as competing risks. See the CompetingRisksModel class
 
     Args:
-        dataset (Union[List[PathObject], DataFrame]): either a list of PathObject or a pandas data frame in the format used to fit the CompetingRiskModel class
-        Dataset used to fit a competing risk model to each state
+        dataset (Union[List[PathObject], DataFrame]): either a list of PathObject or a pandas data frame in the format used to fit the CompetingRiskModel class. Dataset used to fit a competing risk model to each state
         terminal_states (List[int]): States which a sample does not leave
-        update_covariates_fn (Callable[ [Series, int, int, float, float], Series ], optional): A state-transition function, which updates the time dependent variables.
-        This function is used in fitting the model so that the user doesn't have to manually compute the feautres at
-        each state, it is also used in the monte carlo method of predicting the survival curves per sample. Defaults to default_update_covariates_function.
+        update_covariates_fn (Callable[ [Series, int, int, float, float], Series ], optional): A state-transition function, which updates the time dependent variables. This function is used in fitting the model so that the user doesn't have to manually compute the features at each state, it is also used in the monte carlo method of predicting the survival curves per sample. Defaults to default_update_covariates_function.
         covariate_names (List[str], optional): Optional list of covariate names to be used. Defaults to None.
-        event_specific_fitter (EventSpecificFitter, optional): This class holds the model that will be fitter inside the CompetingRisksModel.
-        The default is CoxWrapper that holds a CoxPHFitter. Defaults to CoxWrapper.
-        competing_risk_data_format (bool, optional): A boolean indicating the format of the dataset parmeter, if False - the dataset is assumed to be a list of
-        PathObjects, if True - the dataset is assumed to be a dataframe which is compatible in format for fitting the
-        CompetingRiskModel class. Defaults to False.
+        event_specific_fitter (EventSpecificFitter, optional): This class holds the model that will be fitter inside the CompetingRisksModel. Defaults to CoxWrapper.
+        competing_risk_data_format (bool, optional): A boolean indicating the format of the dataset parmeter, if False - the dataset is assumed to be a list of PathObjects, if True - the dataset is assumed to be a dataframe which is compatible in format for fitting the CompetingRiskModel class. Defaults to False.
 
     Attributes:
         state_specific_models (Dict[int, CompetingRisksModel]): A dictionary of CompetingRisksModel objects, one for each state. Available after running the "fit" function.

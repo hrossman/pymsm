@@ -12,5 +12,8 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: 3.8
-      - run: pip install mkdocs-material mknotebooks mkdocstrings
-      - run: mkdocs gh-deploy --force
+
+      - run: pip install poetry==1.1.13
+      - run: poetry install
+      # - run: pip install mkdocs-material mknotebooks mkdocstrings
+      - run: poetry run mkdocs gh-deploy --force

@@ -1,6 +1,6 @@
 # PyMSM in a nutshell
 ![PyMSM](pymsm_icon.svg)  
-[Hagai Rossman](https://hrossman.github.io/), [Ayya Kehset](https://github.com/ayya-keshet), [Malka Gorfine](https://www.tau.ac.il/~gorfinem/) 2022
+[Hagai Rossman](https://hrossman.github.io/), [Ayya Keshet](https://github.com/ayya-keshet), [Malka Gorfine](https://www.tau.ac.il/~gorfinem/) 2022
 
 [![DOI](https://zenodo.org/badge/443028256.svg)](https://zenodo.org/badge/latestdoi/443028256)
 [![pypi version](https://img.shields.io/pypi/v/pymsm)](https://pypi.org/project/pymsm/)

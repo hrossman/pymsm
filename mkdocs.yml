@@ -22,6 +22,7 @@ theme:
     icon:
       repo: fontawesome/brands/github  # GitHub logo in top right
     logo: pymsm_icon.svg # logo in top left
+    favicon: pymsm_icon.svg # logo in top left
 
 
 site_name: PyMSM

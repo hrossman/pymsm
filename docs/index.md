@@ -7,7 +7,7 @@
 [![Tests](https://github.com/hrossman/pymsm/workflows/Tests/badge.svg)](https://github.com/hrossman/pymsm/actions?workflow=Tests)
 
 
-PyMSM is a Python implementation of Multistate Competing risks models.
+PyMSM is a Python implementation of Competing Risks and Multistate models for survival data.  
 
 Features include:
 

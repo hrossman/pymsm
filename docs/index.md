@@ -53,7 +53,7 @@ all_mcs = multi_state_model.run_monte_carlo_simulation(
               origin_state = 1,
               current_time = 0,
               max_transitions = 2,
-              n_random_samples = 100)
+              n_random_samples = 10)
 ```
 
 

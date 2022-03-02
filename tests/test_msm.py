@@ -27,6 +27,7 @@ def test_msm():
         current_time=0,
         max_transitions=2,
         n_random_samples=3,
+        print_paths=True,
     )
 
 

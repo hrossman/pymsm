@@ -55,6 +55,7 @@ nav:
       - COVID_hospitalization_example.ipynb
     - API:
       - 'api/multistate_model.md'
+      - 'api/competing_risks_model.md'
       - 'api/pathobject.md'
     - Further details:
       - 'methods.md'

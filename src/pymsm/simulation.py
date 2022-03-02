@@ -46,38 +46,33 @@ def extract_competing_risks_models_list_from_msm(
 class MultiStateSimulator(MultiStateModel):
     """This class configures a multi-state model simulator from predefined model parts. It inherents from the MultiStateModel class, but instead of being fitted to data, it is configured based on predefined models.
 
-    Attributes
-    ----------
-    competing_risks_models_list: A list of dictionaries, each of which contains the following keys:
-        origin_state: The state from which the simulation starts.
-        target_states: A list of states to which the simulation transitions.
-        model_defs: A dictionary containing the following keys:
-            coefs: A list of coefficients for the competing risks model.
-            baseline_hazard: A list of baseline hazards for the competing risks model.
-    terminal_states: A list of states that are terminal states.
-    update_covariates_fn: A function that takes in a covariate dataframe and returns a covariate dataframe.
-    covariate_names: A list of covariate names.
+    Args:
+        competing_risks_models_list (List[Dict]): A list of dictionaries, each of which contains the following keys:
+            origin_state: The state from which the simulation starts.
+            target_states: A list of states to which the simulation transitions.
+            model_defs: A dictionary containing the following keys:
+                coefs: A list of coefficients for the competing risks model.
+                baseline_hazard: A list of baseline hazards for the competing risks model.
+        terminal_states (List[int]): A list of states that are terminal states.
+        update_covariates_fn (Callable[ [Series, int, int, float, float], Series ], optional): A function that takes in a covariate dataframe and returns a covariate dataframe.. Defaults to default_update_covariates_function.
+        covariate_names (List[str], optional): A list of covariate names.. Defaults to None.
 
-    Note
-    ----------
-    The update_covariates_fn could be any function you choose to write, but it needs to have the following parameter
-    types (in this order): pandas Series, int, int, float, float,
-    and return a pandas Series.
+    Note:
+        The update_covariates_fn could be any function you choose to write, but it needs to have the following parameter
+        types (in this order): pandas Series, int, int, float, float,
+        and return a pandas Series.
+
     """
-
-    competing_risks_models_list: List[Dict]
-    terminal_states: List[int]
-    update_covariates_fn: Callable[[Series, int, int, float, float], Series]
-    covariate_names: List[str]
 
     def __init__(
         self,
-        competing_risks_models_list,
-        terminal_states,
-        update_covariates_fn=default_update_covariates_function,
-        covariate_names=None,
+        competing_risks_models_list: List[Dict],
+        terminal_states: List[int],
+        update_covariates_fn: Callable[
+            [Series, int, int, float, float], Series
+        ] = default_update_covariates_function,
+        covariate_names: List[str] = None,
     ):
-
         # Configure the MSM, dataset is not relevant
         super().__init__(
             dataset=None,

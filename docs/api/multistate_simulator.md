@@ -1,0 +1,1 @@
+::: pymsm.simulation.MultiStateSimulator

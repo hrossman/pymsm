@@ -21,7 +21,8 @@ theme:
              name: Switch to light mode
     icon:
       repo: fontawesome/brands/github  # GitHub logo in top right
-      logo: material/graphql  # logo in top left
+    logo: pymsm_icon.svg # logo in top left
+
 
 site_name: PyMSM
 site_description: The documentation for the PyMSM software library.
@@ -55,7 +56,8 @@ nav:
       - COVID_hospitalization_example.ipynb
     - API:
       - 'api/multistate_model.md'
-      - 'api/competing_risks_model.md'
+      # - 'api/competing_risks_model.md'
+      - 'api/multistate_simulator.md'
       - 'api/pathobject.md'
     - Further details:
       - 'methods.md'

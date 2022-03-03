@@ -4,8 +4,9 @@
 
     For a comprehensive overview of the methods used in this package, please see the Supplementary data section of [Roimi et. al. 2021](https://academic.oup.com/jamia/article/28/6/1188/6105188)
 
-
-Mathjax trial:
+  
+Mathjax trial:    
+  
 $$
 \lambda_{A,B}=\lambda_{0 A,B}exp(\beta_{A,B}^TZ)
 $$

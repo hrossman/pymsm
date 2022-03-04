@@ -20,7 +20,9 @@ Features include:
  - Modularity and compatibility for different time-to-event models such as Survival Forests or other custom models.
 
 ## Installation
-`pip install pymsm`
+```console
+pip install pymsm
+```
 
 ## Quick example
 

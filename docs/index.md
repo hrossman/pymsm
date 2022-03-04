@@ -21,7 +21,7 @@ Features include:
 
 ## Installation
 
-```
+```console
 pip install pymsm
 ```
 

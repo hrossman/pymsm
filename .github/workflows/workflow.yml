@@ -17,9 +17,9 @@ jobs:
         python-version: 3.7
     - name: Generate coverage report
       run: |
-        pip install pytest
-        pip install pytest-cov
-        pytest --cov=./ --cov-report=xml
+        pip install poetry==1.1.13
+        poetry install
+        poetry run pytest --cov=./ --cov-report=xml
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v2
       with:

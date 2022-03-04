@@ -5,6 +5,7 @@
 [![DOI](https://zenodo.org/badge/443028256.svg)](https://zenodo.org/badge/latestdoi/443028256)
 [![pypi version](https://img.shields.io/pypi/v/pymsm)](https://pypi.org/project/pymsm/)
 [![Tests](https://github.com/hrossman/pymsm/workflows/Tests/badge.svg)](https://github.com/hrossman/pymsm/actions?workflow=Tests)
+[![codecov](https://codecov.io/gh/hrossman/pymsm/branch/main/graph/badge.svg?token=FG434UHSQ2)](https://codecov.io/gh/hrossman/pymsm)
 
 
 PyMSM is a Python implementation of Competing Risks and Multistate models for survival data.  

@@ -1,5 +1,5 @@
-name: Workflow for Codecov
-on: [push]
+name: Codecov
+on: pull_request
 jobs:
   run:
     runs-on: ${{ matrix.os }}

@@ -10,7 +10,7 @@ An example of using Survival Trees as custom event-specific-fitters in a Multist
 
 ```python hl_lines="2 8"
 from pymsm.multi_state_competing_risks_model import MultiStateModel
-from pymsm.event_specific_fitter import SurvivalTreeWrapper
+from pymsm.survival_tree_fitter import SurvivalTreeWrapper
 
 multi_state_model = MultiStateModel(
     dataset, 

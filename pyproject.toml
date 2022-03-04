@@ -1,9 +1,15 @@
 [tool.poetry]
 name = "pymsm"
-version = "0.1.2"
-description = "Multstate modeling"
-authors = ["Hagai Rossman, Ayya Keshet"]
+version = "0.1.3"
+description = "Multstate modeling in Python"
+authors = ["Hagai Rossman, Ayya Keshet, Malka Gorfine"]
 license = "MIT"
+readme = "README.md"
+homepage = "https://hrossman.github.io/pymsm/"
+repository = "https://github.com/hrossman/pymsm"
+documentation = "https://hrossman.github.io/pymsm/"
+keywords = ["multstate", "competing risks", "survival"]
+
 
 [tool.poetry.dependencies]
 python = "^3.8"
@@ -13,7 +19,6 @@ lifelines = "^0.26.4"
 matplotlib = "^3.5.1"
 joblib = "^1.1.0"
 tqdm = "^4.62.3"
-scikit-survival = "^0.17.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.0.1"

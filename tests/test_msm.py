@@ -29,7 +29,3 @@ def test_msm():
         n_random_samples=3,
         print_paths=True,
     )
-
-
-if __name__ == "__main__":
-    test_msm()

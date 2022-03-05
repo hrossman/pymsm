@@ -1,13 +1,12 @@
 from typing import List, Callable, Optional, Dict, Union
 from pandas import Series, DataFrame
 import numpy as np
+import pandas as pd
 from tqdm import tqdm
 from joblib import Parallel, delayed
 
 from pymsm.competing_risks_model import CompetingRisksModel
 from pymsm.event_specific_fitter import CoxWrapper, EventSpecificFitter
-
-np.seterr(divide="ignore", invalid="ignore")  # TODO
 
 
 def default_update_covariates_function(
@@ -221,11 +220,10 @@ class MultiStateModel:
                 transition_row["time_entry_to_origin"] = time_entry_to_origin
                 transition_row["time_transition_to_target"] = time_transition_to_target
                 transition_row.update(covs_entering_origin.to_dict())
-                self.competing_risk_dataset = self.competing_risk_dataset.append(
-                    transition_row, ignore_index=True
+                self.competing_risk_dataset = pd.concat(
+                    [self.competing_risk_dataset, pd.DataFrame([transition_row])],
+                    ignore_index=True,
                 )
-                # TODO change to concat due to:
-                # FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
 
                 if (
                     target_state == RIGHT_CENSORING
@@ -496,9 +494,12 @@ class MultiStateModel:
         )
 
         probability_for_each_t = np.nancumsum(hazard * survival)
-        probability_for_each_t_given_next_state = (
-            probability_for_each_t / probability_for_each_t.max()
-        )  # TODO this raises warnings and we should create better error handling
+        try:
+            probability_for_each_t_given_next_state = (
+                probability_for_each_t / probability_for_each_t.max()
+            )
+        except:
+            pass  # TODO this raises warnings and we should create better error handling
 
         # take the first event time whose probability is less than or equal to eps
         # if we drew a very small eps, use the minimum observed time

@@ -53,3 +53,7 @@ def test_paths_to_timestep_matrix():
     max_timestep = 5
     timestep_matrix = paths_to_timestep_matrix(test_paths, max_timestep)
     np.testing.assert_equal(timestep_matrix, true_timestep_matrix)
+
+    get_state_timestep_probs(timestep_matrix)
+
+    prob_visited_state(paths=test_paths, state=2)

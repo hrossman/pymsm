@@ -34,6 +34,7 @@ def test_rotterdam():
         max_transitions=2,
         n_random_samples=N_SAMPLES,
         print_paths=True,
+        n_jobs=None,
     )
 
 

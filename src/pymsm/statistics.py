@@ -149,7 +149,3 @@ def get_state_timestep_probs(timestep_matrix: np.ndarray) -> Dict:
         state_timestep_probs[state] = probs
 
     return state_timestep_probs
-
-
-if __name__ == "__main__":
-    pass

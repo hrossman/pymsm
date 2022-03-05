@@ -296,8 +296,6 @@ class MultiStateModel:
         assert n_random_samples > 0
         assert isinstance(max_transitions, int)
         assert max_transitions > 0
-        assert isinstance(n_jobs, int)
-        assert n_jobs >= -1
         assert isinstance(print_paths, bool)
 
     def run_monte_carlo_simulation(

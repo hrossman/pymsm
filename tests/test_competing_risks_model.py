@@ -100,8 +100,3 @@ def test_all():
     test_assert_valid_dataset(crm=crm)
     test_break_ties_by_adding_epsilon(crm=crm)
     test_fit_event_specific_model(df=data, crm=None)
-
-
-if __name__ == "__main__":
-    data = create_test_data(N=100)
-    test_all()

@@ -1,7 +1,3 @@
-import numpy as np
-import pandas as pd
-
-
 def test_msm_sim():
     # Load Rotterdam data and fit a model
     from pymsm.datasets import prep_rotterdam
@@ -55,7 +51,3 @@ def test_msm_sim():
         print_paths=True,
         n_jobs=1,
     )
-
-
-if __name__ == "__main__":
-    test_msm_sim()

@@ -51,3 +51,52 @@ def test_msm_sim():
         print_paths=True,
         n_jobs=1,
     )
+
+
+def test_sim_on_rossi():
+    # Load rossi dataset
+    from lifelines.datasets import load_rossi
+
+    rossi = load_rossi()
+    from lifelines import CoxPHFitter
+
+    cph = CoxPHFitter()
+    cph.fit(rossi, duration_col="week", event_col="arrest")
+    baseline_hazard = cph.baseline_hazard_["baseline hazard"]
+    coefs = cph.params_
+
+    from pymsm.datasets import load_rossi_competing_risk_data
+
+    rossi_competing_risk_data, covariate_names = load_rossi_competing_risk_data()
+
+    # Define the full model
+    competing_risks_models_list = [
+        {
+            "origin_state": 1,
+            "target_states": [2],
+            "model_defs": [{"coefs": coefs, "baseline_hazard": baseline_hazard}],
+        }
+    ]
+
+    from pymsm.multi_state_competing_risks_model import (
+        default_update_covariates_function,
+    )
+    from pymsm.simulation import MultiStateSimulator
+
+    # Configure the simulator
+    mssim = MultiStateSimulator(
+        competing_risks_models_list,
+        terminal_states=[2],
+        update_covariates_fn=default_update_covariates_function,
+        covariate_names=covariate_names,
+    )
+
+    # Run simulation
+    mc_paths = mssim.run_monte_carlo_simulation(
+        sample_covariates=rossi_competing_risk_data.loc[0, covariate_names],
+        origin_state=1,
+        current_time=0,
+        n_random_samples=5,
+        max_transitions=10,
+        print_paths=True,
+    )

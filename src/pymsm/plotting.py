@@ -5,6 +5,8 @@ from pymsm.multi_state_competing_risks_model import PathObject
 from pymsm.statistics import paths_to_timestep_matrix, get_state_timestep_probs
 from lifelines import AalenJohansenFitter
 from typing import List, Dict
+import base64
+from IPython.display import Image
 
 
 def stackplot(
@@ -198,3 +200,25 @@ def stackplot_state_timesteps_from_paths(
     stackplot_state_timesteps(
         state_timestep_probs, order_top, order_bottom, labels=labels, ax=ax
     )
+
+
+def state_diagram(graph):
+    """Plot a state diagram for a graph. See http://mermaid-js.github.io/mermaid/#/Tutorials?id=jupyter-integration-with-mermaid-js
+
+    Example:
+        state_diagram(
+            '''
+            s1 : (1) Primary surgery
+            s2: (2) Disease recurrence
+            s3: (3) Death
+            s1 --> s2
+            s1 --> s3
+            s2 --> s3
+            ''')
+    """
+    graph = """stateDiagram-v2""" + graph
+    graphbytes = graph.encode("ascii")
+    base64_bytes = base64.b64encode(graphbytes)
+    base64_string = base64_bytes.decode("ascii")
+    img = Image(url="https://mermaid.ink/img/" + base64_string)
+    return img

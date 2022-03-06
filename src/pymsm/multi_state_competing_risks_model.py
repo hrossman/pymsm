@@ -7,6 +7,7 @@ from joblib import Parallel, delayed
 
 from pymsm.competing_risks_model import CompetingRisksModel
 from pymsm.event_specific_fitter import CoxWrapper, EventSpecificFitter
+from pymsm.state_diagram import state_diagram
 
 
 def default_update_covariates_function(
@@ -78,6 +79,8 @@ class MultiStateModel:
         covariate_names (List[str], optional): Optional list of covariate names to be used. Defaults to None.
         event_specific_fitter (EventSpecificFitter, optional): This class holds the model that will be fitter inside the CompetingRisksModel. Defaults to CoxWrapper.
         competing_risk_data_format (bool, optional): A boolean indicating the format of the dataset parmeter, if False - the dataset is assumed to be a list of PathObjects, if True - the dataset is assumed to be a dataframe which is compatible in format for fitting the CompetingRiskModel class. Defaults to False.
+        states_labels (Dict[int, str], optional): A dictionary of short state labels. Defaults to None.
+        states_labels_long (Dict[int, str], optional): A dictionary of state labels in long verbose format. Defaults to None.
 
     Attributes:
         state_specific_models (Dict[int, CompetingRisksModel]): A dictionary of CompetingRisksModel objects, one for each state. Available after running the "fit" function.
@@ -97,6 +100,7 @@ class MultiStateModel:
         covariate_names: List[str] = None,
         event_specific_fitter: EventSpecificFitter = CoxWrapper,
         competing_risk_data_format: bool = False,
+        state_labels: Dict[int, str] = None,
     ):
         self.dataset = dataset
         self.terminal_states = terminal_states
@@ -108,6 +112,8 @@ class MultiStateModel:
         self._samples_have_weights: bool = False
         self._competing_risk_data_format = competing_risk_data_format
         self._event_specific_fitter = event_specific_fitter
+        self.state_labels = state_labels
+        self.transition_table: DataFrame = None
 
         if not self._competing_risk_data_format:
             self._assert_valid_input()
@@ -135,7 +141,7 @@ class MultiStateModel:
 
     def _assert_valid_input(self) -> None:
         """Checks that the dataset is valid for running the multi state competing risk model"""
-        # Check the number os time is either equal or one less than the number of states
+        # Check the number of times is either equal or one less than the number of states
         for obj in self.dataset:
             n_states = len(obj.states)
             n_times = len(obj.time_at_each_state)
@@ -247,7 +253,54 @@ class MultiStateModel:
         self.competing_risk_dataset["target_state"] = self.competing_risk_dataset[
             "target_state"
         ].astype(int)
+
+        # Create default state_labels if None provided
+        if self.state_labels is None:
+            unique_states = pd.unique(
+                self.competing_risk_dataset[
+                    ["origin_state", "target_state"]
+                ].values.ravel("K")
+            )  # find unique possible states
+            unique_states.sort()  # sort
+            unique_states = unique_states[unique_states > 0]  # drop censored
+            self.state_labels = dict(
+                zip(unique_states, [str(s) for s in unique_states])
+            )
+
         return self.competing_risk_dataset
+
+    def prep_transition_table(self):
+        """This function creates a transition matrix from the dataset"""
+        if self.competing_risk_dataset is None:
+            self._prepare_dataset_for_competing_risks_fit()
+        # Create transition matrix
+        self.transition_matrix = pd.crosstab(
+            self.competing_risk_dataset["origin_state"],
+            self.competing_risk_dataset["target_state"],
+        )
+        # Rename rows and columns and get a transition table
+        self.transition_table = self.transition_matrix.copy()
+        rename_dict = self.state_labels.copy()
+        rename_dict[0] = "Censored"
+        self.transition_table.rename(columns=rename_dict, inplace=True)
+        self.transition_table.rename(index=rename_dict, inplace=True)
+        return self.transition_table
+
+    def plot_state_diagram(self):
+        if self.transition_table is None:
+            self.prep_transition_table()
+        graph = """\n"""
+        for s, state_label in self.state_labels.items():
+            graph += f"""s{s} : ({s}) {state_label}\n"""
+        for origin_state, row in self.transition_matrix.iterrows():
+            for target_state in row.index:
+                if target_state == 0:  # Censored transition
+                    continue
+                if row[target_state] == 0:  # Empty transition
+                    continue
+                graph += f"""s{origin_state} --> s{target_state}\n"""
+        graph += """\n"""
+        return state_diagram(graph)
 
     def _fit_state_specific_model(
         self, state: int, verbose: int = 1

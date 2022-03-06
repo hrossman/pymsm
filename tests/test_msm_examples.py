@@ -9,19 +9,16 @@ def test_rotterdam():
     from pymsm.datasets import prep_rotterdam
 
     dataset, states_labels = prep_rotterdam()
-
-    # Define terminal states
-    terminal_states = [3]
-
     # Init MultistateModel
-    from pymsm.multi_state_competing_risks_model import (
-        MultiStateModel,
-        default_update_covariates_function,
-    )
+    from pymsm.multi_state_competing_risks_model import MultiStateModel
 
     multi_state_model = MultiStateModel(
-        dataset, terminal_states, default_update_covariates_function
+        dataset,
+        terminal_states=[3],
+        state_labels={1: "Primary surgery", 2: "Disease recurrence", 3: "Death"},
     )
+    # Plot state diagram
+    multi_state_model.plot_state_diagram()
 
     # Fit to data
     multi_state_model.fit()

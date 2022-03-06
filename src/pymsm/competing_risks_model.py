@@ -70,7 +70,7 @@ class CompetingRisksModel:
         """Checks if a dataframe is valid for fitting a competing risks model
 
         Args:
-            df (pd.DataFrame): A pandas DataFrame contaning all relevant columns, must have duration and event columns. Optional to have clester and weight columns. All other columns other than these 4 will be treated as covariate columns.
+            df (pd.DataFrame): A pandas DataFrame contaning all relevant columns, must have duration and event columns. Optional to have cluster and weight columns. All other columns other than these 4 will be treated as covariate columns.
             duration_col (str, optional): the name of the column in DataFrame that contains the subjects lifetimes, defaults to "T". Defaults to None.
             event_col (str, optional): the name of the column in DataFrame that contains the subjects death observation, defaults to "E". Defaults to None.
             cluster_col (str, optional): specifies what column has unique identifiers for clustering covariances. Using this forces the sandwich estimator (robust variance estimator) to be used, defaults to None. Defaults to None.
@@ -108,7 +108,7 @@ class CompetingRisksModel:
     def break_ties_by_adding_epsilon(
         t: np.ndarray, epsilon_min: float = 0.0, epsilon_max: float = 0.0001
     ) -> np.ndarray:
-        """Breaks ties in event times by adding a samll random number
+        """Breaks ties in event times by adding a small random number
 
         Parameters
         ----------
@@ -161,7 +161,7 @@ class CompetingRisksModel:
         event_of_interest : int
             The event which is to be fitted
         df : pd.DataFrame
-            A pandas DataFrame contaning all relevant columns, must have duration and event columns. Optional to have clester and weight columns. All other columns other than these 4 will be treated as covariate columns.
+            A pandas DataFrame contaning all relevant columns, must have duration and event columns. Optional to have cluster and weight columns. All other columns other than these 4 will be treated as covariate columns.
         duration_col : str, optional
             the name of the column in DataFrame that contains the subjects lifetimes, defaults to "T", by default None
         event_col : str, optional

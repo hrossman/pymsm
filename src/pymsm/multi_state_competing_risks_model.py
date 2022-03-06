@@ -114,7 +114,9 @@ class MultiStateModel:
         self.state_labels = state_labels
         self.transition_table: DataFrame = None
 
-        if not self._competing_risk_data_format:
+        if self._competing_risk_data_format:
+            self.competing_risk_dataset = dataset
+        else:
             self._assert_valid_input()
 
     def fit(self, verbose: int = 1) -> None:

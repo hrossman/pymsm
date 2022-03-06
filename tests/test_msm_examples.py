@@ -39,7 +39,7 @@ def test_ebmt():
     # load and prep data
     from pymsm.datasets import prep_ebmt_long
 
-    competing_risk_dataset, covariate_cols, states_labels = prep_ebmt_long()
+    competing_risk_dataset, covariate_cols, state_labels = prep_ebmt_long()
 
     # Init
     from pymsm.multi_state_competing_risks_model import (
@@ -49,10 +49,11 @@ def test_ebmt():
 
     terminal_states = [5, 6]
     multi_state_model = MultiStateModel(
-        competing_risk_dataset,
-        terminal_states,
-        default_update_covariates_function,
-        covariate_cols,
+        dataset=competing_risk_dataset,
+        terminal_states=terminal_states,
+        update_covariates_fn=default_update_covariates_function,
+        covariate_names=covariate_cols,
+        state_labels=state_labels,
         competing_risk_data_format=True,
     )
 
@@ -72,27 +73,21 @@ def test_ebmt():
 
 def test_covid_hosp():
     # Load and prep data
-    from pymsm.datasets import prep_covid_hosp_data
+    from pymsm.datasets import prep_covid_hosp_data, plot_covid_hosp
 
-    covid_dataset = prep_covid_hosp_data()
+    dataset, state_labels = prep_covid_hosp_data()
     covariate_cols = ["is_male", "age", "was_severe"]
-    states_labels_long = {
-        0: "Censored",
-        1: "Discharged\Recovered",
-        2: "Mild or Moderate",
-        3: "Severe",
-        4: "Deceased",
-    }
-    states_labels = {0: "C", 1: "R", 2: "M", 3: "S", 4: "D"}
+    covariate_cols = ["is_male", "age", "was_severe"]
     terminal_states = [4]
+    state_labels_short = {0: "C", 1: "R", 2: "M", 3: "S", 4: "D"}
 
     # print single path
-    covid_dataset[567].print_path()
+    dataset[567].print_path()
 
     # print path frequencies
     from pymsm.statistics import get_path_frequencies
 
-    path_freqs = get_path_frequencies(covid_dataset, states_labels)
+    path_freqs = get_path_frequencies(dataset, state_labels_short)
     print(path_freqs)
 
     # define time-varying covariates
@@ -106,18 +101,19 @@ def test_covid_hosp():
         covariates = covariates_entering_origin_state.copy()
         if origin_state == 3:
             covariates["was_severe"] = 1
-
         return covariates
 
     # Fit MSM
     from pymsm.multi_state_competing_risks_model import MultiStateModel
 
     multi_state_model = MultiStateModel(
-        covid_dataset,
-        terminal_states,
-        covid_update_covariates_function,
-        covariate_cols,
+        dataset=dataset,
+        terminal_states=terminal_states,
+        update_covariates_fn=covid_update_covariates_function,
+        covariate_names=covariate_cols,
+        state_labels=state_labels,
     )
+
     multi_state_model.fit()
 
     # Run MC for a sample single patient
@@ -135,7 +131,7 @@ def test_covid_hosp():
     from pymsm.statistics import prob_visited_states, stats_total_time_at_states
 
     # Probability of visiting any of the states
-    for state, state_label in states_labels_long.items():
+    for state, state_label in state_labels.items():
         if state == 0:
             continue
         print(
@@ -143,7 +139,7 @@ def test_covid_hosp():
         )
     # Stats for times at states
     dfs = []
-    for state, state_label in states_labels_long.items():
+    for state, state_label in state_labels.items():
         if state == 0 or state in terminal_states:
             continue
         dfs.append(
@@ -154,7 +150,7 @@ def test_covid_hosp():
         )
     print(pd.concat(dfs).round(3).T)
 
-    path_freqs = get_path_frequencies(mc_paths, states_labels)
+    path_freqs = get_path_frequencies(mc_paths, state_labels_short)
     print(path_freqs)
 
     from pymsm.statistics import path_total_time_at_states
@@ -162,9 +158,3 @@ def test_covid_hosp():
     los = np.array(
         [path_total_time_at_states(path, states=[2, 3]) for path in mc_paths]
     )
-
-
-if __name__ == "__main__":
-    test_rotterdam()
-    test_ebmt()
-    test_covid_hosp()

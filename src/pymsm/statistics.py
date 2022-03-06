@@ -5,15 +5,18 @@ from typing import List, Dict
 from collections import Counter
 
 
-def get_path_frequencies(paths: List[PathObject], states_labels: Dict = None):
+def get_path_frequencies(paths: List[PathObject], state_labels: Dict = None):
     """Get a dictionary of path frequencies for a given list of paths"""
+
     states_list = []
     for path in paths:
         states_list.append(path.states)
 
     # Change from numbers to labels
-    if states_labels is not None:
-        states_list = [[states_labels[y] for y in x] for x in states_list]
+    if state_labels is not None:
+        states_list = [
+            [state_labels.get(y, "Censored") for y in x] for x in states_list
+        ]
 
     counter = Counter(tuple(x) for x in states_list)
     path_freqs = {

@@ -80,7 +80,6 @@ class MultiStateModel:
         event_specific_fitter (EventSpecificFitter, optional): This class holds the model that will be fitter inside the CompetingRisksModel. Defaults to CoxWrapper.
         competing_risk_data_format (bool, optional): A boolean indicating the format of the dataset parmeter, if False - the dataset is assumed to be a list of PathObjects, if True - the dataset is assumed to be a dataframe which is compatible in format for fitting the CompetingRiskModel class. Defaults to False.
         states_labels (Dict[int, str], optional): A dictionary of short state labels. Defaults to None.
-        states_labels_long (Dict[int, str], optional): A dictionary of state labels in long verbose format. Defaults to None.
 
     Attributes:
         state_specific_models (Dict[int, CompetingRisksModel]): A dictionary of CompetingRisksModel objects, one for each state. Available after running the "fit" function.
@@ -138,6 +137,8 @@ class MultiStateModel:
 
             model = self._fit_state_specific_model(state, verbose)
             self.state_specific_models[state] = model
+        if verbose >= 1:
+            self.plot_state_diagram()
 
     def _assert_valid_input(self) -> None:
         """Checks that the dataset is valid for running the multi state competing risk model"""
@@ -298,7 +299,10 @@ class MultiStateModel:
                     continue
                 if row[target_state] == 0:  # Empty transition
                     continue
-                graph += f"""s{origin_state} --> s{target_state}\n"""
+                num_transitions = row[target_state]
+                graph += (
+                    f"""s{origin_state} --> s{target_state}: {num_transitions} \n"""
+                )
         graph += """\n"""
         return state_diagram(graph)
 

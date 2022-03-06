@@ -56,6 +56,7 @@ class MultiStateSimulator(MultiStateModel):
         terminal_states (List[int]): A list of states that are terminal states.
         update_covariates_fn (Callable[ [Series, int, int, float, float], Series ], optional): A function that takes in a covariate dataframe and returns a covariate dataframe.. Defaults to default_update_covariates_function.
         covariate_names (List[str], optional): A list of covariate names.. Defaults to None.
+        states_labels (Dict[int, str], optional): A dictionary of short state labels. Defaults to None.
 
     Note:
         The update_covariates_fn could be any function you choose to write, but it needs to have the following parameter
@@ -72,6 +73,7 @@ class MultiStateSimulator(MultiStateModel):
             [Series, int, int, float, float], Series
         ] = default_update_covariates_function,
         covariate_names: List[str] = None,
+        state_labels: Dict[int, str] = None,
     ):
         # Configure the MSM, dataset is not relevant
         super().__init__(
@@ -81,6 +83,7 @@ class MultiStateSimulator(MultiStateModel):
             covariate_names=covariate_names,
             event_specific_fitter=ManualCoxWrapper,
             competing_risk_data_format=True,
+            state_labels=state_labels,
         )
 
         # Iterate and configure each competing risks model

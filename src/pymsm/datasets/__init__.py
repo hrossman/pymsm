@@ -121,7 +121,7 @@ def prep_ebmt_long():
         [competing_risk_dataset, data[covariate_cols]], axis=1
     )
 
-    states_labels = {
+    state_labels = {
         1: "Transplant",
         2: "Rec",
         3: "AE",
@@ -130,7 +130,7 @@ def prep_ebmt_long():
         6: "Death",
     }
 
-    return competing_risk_dataset, covariate_cols, states_labels
+    return competing_risk_dataset, covariate_cols, state_labels
 
 
 def prep_rotterdam():

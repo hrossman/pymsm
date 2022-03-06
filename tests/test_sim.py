@@ -2,7 +2,7 @@ def test_msm_sim():
     # Load Rotterdam data and fit a model
     from pymsm.datasets import prep_rotterdam
 
-    dataset, states_labels = prep_rotterdam()
+    dataset, state_labels = prep_rotterdam()
     terminal_states = [3]
     from pymsm.multi_state_competing_risks_model import (
         MultiStateModel,

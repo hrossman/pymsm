@@ -8,7 +8,3 @@ def test_loaders():
     data = load_ebmt(data_format="long")
     data = load_rotterdam()
     data = load_aidssi()
-
-
-if __name__ == "__main__":
-    test_loaders()

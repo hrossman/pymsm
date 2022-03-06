@@ -160,8 +160,8 @@ def prep_rotterdam():
             path.time_at_each_state = [row["rtime"], death_time]
         dataset.append(path)
 
-    states_labels = {1: "Primary surgery", 2: "Disease recurrence", 3: "Death"}
-    return dataset, states_labels
+    state_labels = {1: "Primary surgery", 2: "Disease recurrence", 3: "Death"}
+    return dataset, state_labels
 
 
 def prep_covid_hosp_data():
@@ -272,7 +272,12 @@ def prep_covid_hosp_data():
 
     # rename states
     states_mapper = {0: 0, 16: 1, 23: 2, 4: 3, 5: 4}
-    states_labels = {0: "Censored", 1: "OOHQ", 2: "M&M", 3: "Severe", 4: "Deceased"}
+    state_labels = {
+        1: "Discharged\Recovered",
+        2: "Mild or Moderate",
+        3: "Severe",
+        4: "Deceased",
+    }
     for col in state_cols:
         df[col] = df[col].map(states_mapper).astype(int)
 
@@ -282,4 +287,21 @@ def prep_covid_hosp_data():
             continue
         else:
             dataset.append(parse_row(row, verbose=False))
-    return dataset
+    return dataset, state_labels
+
+
+def quick_plot_stat_diagram(dataset, state_labels, terminal_states):
+    from pymsm.multi_state_competing_risks_model import MultiStateModel
+
+    multi_state_model = MultiStateModel(
+        dataset, terminal_states=terminal_states, state_labels=state_labels
+    )
+    multi_state_model.plot_state_diagram()
+
+
+def plot_rotterdam(dataset, state_labels, terminal_states=[3]):
+    quick_plot_stat_diagram(dataset, state_labels, terminal_states)
+
+
+def plot_covid_hosp(dataset, state_labels, terminal_states=[4]):
+    quick_plot_stat_diagram(dataset, state_labels, terminal_states)

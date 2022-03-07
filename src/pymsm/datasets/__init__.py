@@ -104,11 +104,13 @@ def prep_aidssi(data=None):
     competing_risk_dataset = pd.concat(
         [competing_risk_dataset.drop(cat_cols, axis=1), cat_df], axis=1
     )
+    print(competing_risk_dataset.columns)
 
     rename_cols = {
         "patnr": "sample_id",
         "status": "target_state",
         "time": "time_transition_to_target",
+        "ccr5_WW": "ccr5_WW",
     }
     competing_risk_dataset = competing_risk_dataset[rename_cols.keys()].rename(
         columns=rename_cols
@@ -126,6 +128,7 @@ def prep_aidssi(data=None):
             "origin_state",
             "target_state",
             "time_transition_to_target",
+            "ccr5_WW",
         ]
     ]
 
@@ -331,11 +334,29 @@ def prep_covid_hosp_data():
     return dataset, state_labels
 
 
-def quick_plot_stat_diagram(dataset, state_labels, terminal_states):
+def quick_plot_stat_diagram(
+    dataset, state_labels, terminal_states, competing_risk_data_format=False
+):
     from pymsm.multi_state_competing_risks_model import MultiStateModel
 
     multi_state_model = MultiStateModel(
-        dataset, terminal_states=terminal_states, state_labels=state_labels
+        dataset,
+        terminal_states=terminal_states,
+        state_labels=state_labels,
+        competing_risk_data_format=competing_risk_data_format,
+    )
+    multi_state_model.plot_state_diagram()
+
+
+def plot_aidssi(dataset, state_labels, terminal_states=[2, 3]):
+    from pymsm.multi_state_competing_risks_model import MultiStateModel
+
+    multi_state_model = MultiStateModel(
+        dataset,
+        terminal_states=terminal_states,
+        state_labels=state_labels,
+        competing_risk_data_format=True,
+        covariate_names=["ccr5_WW"],
     )
     multi_state_model.plot_state_diagram()
 

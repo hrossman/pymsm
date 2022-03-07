@@ -5,8 +5,11 @@
 [![DOI](https://zenodo.org/badge/443028256.svg)](https://zenodo.org/badge/latestdoi/443028256)
 
 ![PyMSM](docs/pymsm_icon.svg)  
-Multistate competing risk models in Python.  
+
+Multistate competing risk models in Python  
+  
 [Read the Docs](https://hrossman.github.io/pymsm/)  
+  
 [Hagai Rossman](https://hrossman.github.io/), [Ayya Keshet](https://github.com/ayya-keshet), [Malka Gorfine](https://www.tau.ac.il/~gorfinem/) 2022
 
 PyMSM is a Python implementation of Competing Risks and Multistate models for survival data.

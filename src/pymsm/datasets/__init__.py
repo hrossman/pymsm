@@ -93,6 +93,47 @@ def load_aidssi(**kwargs) -> pd.DataFrame:
     return data
 
 
+def prep_aidssi(data=None):
+    if data is None:
+        data = load_aidssi()
+    competing_risk_dataset = data.dropna().reset_index(drop=True).copy()
+    # Categorical columns
+    cat_cols = ["ccr5"]
+    cat_df = get_categorical_columns(competing_risk_dataset, cat_cols)
+    covariate_cols = cat_df.columns
+    competing_risk_dataset = pd.concat(
+        [competing_risk_dataset.drop(cat_cols, axis=1), cat_df], axis=1
+    )
+
+    rename_cols = {
+        "patnr": "sample_id",
+        "status": "target_state",
+        "time": "time_transition_to_target",
+    }
+    competing_risk_dataset = competing_risk_dataset[rename_cols.keys()].rename(
+        columns=rename_cols
+    )
+    competing_risk_dataset["target_state"] = competing_risk_dataset[
+        "target_state"
+    ].replace({0: 0, 1: 2, 2: 3})
+    competing_risk_dataset["time_entry_to_origin"] = 0
+    competing_risk_dataset["origin_state"] = 1
+
+    competing_risk_dataset = competing_risk_dataset[
+        [
+            "sample_id",
+            "time_entry_to_origin",
+            "origin_state",
+            "target_state",
+            "time_transition_to_target",
+        ]
+    ]
+
+    state_labels = {1: "Event-free", 2: "AIDS", 3: "SI"}
+
+    return competing_risk_dataset, covariate_cols, state_labels
+
+
 def prep_ebmt_long():
     longdata = load_ebmt()
     longdata.loc[longdata["status"] == 0, "to"] = 0  # take care of right censoring

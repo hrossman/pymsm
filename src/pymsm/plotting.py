@@ -7,24 +7,48 @@ from lifelines import AalenJohansenFitter
 from typing import List, Dict
 
 
-def stackplot(
+def competingrisks_stackplot(
     data: pd.DataFrame,
-    origin_state: int,
     duration_col: str,
     event_col: str,
-    order_top: List = [],
-    order_bottom: List = [],
+    order_top: List = None,
+    order_bottom: List = None,
     times: np.ndarray = None,
-    labels: Dict = None,
+    state_labels: Dict = None,
     fontsize: int = 18,
     ax=None,
 ):
+    """Plot a stackplot for a competing risks dataset.
+
+    Args:
+        data (pd.DataFrame): dataset to plot
+        duration_col (str): duration column name
+        event_col (str): event column name
+        order_top (List, optional): Order of the states to plot from the top. Defaults to None.
+        order_bottom (List, optional): Order of the states to plot from the bottom. Defaults to None.
+        times (np.ndarray, optional): manual times for x axis. Defaults to None.
+        state_labels (Dict, optional): _description_. Defaults to None.
+        fontsize (int, optional): _description_. Defaults to 18.
+        ax (_type_, optional): Matplotlib ax to plot to. Defaults to None.
+
+    Returns:
+        _type_: _description_
+    """
     if times is None:
         times = np.sort(data[duration_col].unique())
 
     failure_types = np.sort(data[event_col].unique())
-    if labels is None:
-        labels = dict(zip(failure_types, [str(f) for f in failure_types]))
+    failure_types = failure_types[failure_types != 0]
+
+    if (order_top is None) & (order_bottom is None):
+        order_bottom = failure_types
+    if order_top is None:
+        order_top = []
+    if order_bottom is None:
+        order_bottom = []
+
+    if state_labels is None:
+        state_labels = dict(zip(failure_types, [str(f) for f in failure_types]))
 
     if ax is None:
         fig, ax = plt.subplots(1, 1)
@@ -32,7 +56,7 @@ def stackplot(
         ax.set_xlim(0, times[-1])
         ax.set_ylabel("Probability", fontsize=fontsize)
         ax.set_xlabel("t", fontsize=fontsize)
-        ax.set_title(f"Starting from {labels[origin_state]}", fontsize=fontsize + 4)
+        # ax.set_title(f"Starting from {state_labels[origin_state]}", fontsize=fontsize + 4)
 
     cumulative_densities = dict(zip(failure_types, ([0] * len(failure_types))))
     for failure_type in failure_types:
@@ -51,7 +75,7 @@ def stackplot(
             ax.text(
                 x=times[-1] * 1.02,
                 y=(cif[-1] + (1 - cif[-1]) / 2),
-                s=labels[failure_type],
+                s=state_labels[failure_type],
                 fontsize=fontsize,
                 color=color,
             )
@@ -61,7 +85,7 @@ def stackplot(
             ax.text(
                 x=times[-1] * 1.02,
                 y=(cif[-1] + (cifs_top[i - 1][-1] - cif[-1]) / 2),
-                s=labels[failure_type],
+                s=state_labels[failure_type],
                 fontsize=fontsize,
                 color=color,
             )
@@ -77,7 +101,7 @@ def stackplot(
             ax.text(
                 x=times[-1] * 1.02,
                 y=((cif[-1]) / 2),
-                s=labels[failure_type],
+                s=state_labels[failure_type],
                 fontsize=fontsize,
                 color=color,
             )
@@ -88,18 +112,19 @@ def stackplot(
                 cifs_bottom[i - 1],
                 cif,
                 alpha=0.8,
-                label=labels[failure_type],
+                label=state_labels[failure_type],
                 color=color,
             )
             ax.text(
                 x=times[-1] * 1.02,
                 y=(cif[-1] + (cifs_bottom[i - 1][-1] - cif[-1]) / 2),
-                s=labels[failure_type],
+                s=state_labels[failure_type],
                 fontsize=fontsize,
                 color=color,
             )
         ax.plot(times, cif, color="k")
         cifs_bottom.append(cif)
+    return ax
 
 
 def stackplot_state_timesteps(

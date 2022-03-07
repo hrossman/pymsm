@@ -100,11 +100,10 @@ def prep_aidssi(data=None):
     # Categorical columns
     cat_cols = ["ccr5"]
     cat_df = get_categorical_columns(competing_risk_dataset, cat_cols)
-    covariate_cols = cat_df.columns
+    covariate_cols = cat_df.columns.values
     competing_risk_dataset = pd.concat(
         [competing_risk_dataset.drop(cat_cols, axis=1), cat_df], axis=1
     )
-    print(competing_risk_dataset.columns)
 
     rename_cols = {
         "patnr": "sample_id",
@@ -363,6 +362,21 @@ def plot_aidssi(dataset, state_labels, terminal_states=[2, 3]):
 
 def plot_rotterdam(dataset, state_labels, terminal_states=[3]):
     quick_plot_stat_diagram(dataset, state_labels, terminal_states)
+
+
+def plot_ebmt(
+    competing_risk_dataset, state_labels, covariate_cols, terminal_states=[5, 6]
+):
+    from pymsm.multi_state_competing_risks_model import MultiStateModel
+
+    multi_state_model = MultiStateModel(
+        dataset=competing_risk_dataset,
+        terminal_states=terminal_states,
+        state_labels=state_labels,
+        competing_risk_data_format=True,
+        covariate_names=covariate_cols,
+    )
+    multi_state_model.plot_state_diagram()
 
 
 def plot_covid_hosp(dataset, state_labels, terminal_states=[4]):

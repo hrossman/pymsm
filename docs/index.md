@@ -1,5 +1,7 @@
-# PyMSM in a nutshell
-![PyMSM](pymsm_icon.svg)  
+# PyMSM in a nutshell  
+![PyMSM](pymsm_icon.svg#only-light)
+![PyMSM](pymsm_icon_dark.svg#only-dark)
+
 [Hagai Rossman](https://hrossman.github.io/), [Ayya Keshet](https://github.com/ayya-keshet), [Malka Gorfine](https://www.tau.ac.il/~gorfinem/) 2022
 
 [![DOI](https://zenodo.org/badge/443028256.svg)](https://zenodo.org/badge/latestdoi/443028256)

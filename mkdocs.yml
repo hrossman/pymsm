@@ -1,11 +1,9 @@
-# Lots of this config is taken from: https://docs.kidger.site/diffrax/.
-
 theme:
     name: material
     features:
-        - navigation.sections  # Sections are included in the navigation on the left.
-        - toc.integrate  # Table of contents is integrated on the left; does not appear separately on the right.
-        - header.autohide  # header disappears as you scroll
+        # - navigation.sections  # Sections are included in the navigation on the left.
+        # - toc.integrate  # Table of contents is integrated on the left; does not appear separately on the right.
+        # - header.autohide  # header disappears as you scroll
     palette:
         - scheme: default
           primary: white
@@ -41,7 +39,6 @@ markdown_extensions:
     - pymdownx.inlinehilite
     - pymdownx.arithmatex:  # Render LaTeX via MathJax
         generic: true
-    - pymdownx.superfences  # Seems to enable syntax highlighting when used with the Material theme.
     - pymdownx.details  # Allowing hidden expandable regions denoted by ???
     - pymdownx.snippets:  # Include one Markdown file into another
         base_path: docs
@@ -49,7 +46,14 @@ markdown_extensions:
     - toc:
         permalink: "¤"  # Adds a clickable permalink to each section heading
         toc_depth: 4  # Prevents h5, h6 from showing up in the TOC.
+    - pymdownx.superfences:
+        custom_fences:
+          - name: mermaid
+            class: mermaid
+            format: !!python/name:pymdownx.superfences.fence_code_format
 
+    
+    
 extra_javascript:
   - javascripts/mathjax.js
   - https://polyfill.io/v3/polyfill.min.js?features=es6
@@ -58,6 +62,7 @@ extra_javascript:
 
 nav:
     - 'index.md'
+    - 'methods.md'
     - Usage:
       - Datasets.ipynb
       - 'custom_fitters.md'
@@ -66,13 +71,11 @@ nav:
       - Rotterdam_example.ipynb
       - COVID_hospitalization_example.ipynb
       - AIDSI_example.ipynb
-      - EBMT_example.ipynb
+      - EBMT_example.ipynb     
     - API:
       - 'api/multistate_model.md'
       - 'api/multistate_simulator.md'
       - 'api/pathobject.md'
-    - Further details:
-      - 'methods.md'
 
 plugins:
   - mknotebooks

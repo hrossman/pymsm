@@ -80,6 +80,7 @@ class MultiStateModel:
         event_specific_fitter (EventSpecificFitter, optional): This class holds the model that will be fitter inside the CompetingRisksModel. Defaults to CoxWrapper.
         competing_risk_data_format (bool, optional): A boolean indicating the format of the dataset parmeter, if False - the dataset is assumed to be a list of PathObjects, if True - the dataset is assumed to be a dataframe which is compatible in format for fitting the CompetingRiskModel class. Defaults to False.
         states_labels (Dict[int, str], optional): A dictionary of short state labels. Defaults to None.
+        trim_transitions_threshold (int): A threshold of the minimal number of transitions needed in the data to build a tranisition model. For transitions with less this number, no moedl will be built and data will be discarded. Defaults to 0.
 
     Attributes:
         state_specific_models (Dict[int, CompetingRisksModel]): A dictionary of CompetingRisksModel objects, one for each state. Available after running the "fit" function.
@@ -100,6 +101,7 @@ class MultiStateModel:
         event_specific_fitter: EventSpecificFitter = CoxWrapper,
         competing_risk_data_format: bool = False,
         state_labels: Dict[int, str] = None,
+        trim_transitions_threshold: int = 0,
     ):
         self.dataset = dataset
         self.terminal_states = terminal_states
@@ -112,10 +114,14 @@ class MultiStateModel:
         self._competing_risk_data_format = competing_risk_data_format
         self._event_specific_fitter = event_specific_fitter
         self.state_labels = state_labels
+        self.trim_transitions_threshold = trim_transitions_threshold
+        self.transition_matrix: DataFrame = None
         self.transition_table: DataFrame = None
 
         if self._competing_risk_data_format:
             self.competing_risk_dataset = dataset
+            if self.trim_transitions_threshold > 0:
+                self._trim_transitions()
         else:
             self._assert_valid_input()
 
@@ -270,6 +276,10 @@ class MultiStateModel:
                 zip(unique_states, [str(s) for s in unique_states])
             )
 
+        # trim transitions if needed
+        if self.trim_transitions_threshold > 0:
+            self._trim_transitions()
+
         return self.competing_risk_dataset
 
     def prep_transition_table(self):
@@ -289,7 +299,35 @@ class MultiStateModel:
         self.transition_table.rename(index=rename_dict, inplace=True)
         return self.transition_table
 
+    def _trim_transitions(self) -> None:
+        """For transitions with less this trim_transitions_thresholddiscard data in competing_risk_dataset"""
+        # copy orignal dataset for any future use
+        self._original_competing_risk_dataset = self.competing_risk_dataset.copy()
+        if self.transition_matrix is None:
+            self.prep_transition_table()
+        # generate a list of tuples of transitions with less than trim_transitions_threshold
+        i, j = np.where(self.transition_matrix < self.trim_transitions_threshold)
+        invalid_transitions = list(
+            zip(
+                self.transition_matrix.index[i].values,
+                self.transition_matrix.columns[j].values,
+            )
+        )
+        # discard these tranisitons from competing risk dataset
+        for origin_state, target_state in invalid_transitions:
+            if origin_state == target_state:
+                continue
+            self.competing_risk_dataset = self.competing_risk_dataset[
+                ~(
+                    (self.competing_risk_dataset["origin_state"] == origin_state)
+                    & (self.competing_risk_dataset["target_state"] == target_state)
+                )
+            ]
+        # Update transition_table
+        self.prep_transition_table()
+
     def plot_state_diagram(self):
+        """This function plots a state diagram for the model"""
         if self.transition_table is None:
             self.prep_transition_table()
         graph = """\n"""

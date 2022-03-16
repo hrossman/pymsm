@@ -63,10 +63,10 @@ extra_javascript:
 
 nav:
     - index.md
-    - methods.md
     - Usage:
       - usage/Preparing_a_dataset.ipynb
       - usage/fitting_a_multistate_model.ipynb
+      - usage/path_sampling.ipynb
       - usage/Datasets.ipynb
       - usage/custom_fitters.md
       - usage/Simulator.md
@@ -79,6 +79,8 @@ nav:
       - api/multistate_model.md
       - api/multistate_simulator.md
       - api/pathobject.md
+    - methods.md
+
 
 plugins:
   - mknotebooks

@@ -34,6 +34,7 @@ edit_uri: ""  # No edit button, as some of our pages are in /docs and some in /e
 strict: false  # Don't allow warnings during the build process
 
 markdown_extensions:
+    - tables
     - pymdownx.highlight:
         anchor_linenums: true
     - pymdownx.inlinehilite
@@ -64,6 +65,8 @@ nav:
     - 'index.md'
     - 'methods.md'
     - Usage:
+      - 'Preparing_a_dataset.md'
+      - 'Fitting_a_multistate_model.md'
       - Datasets.ipynb
       - 'custom_fitters.md'
       - 'Simulator.md'

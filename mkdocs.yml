@@ -62,23 +62,23 @@ extra_javascript:
 
 
 nav:
-    - 'index.md'
-    - 'methods.md'
+    - index.md
+    - methods.md
     - Usage:
-      - 'Preparing_a_dataset.md'
-      - 'Fitting_a_multistate_model.md'
-      - Datasets.ipynb
-      - 'custom_fitters.md'
-      - 'Simulator.md'
+      - usage/Preparing_a_dataset.ipynb
+      - usage/fitting_a_multistate_model.ipynb
+      - usage/Datasets.ipynb
+      - usage/custom_fitters.md
+      - usage/Simulator.md
     - Full examples:
-      - Rotterdam_example.ipynb
-      - COVID_hospitalization_example.ipynb
-      - AIDSI_example.ipynb
-      - EBMT_example.ipynb     
+      - full_examples/Rotterdam_example.ipynb
+      - full_examples/COVID_hospitalization_example.ipynb
+      - full_examples/AIDSI_example.ipynb
+      - full_examples/EBMT_example.ipynb     
     - API:
-      - 'api/multistate_model.md'
-      - 'api/multistate_simulator.md'
-      - 'api/pathobject.md'
+      - api/multistate_model.md
+      - api/multistate_simulator.md
+      - api/pathobject.md
 
 plugins:
   - mknotebooks

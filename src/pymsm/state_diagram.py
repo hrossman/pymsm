@@ -7,7 +7,7 @@ def state_diagram(graph):
 
     Example:
         state_diagram(
-            '''
+            '''stateDiagram-v2
             s1 : (1) Primary surgery
             s2: (2) Disease recurrence
             s3: (3) Death
@@ -16,7 +16,6 @@ def state_diagram(graph):
             s2 --> s3
             ''')
     """
-    graph = """stateDiagram-v2""" + graph
     graphbytes = graph.encode("ascii")
     base64_bytes = base64.b64encode(graphbytes)
     base64_string = base64_bytes.decode("ascii")

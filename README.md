@@ -1,7 +1,7 @@
 [![pypi version](https://img.shields.io/pypi/v/pymsm)](https://pypi.org/project/pymsm/)
-[![Tests](https://github.com/hrossman/pymsm/workflows/Tests/badge.svg)](https://github.com/hrossman/pymsm/actions?workflow=Tests)
+[![Tests](https://github.com/hrossman/pymsm/workflows/Test/badge.svg)](https://github.com/hrossman/pymsm/actions?workflow=Test)
 [![codecov](https://codecov.io/gh/hrossman/pymsm/branch/main/graph/badge.svg?token=FG434UHSQ2)](https://codecov.io/gh/hrossman/pymsm)
-[![documentation](https://img.shields.io/badge/docs-mkdocs%20material-blue.svg?style=flat)](https://hrossman.github.io/pymsm)
+[![documentation](https://github.com/hrossman/pymsm/workflows/pages-build-deployment/badge.svg)](https://github.com/hrossman/pymsm/actions?workflow=pages-build-deployment)
 [![DOI](https://zenodo.org/badge/443028256.svg)](https://zenodo.org/badge/latestdoi/443028256)
 
 ![PyMSM](https://github.com/hrossman/pymsm/blob/main/docs/pymsm_icon.svg)  

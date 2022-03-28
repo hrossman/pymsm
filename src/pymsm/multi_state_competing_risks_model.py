@@ -117,6 +117,7 @@ class MultiStateModel:
         self.trim_transitions_threshold = trim_transitions_threshold
         self.transition_matrix: DataFrame = None
         self.transition_table: DataFrame = None
+        self.state_diagram_graph_string: str = None
 
         if self._competing_risk_data_format:
             self.competing_risk_dataset = dataset
@@ -300,7 +301,7 @@ class MultiStateModel:
         return self.transition_table
 
     def _trim_transitions(self) -> None:
-        """For transitions with less this trim_transitions_thresholddiscard data in competing_risk_dataset"""
+        """For transitions with less than trim_transitions_threshold - discard data in competing_risk_dataset"""
         # copy orignal dataset for any future use
         self._original_competing_risk_dataset = self.competing_risk_dataset.copy()
         if self.transition_matrix is None:
@@ -326,11 +327,11 @@ class MultiStateModel:
         # Update transition_table
         self.prep_transition_table()
 
-    def plot_state_diagram(self):
-        """This function plots a state diagram for the model"""
+    def extract_state_diagram_string_from_transition_table(self) -> str:
+        """This function extracts a mermaid state diagram string"""
         if self.transition_table is None:
             self.prep_transition_table()
-        graph = """\n"""
+        graph = """stateDiagram-v2\n"""
         for s, state_label in self.state_labels.items():
             graph += f"""s{s} : ({s}) {state_label}\n"""
         for origin_state, row in self.transition_matrix.iterrows():
@@ -344,7 +345,13 @@ class MultiStateModel:
                     f"""s{origin_state} --> s{target_state}: {num_transitions} \n"""
                 )
         graph += """\n"""
-        return state_diagram(graph)
+        self.state_diagram_graph_string = graph
+
+    def plot_state_diagram(self):
+        """This function plots a mermaid state diagram for the model"""
+        if self.state_diagram_graph_string is None:
+            self.extract_state_diagram_string_from_transition_table()
+        return state_diagram(self.state_diagram_graph_string)
 
     def _fit_state_specific_model(
         self, state: int, verbose: int = 1

@@ -5,6 +5,7 @@ from pymsm.multi_state_competing_risks_model import PathObject
 from pymsm.statistics import paths_to_timestep_matrix, get_state_timestep_probs
 from lifelines import AalenJohansenFitter
 from typing import List, Dict
+import warnings
 
 
 def competingrisks_stackplot(
@@ -62,9 +63,11 @@ def competingrisks_stackplot(
     for failure_type in failure_types:
         T = data[duration_col]
         E = data[event_col]
-        ajf = AalenJohansenFitter()
-        ajf.fit(T, E, event_of_interest=failure_type)
-        cumulative_densities[failure_type] = ajf.predict(times, interpolate=True)
+        with warnings.catch_warnings():  # ignore warnings related to AJ Fitter
+            warnings.simplefilter("ignore")
+            ajf = AalenJohansenFitter()
+            ajf.fit(T, E, event_of_interest=failure_type)
+            cumulative_densities[failure_type] = ajf.predict(times, interpolate=True)
 
     cifs_top = []
     for i, failure_type in enumerate(order_top):

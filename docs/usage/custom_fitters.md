@@ -1,6 +1,6 @@
 ## Custom fitters
 PyMSM allows configuration of custom event-specific-fitters.  
-See EventSpecificFitter class which is an abstract class which specifies the API needed to be manually specified.  
+See EventSpecificFitter class which is an abstract class which specifies the API which needs to be implemented.  
 
 Some custom fitters are available off-the-shelf such as Survival trees [Ishwaran 2008]  
 

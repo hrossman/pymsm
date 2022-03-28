@@ -44,7 +44,7 @@ def extract_competing_risks_models_list_from_msm(
 
 
 class MultiStateSimulator(MultiStateModel):
-    """This class configures a multi-state model simulator from predefined model parts. It inherents from the MultiStateModel class, but instead of being fitted to data, it is configured based on predefined models.
+    """This class configures a multi-state model simulator from predefined model parts. It inherits from the MultiStateModel class, but instead of being fitted to data, it is configured based on predefined models.
 
     Args:
         competing_risks_models_list (List[Dict]): A list of dictionaries, each of which contains the following keys:

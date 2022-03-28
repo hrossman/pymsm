@@ -1,7 +1,7 @@
+![Docs](https://github.com/hrossman/pymsm/actions/workflows/docs.yml/badge.svg)
 [![pypi version](https://img.shields.io/pypi/v/pymsm)](https://pypi.org/project/pymsm/)
 ![Tests](https://github.com/hrossman/pymsm/actions/workflows/tests.yml/badge.svg)
 [![codecov](https://codecov.io/gh/hrossman/pymsm/branch/main/graph/badge.svg?token=FG434UHSQ2)](https://codecov.io/gh/hrossman/pymsm)
-![Docs](https://github.com/hrossman/pymsm/actions/workflows/docs.yml/badge.svg)
 [![DOI](https://zenodo.org/badge/443028256.svg)](https://zenodo.org/badge/latestdoi/443028256)
 
 ![PyMSM](https://github.com/hrossman/pymsm/blob/main/docs/pymsm_icon.svg)  

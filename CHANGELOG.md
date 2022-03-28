@@ -6,7 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- 
+- Better saving and loading
+- multinomial probabilities for starting states when sampling
 
 ### Changed
 - 
@@ -16,12 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.1.7] - 2022-03-28
 ### Added
-- New docs on competing risks stackplots
-- multinomial probabilities for starting states when sampling
+- New docs
 
 ### Changed
 - Better quickstart
-- Better saving and loading
 
 ### Removed
 - 

@@ -68,6 +68,8 @@ nav:
       - usage/fitting_a_multistate_model.ipynb
       - usage/path_sampling.ipynb
       - usage/Datasets.ipynb
+      - usage/competing_risks_stackplot.ipynb
+      - usage/examining_a_model.ipynb
       - usage/custom_fitters.md
       - usage/Simulator.md
     - Full examples:

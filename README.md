@@ -4,7 +4,7 @@
 [![documentation](https://img.shields.io/badge/docs-mkdocs%20material-blue.svg?style=flat)](https://hrossman.github.io/pymsm)
 [![DOI](https://zenodo.org/badge/443028256.svg)](https://zenodo.org/badge/latestdoi/443028256)
 
-![PyMSM](docs/pymsm_icon.svg)  
+![PyMSM](https://github.com/hrossman/pymsm/blob/main/docs/pymsm_icon.svg)  
 
 Multistate competing risk models in Python  
   

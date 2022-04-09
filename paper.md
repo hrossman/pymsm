@@ -67,8 +67,8 @@ Using a pre-loaded or a pre-defined model, {PyMSM} provides an API to generate s
 In this section we give an overview of the models and methods underlying the statistics and computations performed in `PyMSM`.
 
 
-\subsection{Introduction}\label{Sec1}
-\texttt The description of the content of \texttt{PyMSM} would be easier to digest under a certain setting.  Thus, to set the stage, we adopt the multi-state model of Roimi et al. (2021). Specifically, assume a multi-state model consists of four states $A,B,C,D$ and six possible transitions:
+# ntroduction
+The description of the content of \texttt{PyMSM} would be easier to digest under a certain setting.  Thus, to set the stage, we adopt the multi-state model of [@Roimi:2021]. Specifically, assume a multi-state model consists of four states $A,B,C,D$ and six possible transitions:
  $$
  A \rightarrow B \,\,\,\,\,\,       A \rightarrow C   \,\,\,\,\,\,     A \rightarrow D   \,\,\,\,\,\,    B \rightarrow A \,\,\,\,\,\,    B \rightarrow D \,\,\,\,\,\,   C \rightarrow A \, .
  $$

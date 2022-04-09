@@ -129,6 +129,52 @@ the estimation procedure is straightforward. Specifically, under transition-spec
 - Left truncation which occurs at each transition that is not the origin state of the subject's path. Bias due to left truncation is eliminated by using the well-known risk-set correction (klein2006survival). 
 - Recurrent events which occurs when subjects visit the same state multiple times. In such cases, the robust standard errors account for correlated outcomes within a subject (andersen1982cox). 	
 
+Based on the estimates of the regression coefficients and the cumulative baseline hazard functions all the distribution functions of Section \ref{Sec1} can be estimated by replacing the integrals with sums over the observed failure time, and any unknown parameter is replaced by its estimator. Specifically, let $\tau_{j^*,j}$ be the largest observed event time of transition $j^* \rightarrow j$. Then, 
+$$
+\widehat{\Pr} (J_N=j | J_C=j^*,Z(0)=Z) \\
+=   \sum_{t_m \leq \tau_{j^*,j}} \exp\left( \widehat\beta_{j^*,j}^T Z\right) \widehat\lambda_{0j^*,j}(t_m) \exp \left\{-\sum_{k=1}^{|K_{j^*}|} \widehat\Lambda_{0j^*,k}(t_{m-1})\exp\left( \widehat\beta_{j^*,k}^T Z\right) \right\} \, ,  
+$$
+
+$$
+\widehat{\Pr} (T\leq t| J_N=j', J_C=j^* , Z(0)=Z)\\
+\hspace{0.5cm} = \frac{\sum_{t_m \leq t} \exp\left( \widehat\beta_{j^*,j'}^T Z\right) \widehat\lambda_{0j^*,j'}(t_m) \exp \left\{-\sum_{k=1}^{|K_{j^*}|} \widehat\Lambda_{0j^*,k}(t_{m-1})\exp\left( \widehat\beta_{j^*k}^T Z\right) \right\} }{ \sum_{t_m \leq \tau_{j^*,j'}} \exp\left( \widehat\beta_{j^*,j'}^T Z\right) \widehat\lambda_{0j^*,j'}(t_m) \exp \left\{-\sum_{k=1}^{K_{j^*}} \widehat\Lambda_{0j^*,k}(t_{m-1})\exp\left( \widehat\beta_{j^*,k}^T Z\right) \right\} } \, , 
+$$
+and finally, given a new $\breve{j}$, the estimated probability of staying at state $j'$ less than or equal $t$ time unit is given by
+$$
+\widehat{\Pr} (T\leq t| J_N=\breve{j}, J_C=j' , Z(t')=Z) \\
+\hspace{0.5cm} = \frac{\sum_{t' < t_m \leq t} \exp\left( \widehat\beta_{j',\breve{j}}^T Z\right) \widehat\lambda_{0j',\breve{j}}(t_m) \exp \left\{-\sum_{k=1}^{|K_{j'}|} \widehat\Lambda_{0j',k}(t_{m-1})\exp\left( \widehat\beta_{j',k}^T Z\right) \right\} }{ \sum_{t' < t_m \leq \tau_{j',\breve{j}}} \exp\left( \widehat\beta_{j',\breve{j}}^T Z\right) \widehat\lambda_{0j',\breve{j}}(t_m) \exp \left\{-\sum_{k=1}^{K_{j'}} \widehat\Lambda_{0j',k}(t_{m-1})\exp\left( \widehat\beta_{j',k}^T Z\right) \right\} } \, .
+$$
+
+# Other transition-specific models
+Similarly, the user can define other survival models and estimation procedure, such as accelerated failure time model, random survival forests (ref) etc, for each transition, as explained in section XXXCustomeFitters.
+
+# Prediction - Monte Carlo Simulation
+Based on the multi-state model, we reconstruct the complete distribution of the path for a new observation, given the observed covariates $W$. Based on the reconstructed distribution we estimate
+- The probability of visiting each state.
+- The total length of stay at each state.
+- The total length of stay in the entire system.
+
+The above quantities can be predicted before entering the system and also during the stay at one of the systems' states, while correctly taking into account the accumulated time already spent in the system and $Z(\cdot)$.
+
+We reconstruct the distribution of the path for a new observation by Monte-Carlo simulation. Assume the starting state (provided by the user) is $j^*$. Then, the next state $J_N$ is sampled based on the discrete conditional probabilities
+$$
+p_{j|j^*,Z}= \frac{\widehat{\Pr} (J_N=j | J_C=j^*, Z(0)=Z) }{\sum_{j'=1}^{K_{j^*}} \widehat{\Pr} (J_N=j' | J_C=j^*, Z(0)=Z)}  \, .
+$$
+where $j \in K_{j^*}$ and the summation is over the distinct observed event times of transition $j^* \rightarrow j$. Once we sampled the next state, denoted by $j'$, the time to be spent at state $j^*$ is sampled based on 
+$$
+\widehat{\Pr} (T\leq t| J_N=j', J_C=j^* , Z(0)=Z) \, .
+$$
+This is done by sampling $U \sim Uniform[0,1]$, equating 
+$$
+U=\widehat{\Pr} (T\leq t| J_N=j', J_C=j^* , Z(0)=Z)
+$$ 
+and solving for $t$. Denote the sampled time by $t'$ and update $Z(t')$. In case $j'$, is a terminal state, the sampling path ends here. Otherwise, the current state is updated to $J_C=j'$, and the following state is sampled by $p_{j|j',Z(t')}$, $j=1 \in  K_{j'}$, 
+$$
+p_{`j|j',Z}= \frac{\sum_{t' < t_m \leq \tau_{j',j}} \exp\left( \widehat\beta_{j',j}^T Z\right) \widehat\lambda_{0j',j}(t_m) \exp \left\{-\sum_{k=1}^{|K_{j'}|} \widehat\Lambda_{0j',k}(t_{m-1})\exp\left( \widehat\beta_{j',k}^T Z\right) \right\} }
+{\sum_{j^{**}=1}^{K_{j'}} \sum_{t' < t_m \leq \tau_{j',j^{**}}} \exp\left( \widehat\beta_{j',j^{**}}^T Z\right) \widehat\lambda_{0j',j^{**}}(t_m) \exp \left\{-\sum_{k=1}^{|K_{j'}|} \widehat\Lambda_{0j',k}(t_{m-1})\exp\left( \widehat\beta_{j',k}^T Z\right) \right\}} \, .`
+$$
+
+# Generating Random Multistate Survival Data
 
 
 

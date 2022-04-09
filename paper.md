@@ -177,7 +177,6 @@ $$
 # Generating Random Multistate Survival Data
 
 
-
 # Acknowledgements
 
 We acknowledge contributions from TBD.

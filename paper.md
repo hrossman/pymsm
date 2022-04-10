@@ -8,19 +8,17 @@ tags:
 authors:
   - name: Hagai Rossman^[Co-first author] # note this makes a footnote saying 'Co-first author'
     orcid: 0000-0000-0000-0000
-    affiliation: "1, 2" # (Multiple affiliations must be quoted)
-  - name: Ayya Keshet^[Co-first author] # note this makes a footnote saying 'Co-first author'
+    affiliation: 1 # (Multiple affiliations must be quoted)
+  - name: Ayya Keshet^
     orcid: 0000-0000-0000-0000
-    affiliation: "1, 2" # (Multiple affiliations must be quoted)
+    affiliation: 1 # (Multiple affiliations must be quoted)
   - name: Maka Gorfine^[Corresponding author]
-    affiliation: 3
+    affiliation: 2
 affiliations:
- - name: Weizmann XXX
+ - name: Department of Computer Science and Applied Mathematics, Weizmann Institute of Science, Rehovot, Israel
    index: 1
- - name: Weizmann XXX
+ - name: Department of Statistics and Operations Research, Tel Aviv University, Tel Aviv, Israel
    index: 2
- - name: TAU XXX
-   index: 3
 date: 10 April 2022
 bibliography: paper.bib
 ---
@@ -57,11 +55,11 @@ A brief overview of the package functionality is described below. Detailed expla
 
 
 ## Model fitting
-Fitting a multi-state model to a data-set requires only a few simple steps;
-- Preparaing a data-set in one of two formats
-- Defining a function for updating time-dependent covariates
-- Define covariate columns
-- Define terminal states
+Fitting a multi-state model to a data-set requires only a few simple steps:  
+- Preparing a data-set in one of two formats  
+- Defining a function for updating time-dependent covariates  
+- Define covariate columns  
+- Define terminal states  
 - Define a minimum number of data transitions needed to fit a transition  
 Once all the above was done, the user can fit a multi-state model to his data-set, and use it for downstream analyses.
 

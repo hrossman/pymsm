@@ -9,7 +9,7 @@ authors:
   - name: Hagai Rossman^[Co-first author] # note this makes a footnote saying 'Co-first author'
     orcid: 0000-0000-0000-0000
     affiliation: 1 # (Multiple affiliations must be quoted)
-  - name: Ayya Keshet^
+  - name: Ayya Keshet^[Co-first author]
     orcid: 0000-0000-0000-0000
     affiliation: 1 # (Multiple affiliations must be quoted)
   - name: Maka Gorfine^[Corresponding author]

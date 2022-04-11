@@ -143,7 +143,7 @@ the estimation procedure is straightforward. Specifically, under transition-spec
 - Left truncation which occurs at each transition that is not the origin state of the subject's path. Bias due to left truncation is eliminated by using the well-known risk-set correction [@Klein:2006]. 
 - Recurrent events which occurs when subjects visit the same state multiple times. In such cases, the robust standard errors account for correlated outcomes within a subject [@Andersen:1982]. 	
 
-Based on the estimates of the regression coefficients and the cumulative baseline hazard functions all the distribution functions of Section \ref{Sec1} can be estimated by replacing the integrals with sums over the observed failure time, and any unknown parameter is replaced by its estimator. Specifically, let $\tau_{j^*,j}$ be the largest observed event time of transition $j^* \rightarrow j$. Then, 
+Based on the estimates of the regression coefficients and the cumulative baseline hazard functions all the distribution functions in the introduction section can be estimated by replacing the integrals with sums over the observed failure time, and any unknown parameter is replaced by its estimator. Specifically, let $\tau_{j^*,j}$ be the largest observed event time of transition $j^* \rightarrow j$. Then, 
 \begin{equation}
     \begin{aligned}
 \widehat{\Pr} (J_N=j | J_C=j^*,Z(0)=Z) \\
@@ -167,7 +167,7 @@ and finally, given a new $\breve{j}$, the estimated probability of staying at st
 \end{equation}
 
 # Other transition-specific models
-Similarly, the user can define other survival models and estimation procedure, such as accelerated failure time model, random survival forests (ref) etc, for each transition, as explained in section XXXCustomeFitters.
+Similarly, the user can define other survival models and estimation procedure, such as accelerated failure time model, random survival forests (ref) etc, for each transition, as explained in section Costume Fitters above.
 
 # Prediction - Monte Carlo Simulation
 Based on the multi-state model, we reconstruct the complete distribution of the path for a new observation, given the observed covariates $W$. Based on the reconstructed distribution we estimate

@@ -34,11 +34,12 @@ When faced with such data, a researcher or clinician might seek to characterize 
 
 `PyMSM` is a Python package for fitting multi-state models, with a simple API which allows user-defined models, predictions at a single or population sample level, and various statistical summaries and figures.
 Features of this software include:
-- Fitting a Competing risks Multistate model based on various types of survival analysis (time-to-event) such as Cox proportional hazards models or machine learning models, while taking into account right censoring, competing events, recurrent events, left truncation, and time-dependent covariates.
-- Running Monte-carlo simulations (in parallel computation) for paths emitted by the trained model and extracting various summary statistics and plots.
-- Loading or configuring a pre-defined model and generating simulated data in terms of random paths using model parameters, which could be highly useful as a research tool.
--  Modularity and compatibility for different time-to-event models such as Survival Forests and other custom ML models provided by the user.
-
+\begin{itemize}
+    \item Fitting a Competing risks Multistate model based on various types of survival analysis (time-to-event) such as Cox proportional hazards models or machine learning models, while taking into account right censoring, competing events, recurrent events, left truncation, and time-dependent covariates.
+    \item Running Monte-carlo simulations (in parallel computation) for paths emitted by the trained model and extracting various summary statistics and plots.
+    \item Loading or configuring a pre-defined model and generating simulated data in terms of random paths using model parameters, which could be highly useful as a research tool.
+    \item Modularity and compatibility for different time-to-event models such as Survival Forests and other custom ML models provided by the user.
+\end{itemize}
 The package is designed to allow modular usage by both experienced researchers and non-expert users. In addition to fitting a multi-state model for a given data - `PyMSM` allows the user to simulate trajectories, thus creating a multi-state data-set, from a predefined model. This could be a valuable research tool - both for sharing sensitive simulated individual data and as a tool for any downstream task which needs individual trajectories.
 To the authors best knowledge, this is the first open-source multi-state model tool that allows fitting of such models while also dealing with important concepts such as right censoring, competing events, recurrent events, left truncation, and time-dependent covariates.
 
@@ -58,11 +59,13 @@ A brief overview of the package functionality is described below. Detailed expla
 
 ## Model fitting
 Fitting a multi-state model to a data-set requires only a few simple steps;
-- Preparaing a data-set in one of two formats
-- Defining a function for updating time-dependent covariates
-- Define covariate columns
-- Define terminal states
-- Define a minimum number of data transitions needed to fit a transition  
+\begin{itemize}
+    \item Preparaing a data-set in one of two formats
+    \item Defining a function for updating time-dependent covariates
+    \item Define covariate columns
+    \item Define terminal states
+    \item Define a minimum number of data transitions needed to fit a transition
+\end{itemize}  
 Once all the above was done, the user can fit a multi-state model to his data-set, and use it for downstream analyses.
 
 ## Path sampling

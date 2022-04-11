@@ -51,7 +51,7 @@ A similar R version of this package is available in [@Roimi:2021], yet this is t
 Other usage examples are provided in the software package docs such as breast cancer state transitions (Rotterdam dataset), AIDs competing risk data, disease stage data from the European Society for Blood and Marrow Transplantation (EBMT) and COVID-19 national hospitalizations.
 
 
-# The PyMSM package
+# The `PyMSM` package
 
 A brief overview of the package functionality is described below. Detailed explanations of the API, along with four full usage examples on real data are available in the package documentation at https://hrossman.github.io/pymsm/.
 
@@ -72,16 +72,16 @@ Using the previously fitted multi-state model, the user can sample paths using t
 `PyMSM` allows configuration of custom event-specific-fitters.
 EventSpecificFitter class is an abstract class which defines the API which needs to be implemented by the user.
 
-Some custom fitters are available off-the-shelf such as Survival trees (Ishwaran 2008).
+Some custom fitters are available off-the-shelf such as Survival trees [@Ishwaran:2008].
 
 ## Simulating Multi-state Survival Data
-Using a pre-loaded or a pre-defined model, {PyMSM} provides an API to generate simulated data of random trajectories using the model parameters. Creating a simulated multi-state paths data-set could serve as a useful research tool in cases where data sharing is limited due to privacy limitations, or as a generation tool for any downstream task which requires individual trajectories.
+Using a pre-loaded or a pre-defined model, `PyMSM` provides an API to generate simulated data of random trajectories using the model parameters. Creating a simulated multi-state paths data-set could serve as a useful research tool in cases where data sharing is limited due to privacy limitations, or as a generation tool for any downstream task which requires individual trajectories.
 
 # Models and Methods
 In this section we give an overview of the models and methods underlying the statistics and computations performed in `PyMSM`.
 
 # Introduction
-The description of the content of \texttt{PyMSM} would be easier to digest under a certain setting.  Thus, to set the stage, we adopt the multi-state model of [@Roimi:2021]. Specifically, assume a multi-state model consists of four states $A,B,C,D$ and six possible transitions:
+The description of the content of `PyMSM` would be easier to digest under a certain setting.  Thus, to set the stage, we adopt the multi-state model of [@Roimi:2021]. Specifically, assume a multi-state model consists of four states $A,B,C,D$ and six possible transitions:
 $$
 A \rightarrow B \,\,\,\,\,\,       A \rightarrow C   \,\,\,\,\,\,     A \rightarrow D   \,\,\,\,\,\,    B \rightarrow A \,\,\,\,\,\,    B \rightarrow D \,\,\,\,\,\,   C \rightarrow A \, .
 $$
@@ -139,14 +139,16 @@ $$
 \lambda_{j,j'}(t|Z) = \lambda_{0j,j'}(t) \exp(Z^T \beta_{j,j'}) \, ,
 $$
 the estimation procedure is straightforward. Specifically, under transition-specific semi-parametric Cox models, we can easily deal with: 
-- Right censoring and competing events based on the approach of (andersen1991non). Namely, maximization of the likelihood function in terms of all the involved  Cox models is done by maximizing the likelihood of each transition separately. Thus, we use the standard partial likelihood estimators of $\beta_{j,j'}$ (klein2006survival) and Breslow estimator of $\Lambda_{0j,j'}(t)=\int_0^t \lambda_{0j,j'}(u)du$ (Breslow, 1972). 
-- Left truncation which occurs at each transition that is not the origin state of the subject's path. Bias due to left truncation is eliminated by using the well-known risk-set correction (klein2006survival). 
-- Recurrent events which occurs when subjects visit the same state multiple times. In such cases, the robust standard errors account for correlated outcomes within a subject (andersen1982cox). 	
+- Right censoring and competing events based on the approach of @[Andersen:1991]. Namely, maximization of the likelihood function in terms of all the involved  Cox models is done by maximizing the likelihood of each transition separately. Thus, we use the standard partial likelihood estimators of $\beta_{j,j'}$ @[Klein:2006] and Breslow estimator of $\Lambda_{0j,j'}(t)=\int_0^t \lambda_{0j,j'}(u)du$ (Breslow, 1972). 
+- Left truncation which occurs at each transition that is not the origin state of the subject's path. Bias due to left truncation is eliminated by using the well-known risk-set correction @[Klein:2006]. 
+- Recurrent events which occurs when subjects visit the same state multiple times. In such cases, the robust standard errors account for correlated outcomes within a subject @[Andersen:1982]. 	
 
 Based on the estimates of the regression coefficients and the cumulative baseline hazard functions all the distribution functions of Section \ref{Sec1} can be estimated by replacing the integrals with sums over the observed failure time, and any unknown parameter is replaced by its estimator. Specifically, let $\tau_{j^*,j}$ be the largest observed event time of transition $j^* \rightarrow j$. Then, 
 $$
+\begin{multlined}
 \widehat{\Pr} (J_N=j | J_C=j^*,Z(0)=Z) \\
 =   \sum_{t_m \leq \tau_{j^*,j}} \exp\left( \widehat\beta_{j^*,j}^T Z\right) \widehat\lambda_{0j^*,j}(t_m) \exp \left\{-\sum_{k=1}^{|K_{j^*}|} \widehat\Lambda_{0j^*,k}(t_{m-1})\exp\left( \widehat\beta_{j^*,k}^T Z\right) \right\} \, ,  
+\end{multlined}
 $$
 
 $$

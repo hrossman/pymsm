@@ -15,11 +15,11 @@ authors:
   - name: Maka Gorfine^[Corresponding author]
     affiliation: 3
 affiliations:
- - name: Weizmann XXX
+ - name: Department of Computer Science and Applied Mathematics, Weizmann Institute of Science, Rehovot, Israel
    index: 1
- - name: Weizmann XXX
+ - name: Department of Molecular Cell Biology, Weizmann Institute of Science, Rehovot, Israel
    index: 2
- - name: TAU XXX
+ - name: Department of Statistics and Operations Research, Tel Aviv University, Tel Aviv, Israel
    index: 3
 date: 10 April 2022
 bibliography: paper.bib

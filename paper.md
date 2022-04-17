@@ -135,7 +135,7 @@ All the above, set the main multi-state model components required for prediction
 # Estimation
 
 ## Cox transition-specific hazard models
-The estimation procedure for the hazard functions that define the multi-state model can be chosen by the user. For example, if Cox models are  adopted, where each transition $j \rightarrow j'$ consists of transition-specific unspecified baseline hazard function $\lambda_{0j,j'}(\cdot)$ and a 
+The estimation procedure for the hazard functions that define the multi-state model can be chosen by the user. For example, if Cox models are adopted, where each transition $j \rightarrow j'$ consists of transition-specific unspecified baseline hazard function $\lambda_{0j,j'}(\cdot)$ and a 
 transition-specific vector of regression coefficients $\beta_{j,j'}$, i.e.,
 $$
 \lambda_{j,j'}(t|Z) = \lambda_{0j,j'}(t) \exp(Z^T \beta_{j,j'}) \, ,
@@ -198,10 +198,9 @@ p_{`j|j',Z}= \frac{\sum_{t' < t_m \leq \tau_{j',j}} \exp\left( \widehat\beta_{j'
 $$
 
 # Generating Random Multistate Survival Data
+`PyMSM` allows the user to predefine a model by providing an input of transition-specific baseline hazards and hazard coefficients $\beta_{j,j'}$, and a time-varying covariates update function if needed. After providing this information, the user can then simulate trajectories, thus creating a new multi-state data-set which may be valuable for a variety of purposes.
 
-
-# Acknowledgements
-
-We acknowledge contributions from TBD.
+# Acknowledgemnts
+This project is based on methods first introduced by the authors of [@Roimi:2021]. We thank Jonathan Somer, Asaf Ben Arie, Rom Gutman, Tomer Meir, & Uri Shalit for their work on the model, R code and valuable discussions.
 
 # References

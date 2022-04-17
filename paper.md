@@ -53,7 +53,7 @@ This project is based on methods first introduced during 2020 for predicting nat
 A similar R version of this package is available in [@Roimi:2021], yet this is the first Python version to be released as an open-source package containing extended features and use cases.
 Other usage examples are provided in the software package docs such as breast cancer state transitions (Rotterdam dataset), AIDs competing risk data, disease stage data from the European Society for Blood and Marrow Transplantation (EBMT) and COVID-19 national hospitalizations.
 
-![Rotterdam dataset\label{fig:rotterdam}](rotterdam.svg){ width=20% }
+![Rotterdam dataset](rotterdam.svg){ width=20% }
 
 # The `PyMSM` package
 

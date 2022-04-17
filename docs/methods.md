@@ -1,6 +1,5 @@
 # Methods
-In this section we give an overview of the models and methods underlying the statistics and computations performed in `PyMSM`.
-!!! error "Under construction". 
+In this section we give an overview of the models and methods underlying the statistics and computations performed in `PyMSM`.  
 
 ## Introduction
 

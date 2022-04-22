@@ -44,11 +44,7 @@ The package is designed to allow modular usage by both experienced researchers a
 To the authors best knowledge, this is the first open-source multi-state model tool that allows fitting of such models while also dealing with important concepts such as right censoring, competing events, recurrent events, left truncation, and time-dependent covariates.
 
 # Usage examples
-This project is based on methods first introduced during 2020 for predicting national COVID-19 hospitalizations in Israel. Important health policy applications based on these methods were built and used by government policymakers throughout the pandemic. For example:  
-\begin{itemize}
-    \item Help assess hospital resource utilization [@Roimi:2021].  
-    \item Associations between high hospital load and excess deaths [@Rossman:2021].  
-\end{itemize}
+This project is based on methods first introduced during 2020 for predicting national COVID-19 hospitalizations in Israel. Important health policy applications based on these methods were built and used by government policymakers throughout the pandemic. For example: help assess hospital resource utilization [@Roimi:2021], associations between high hospital load and excess deaths [@Rossman:2021].  
 A similar R version of this package is available in [@Roimi:2021], yet this is the first Python version to be released as an open-source package containing extended features and use cases.
 Other usage examples are provided in the software package docs such as breast cancer state transitions (Rotterdam dataset), AIDs competing risk data, disease stage data from the European Society for Blood and Marrow Transplantation (EBMT) and COVID-19 national hospitalizations.
 

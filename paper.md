@@ -7,12 +7,13 @@ tags:
   - competing risks
 authors:
   - name: Hagai Rossman^[Co-first author] # note this makes a footnote saying 'Co-first author'
-    orcid: 0000-0000-0000-0000
+    orcid: 0000-0002-5613-8004
     affiliation: "1, 2" # (Multiple affiliations must be quoted)
   - name: Ayya Keshet^[Co-first author] # note this makes a footnote saying 'Co-first author'
-    orcid: 0000-0000-0000-0000
+    orcid: 0000-0002-1841-7918
     affiliation: "1, 2" # (Multiple affiliations must be quoted)
   - name: Maka Gorfine^[Corresponding author]
+    orcid: 0000-0002-1577-6624
     affiliation: 3
 affiliations:
  - name: Department of Computer Science and Applied Mathematics, Weizmann Institute of Science, Rehovot, Israel
@@ -46,10 +47,11 @@ To the authors best knowledge, this is the first open-source multi-state model t
 # Usage examples
 This project is based on methods first introduced during 2020 for predicting national COVID-19 hospitalizations in Israel. Important health policy applications based on these methods were built and used by government policymakers throughout the pandemic. For example: help assess hospital resource utilization [@Roimi:2021], associations between high hospital load and excess deaths [@Rossman:2021].  
 A similar R version of this package is available in [@Roimi:2021], yet this is the first Python version to be released as an open-source package containing extended features and use cases.
-Other usage examples are provided in the software package docs such as breast cancer state transitions (Rotterdam dataset), AIDs competing risk data, disease stage data from the European Society for Blood and Marrow Transplantation (EBMT) and COVID-19 national hospitalizations.
+Other usage examples are provided in the software package docs such as breast cancer state transitions (Rotterdam dataset), AIDs competing risk data, disease stage data from the European Society for Blood and Marrow Transplantation (EBMT) and COVID-19 national hospitalizations.  
+
+![Transitions for the Rotterdam example dataset](rotterdam.png){ width=65% }
 
 # The `PyMSM` package
-
 A brief overview of the package functionality is described below. Detailed explanations of the API, along with four full usage examples on real data are available in the package documentation at https://hrossman.github.io/pymsm/.
 
 ## Model fitting
@@ -78,7 +80,7 @@ Using a pre-loaded or a pre-defined model, `PyMSM` provides an API to generate s
 # Models and Methods
 In this section we give an overview of the models and methods underlying the statistics and computations performed in `PyMSM`.
 
-# Introduction
+## Introduction
 The description of the content of `PyMSM` would be easier to digest under a certain setting.  Thus, to set the stage, we adopt the multi-state model of [@Roimi:2021]. Specifically, assume a multi-state model consists of four states $A,B,C,D$ and six possible transitions:
 $$
 A \rightarrow B \,\,\,\,\,\,       A \rightarrow C   \,\,\,\,\,\,     A \rightarrow D   \,\,\,\,\,\,    B \rightarrow A \,\,\,\,\,\,    B \rightarrow D \,\,\,\,\,\,   C \rightarrow A \, .
@@ -128,10 +130,10 @@ $$
 $$    
 All the above, set the main multi-state model components required for prediction, as will be explained in the following sections.
 
-# Estimation
+## Estimation
 
-## Cox transition-specific hazard models
-The estimation procedure for the hazard functions that define the multi-state model can be chosen by the user. For example, if Cox models are  adopted, where each transition $j \rightarrow j'$ consists of transition-specific unspecified baseline hazard function $\lambda_{0j,j'}(\cdot)$ and a 
+### Cox transition-specific hazard models
+The estimation procedure for the hazard functions that define the multi-state model can be chosen by the user. For example, if Cox models are adopted, where each transition $j \rightarrow j'$ consists of transition-specific unspecified baseline hazard function $\lambda_{0j,j'}(\cdot)$ and a 
 transition-specific vector of regression coefficients $\beta_{j,j'}$, i.e.,
 $$
 \lambda_{j,j'}(t|Z) = \lambda_{0j,j'}(t) \exp(Z^T \beta_{j,j'}) \, ,
@@ -164,10 +166,10 @@ and finally, given a new $\breve{j}$, the estimated probability of staying at st
     \end{aligned}
 \end{equation}
 
-# Other transition-specific models
+### Other transition-specific models
 Similarly, the user can define other survival models and estimation procedure, such as accelerated failure time model, random survival forests (ref) etc, for each transition, as explained in section Costume Fitters above.
 
-# Prediction - Monte Carlo Simulation
+## Prediction - Monte Carlo Simulation
 Based on the multi-state model, we reconstruct the complete distribution of the path for a new observation, given the observed covariates $W$. Based on the reconstructed distribution we estimate
 - The probability of visiting each state.
 - The total length of stay at each state.
@@ -193,11 +195,10 @@ p_{`j|j',Z}= \frac{\sum_{t' < t_m \leq \tau_{j',j}} \exp\left( \widehat\beta_{j'
     {\sum_{j^{**}=1}^{K_{j'}} \sum_{t' < t_m \leq \tau_{j',j^{**}}} \exp\left( \widehat\beta_{j',j^{**}}^T Z\right) \widehat\lambda_{0j',j^{**}}(t_m) \exp \left\{-\sum_{k=1}^{|K_{j'}|} \widehat\Lambda_{0j',k}(t_{m-1})\exp\left( \widehat\beta_{j',k}^T Z\right) \right\}} \, .`
 $$
 
-# Generating Random Multistate Survival Data
+## Generating Random Multistate Survival Data
+`PyMSM` allows the user to predefine a model by providing an input of transition-specific baseline hazards and hazard coefficients $\beta_{j,j'}$, and a time-varying covariates update function if needed. After providing this information, the user can then simulate trajectories, thus creating a new multi-state data-set which may be valuable for a variety of purposes.
 
-
-# Acknowledgements
-
-We acknowledge contributions from TBD.
+# Acknowledgemnts
+This project is based on methods first introduced by the authors of [@Roimi:2021]. We thank Jonathan Somer, Asaf Ben Arie, Rom Gutman, Tomer Meir, & Uri Shalit for their work on the model, R code and valuable discussions.
 
 # References

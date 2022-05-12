@@ -139,7 +139,7 @@ $$
 \lambda_{j,j'}(t|Z) = \lambda_{0j,j'}(t) \exp(Z^T \beta_{j,j'}) \, ,
 $$
 the estimation procedure is straightforward. Specifically, under transition-specific semi-parametric Cox models, we can easily deal with 
-right censoring and competing events based on the approach of \textcite{Andersen:1991}. Namely, maximization of the partial likelihood function in terms of all the involved  Cox models is done by maximizing the partial likelihood of each transition separately, and temporarily treating competing events as censoring. Thus, we use the standard partial likelihood estimators of $\beta_{j,j'}$ [@Klein:2006] and Breslow estimator of $\Lambda_{0j,j'}(t)=\int_0^t \lambda_{0j,j'}(u)du$ [@Breslow:1972]. 
+right censoring and competing events based on the approach of [@Andersen:1991]. Namely, maximization of the partial likelihood function in terms of all the involved  Cox models is done by maximizing the partial likelihood of each transition separately, and temporarily treating competing events as censoring. Thus, we use the standard partial likelihood estimators of $\beta_{j,j'}$ [@Klein:2006] and Breslow estimator of $\Lambda_{0j,j'}(t)=\int_0^t \lambda_{0j,j'}(u)du$ [@Breslow:1972]. 
 Another important issue is left truncation which occurs at each transition that is not the origin state of the subject's path. Bias due to left truncation is eliminated by using the well-known risk-set correction [@Klein:2006]. 
 Recurrent events, which occurs when subjects visit the same state multiple times, are accommodated by the robust standard errors [@Andersen:1982]. 	
 

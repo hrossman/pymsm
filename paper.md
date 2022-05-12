@@ -81,7 +81,7 @@ Using a pre-loaded or a pre-defined model, `PyMSM` provides an API to generate s
 In this section we give an overview of the models and methods underlying the statistics and computations performed in `PyMSM`.
 
 ## Introduction
-The description of the content of `PyMSM` would be easier to digest under a certain setting.  Thus, to set the stage, we adopt the multi-state model of \citealt{Roimi:2021}. Specifically, assume a multi-state model consists of four states $A,B,C,D$ and six possible transitions:
+The description of the content of `PyMSM` would be easier to digest under a certain setting.  Thus, to set the stage, we adopt the multi-state model of \citealp{Roimi:2021}. Specifically, assume a multi-state model consists of four states $A,B,C,D$ and six possible transitions:
 $$
 A \rightarrow B \,\,\,\,\,\,       A \rightarrow C   \,\,\,\,\,\,     A \rightarrow D   \,\,\,\,\,\,    B \rightarrow A \,\,\,\,\,\,    B \rightarrow D \,\,\,\,\,\,   C \rightarrow A \, .
 $$
@@ -197,6 +197,6 @@ $$
 `PyMSM` allows the user to predefine a model by providing an input of transition-specific baseline hazards, vectors of regression coefficients, and a time-varying covariates update function if needed. After providing this information, the user can then simulate trajectories, thus creating a new multi-state data-set which may be valuable for a variety of purposes.
 
 # Acknowledgemnts
-This project is based on \citealt{Roimi:2021}. We thank Jonathan Somer, Asaf Ben Arie, Rom Gutman, Tomer Meir, & Uri Shalit for their work on the model, R code and valuable discussions.
+This project is based on \citealp{Roimi:2021}. We thank Jonathan Somer, Asaf Ben Arie, Rom Gutman, Tomer Meir, & Uri Shalit for their work on the model, R code and valuable discussions.
 
 # References

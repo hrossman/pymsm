@@ -1,5 +1,5 @@
 ---
-title: 'PyMSM: Python package for Competing Risks and Multi-State models for Survival Data'
+title: 'PyMSM: Python package for Competing Risks and Multi-State models for Survival Data' 
 tags:
   - Python
   - multistate models

@@ -81,7 +81,7 @@ Using a pre-loaded or a pre-defined model, `PyMSM` provides an API to generate s
 In this section we give an overview of the models and methods underlying the statistics and computations performed in `PyMSM`.
 
 ## Introduction
-The description of the content of `PyMSM` would be easier to digest under a certain setting.  Thus, to set the stage, we adopt the multi-state model of [@Roimi:2021]. Specifically, assume a multi-state model consists of four states $A,B,C,D$ and six possible transitions:
+The description of the content of `PyMSM` would be easier to digest under a certain setting.  Thus, to set the stage, we adopt the multi-state model of Roimi [@Roimi:2021]. Specifically, assume a multi-state model consists of four states $A,B,C,D$ and six possible transitions:
 $$
 A \rightarrow B \,\,\,\,\,\,       A \rightarrow C   \,\,\,\,\,\,     A \rightarrow D   \,\,\,\,\,\,    B \rightarrow A \,\,\,\,\,\,    B \rightarrow D \,\,\,\,\,\,   C \rightarrow A \, .
 $$
@@ -139,7 +139,7 @@ $$
 \lambda_{j,j'}(t|Z) = \lambda_{0j,j'}(t) \exp(Z^T \beta_{j,j'}) \, ,
 $$
 the estimation procedure is straightforward. Specifically, under transition-specific semi-parametric Cox models, we can easily deal with 
-right censoring and competing events based on the approach of [@Andersen:1991]. Namely, maximization of the partial likelihood function in terms of all the involved  Cox models is done by maximizing the partial likelihood of each transition separately, and temporarily treating competing events as censoring. Thus, we use the standard partial likelihood estimators of $\beta_{j,j'}$ [@Klein:2006] and Breslow estimator of $\Lambda_{0j,j'}(t)=\int_0^t \lambda_{0j,j'}(u)du$ [@Breslow:1972]. 
+right censoring and competing events based on the approach of Andersen & Keiding [@Andersen:1991]. Namely, maximization of the partial likelihood function in terms of all the involved  Cox models is done by maximizing the partial likelihood of each transition separately, and temporarily treating competing events as censoring. Thus, we use the standard partial likelihood estimators of $\beta_{j,j'}$ [@Klein:2006] and Breslow estimator of $\Lambda_{0j,j'}(t)=\int_0^t \lambda_{0j,j'}(u)du$ [@Breslow:1972]. 
 Another important issue is left truncation which occurs at each transition that is not the origin state of the subject's path. Bias due to left truncation is eliminated by using the well-known risk-set correction [@Klein:2006]. 
 Recurrent events, which occurs when subjects visit the same state multiple times, are accommodated by the robust standard errors [@Andersen:1982]. 	
 
@@ -177,7 +177,7 @@ The above quantities can be predicted before entering the system and also during
 
 We reconstruct the distribution of the path for a new observation by Monte-Carlo simulation. Assume the starting state (provided by the user) is $j^*$. Then, the next state $J_N$ is sampled based on the discrete conditional probabilities
 $$
-p_{j|j^*,Z}= \frac{\widehat{\Pr} (J_N=j | J_C=j^*, Z(0)=Z) }{\sum_{j'=1}^{K_{j^*}} \widehat{\Pr} (J_N=j' | J_C=j^*, Z(0)=Z)}  \, ,
+p_{j|j^*,Z}= \frac{\widehat{\Pr} (J_N=j | J_C=j^*, Z(0)=Z) }{\sum_{j'=1}^{|K_{j^*}|} \widehat{\Pr} (J_N=j' | J_C=j^*, Z(0)=Z)}  \, ,
 $$
 where $j \in K_{j^*}$. Once we sampled the next state, denoted by $j'$, the time to be spent at state $j^*$ is sampled based on 
 $$
@@ -189,14 +189,18 @@ U=\widehat{\Pr} (T\leq t| J_N=j', J_C=j^* , Z(0)=Z)
 $$ 
 and solving for $t$. Denote the sampled time by $t'$ and update $Z(t')$. In case $j'$, is a terminal state, the sampling path ends here. Otherwise, the current state is updated to $J_C=j'$, and the following state is sampled by $p_{j|j',Z(t')}$, $j=1 \in  K_{j'}$, 
 $$
+\begin{equation}
+    \begin{gathered}
 p_{`j|j',Z}=\frac{\sum_{t'<t_m \leq \tau_{j',j}} \exp\left(\widehat\beta_{j',j}^T Z\right)\widehat\lambda_{0j',j}(t_m)\exp\left\{-\sum_{k=1}^{|K_{j'}|}\widehat\Lambda_{0j',k}(t_{m-1})\exp\left(\widehat\beta_{j',k}^T Z\right) \right\} }
-    {\sum_{j^{**}=1}^{K_{j'}} \sum_{t'<t_m \leq \tau_{j',j^{**}}} \exp\left(\widehat\beta_{j',j^{**}}^T Z\right) \widehat\lambda_{0j',j^{**}}(t_m) \exp\left\{-\sum_{k=1}^{|K_{j'}|}\widehat\Lambda_{0j',k}(t_{m-1})\exp\left(\widehat\beta_{j',k}^T Z\right) \right\}} \, .`
+    {\sum_{j^{**}=1}^{|K_{j'}|} \sum_{t'<t_m \leq \tau_{j',j^{**}}} \exp\left(\widehat\beta_{j',j^{**}}^T Z\right) \widehat\lambda_{0j',j^{**}}(t_m) \exp\left\{-\sum_{k=1}^{|K_{j'}|}\widehat\Lambda_{0j',k}(t_{m-1})\exp\left(\widehat\beta_{j',k}^T Z\right) \right\}} \, .`
+    \end{gathered}
+\end{equation}
 $$
 
 ## Generating Random Multistate Survival Data
 `PyMSM` allows the user to predefine a model by providing an input of transition-specific baseline hazards, vectors of regression coefficients, and a time-varying covariates update function if needed. After providing this information, the user can then simulate trajectories, thus creating a new multi-state data-set which may be valuable for a variety of purposes.
 
 # Acknowledgemnts
-This project is based on [@Roimi:2021]. We thank Jonathan Somer, Asaf Ben Arie, Rom Gutman, Tomer Meir, & Uri Shalit for their work on the model, R code and valuable discussions.
+This project is based on Roimi [@Roimi:2021]. We thank Jonathan Somer, Asaf Ben Arie, Rom Gutman, Tomer Meir, & Uri Shalit for their work on the model, R code and valuable discussions.
 
 # References

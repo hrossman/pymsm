@@ -46,7 +46,7 @@ To the authors best knowledge, this is the first open-source multi-state model t
 
 # Usage examples
 This project is based on methods first introduced during 2020 for predicting national COVID-19 hospitalizations in Israel. Important health policy applications based on these methods were built and used by government policymakers throughout the pandemic. For example: help assess hospital resource utilization [@Roimi:2021], associations between high hospital load and excess deaths [@Rossman:2021].  
-A similar R version of this package is available in [@Roimi:2021], yet this is the first Python version to be released as an open-source package containing extended features and use cases.
+A similar R version of this package is available in Roimi [@Roimi:2021], yet this is the first Python version to be released as an open-source package containing extended features and use cases.
 Other usage examples are provided in the software package docs such as breast cancer state transitions (Rotterdam dataset), AIDs competing risk data, disease stage data from the European Society for Blood and Marrow Transplantation (EBMT) and COVID-19 national hospitalizations.  
 
 ![Transitions for the Rotterdam example dataset](rotterdam.png){ width=65% }
@@ -191,7 +191,7 @@ and solving for $t$. Denote the sampled time by $t'$ and update $Z(t')$. In case
 $$
 p_{j|j',Z}= \\
 \frac{\sum_{t'<t_m \leq \tau_{j',j}} \exp\left(\widehat\beta_{j',j}^T Z\right)\widehat\lambda_{0j',j}(t_m)\exp\left\{-\sum_{k=1}^{|K_{j'}|}\widehat\Lambda_{0j',k}(t_{m-1})\exp\left(\widehat\beta_{j',k}^T Z\right) \right\} }
-{\sum_{j^{**}=1}^{|K_{j'}|} \sum_{t'<t_m \leq \tau_{j',j^{**}}} \exp\left(\widehat\beta_{j',j^{**}}^T Z\right) \widehat\lambda_{0j',j^{**}}(t_m) \exp\left\{-\sum_{k=1}^{|K_{j'}|}\widehat\Lambda_{0j',k}(t_{m-1})\exp\left(\widehat\beta_{j',k}^T Z\right) \right\}} \, .
+{\sum_{j^{#}=1}^{|K_{j'}|} \sum_{t'<t_m \leq \tau_{j',j^{#}}} \exp\left(\widehat\beta_{j',j^{#}}^T Z\right) \widehat\lambda_{0j',j^{#}}(t_m) \exp\left\{-\sum_{k=1}^{|K_{j'}|}\widehat\Lambda_{0j',k}(t_{m-1})\exp\left(\widehat\beta_{j',k}^T Z\right) \right\}} \, .
 $$
 
 ## Generating Random Multistate Survival Data

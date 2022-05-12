@@ -28,7 +28,7 @@ bibliography: paper.bib
 
 # Summary
 Multi-state data are common, and could be used to describe trajectories in diverse applications such as a patient's health progression through disease states, pickups during the workday of a taxi driver, or a website browsing trajectory to name a few.
-When faced with such data, a researcher or clinician might seek to characterize the possible transitions between states, their occurrence probabilities, or to predict the trajectory of future observations - given various baseline and time-varying individual covariates (features). By fitting a multi-state model, we can learn the hazard for each specific transition, which would later be used to predict future paths. Predicting paths could be used at a single individual level, for example predicting how long until a cancer patient will be relapse-free given his current health status, or at what probability will a patient end a trajectory at any of the possible states. At the population level paths predictions could be used to estimate how many patients which arrive at the emergency-room will need to be admitted, given their covariates. Moreover, their expected hospitalization duration could also be inferred, to provide hospitals with anticipated patients load.
+When faced with such data, a researcher or clinician might seek to characterize the possible transitions between states, their occurrence probabilities, or to predict the trajectory of future observations - given various baseline and time-varying individual covariates (features). By fitting a multi-state model, we can learn the hazard for each specific transition, which would later be used to predict future paths. Predicting paths could be used at a single individual level, for example predicting how long until a cancer patient will be relapse-free given his current health status, or at what probability will a patient end a trajectory at any of the possible states. At the population level paths predictions could be used to estimate how many patients which arrive at the emergency-room will need to be admitted, given their covariates. Moreover, their expected hospitalization duration could also be inferred, and provide planners with anticipated patients load.
 
 
 # Statement of need
@@ -46,7 +46,7 @@ To the authors best knowledge, this is the first open-source multi-state model t
 
 # Usage examples
 This project is based on methods first introduced during 2020 for predicting national COVID-19 hospitalizations in Israel. Important health policy applications based on these methods were built and used by government policymakers throughout the pandemic. For example: help assess hospital resource utilization [@Roimi:2021], associations between high hospital load and excess deaths [@Rossman:2021].  
-A similar R version of this package is available in Roimi [@Roimi:2021], yet this is the first Python version to be released as an open-source package containing extended features and use cases.
+A similar R version of this package is available in Roimi 2021, yet this is the first Python version to be released as an open-source package containing extended features and use cases.
 Other usage examples are provided in the software package docs such as breast cancer state transitions (Rotterdam dataset), AIDs competing risk data, disease stage data from the European Society for Blood and Marrow Transplantation (EBMT) and COVID-19 national hospitalizations.  
 
 ![Transitions for the Rotterdam example dataset](rotterdam.png){ width=65% }
@@ -198,6 +198,6 @@ $$
 `PyMSM` allows the user to predefine a model by providing an input of transition-specific baseline hazards, vectors of regression coefficients, and a time-varying covariates update function if needed. After providing this information, the user can then simulate trajectories, thus creating a new multi-state data-set which may be valuable for a variety of purposes.
 
 # Acknowledgemnts
-This project is based on Roimi [@Roimi:2021]. We thank Jonathan Somer, Asaf Ben Arie, Rom Gutman, Tomer Meir, & Uri Shalit for their work on the model, R code and valuable discussions.
+This project is based on Roimi 2021. We thank Jonathan Somer, Asaf Ben Arie, Rom Gutman, Tomer Meir, & Uri Shalit for their work on the model, R code and valuable discussions.
 
 # References

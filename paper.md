@@ -201,3 +201,5 @@ $$
 This project is based on \textcite{Roimi:2021}. We thank Jonathan Somer, Asaf Ben Arie, Rom Gutman, Tomer Meir, & Uri Shalit for their work on the model, R code and valuable discussions.
 
 # References
+
+bibliography{paper}

@@ -189,13 +189,9 @@ U=\widehat{\Pr} (T\leq t| J_N=j', J_C=j^* , Z(0)=Z)
 $$ 
 and solving for $t$. Denote the sampled time by $t'$ and update $Z(t')$. In case $j'$, is a terminal state, the sampling path ends here. Otherwise, the current state is updated to $J_C=j'$, and the following state is sampled by $p_{j|j',Z(t')}$, $j=1 \in  K_{j'}$, 
 $$
-\begin{equation}
-    \begin{gathered}
 p_{j|j',Z}= \\
 \frac{\sum_{t'<t_m \leq \tau_{j',j}} \exp\left(\widehat\beta_{j',j}^T Z\right)\widehat\lambda_{0j',j}(t_m)\exp\left\{-\sum_{k=1}^{|K_{j'}|}\widehat\Lambda_{0j',k}(t_{m-1})\exp\left(\widehat\beta_{j',k}^T Z\right) \right\} }
-{\sum_{j^{**}=1}^{|K_{j'}|} \sum_{t'<t_m \leq \tau_{j',j^{**}}} \exp\left(\widehat\beta_{j',j^{**}}^T Z\right) \widehat\lambda_{0j',j^{**}}(t_m) \exp\left\{-\sum_{k=1}^{|K_{j'}|}\widehat\Lambda_{0j',k}(t_{m-1})\exp\left(\widehat\beta_{j',k}^T Z\right) \right\}} \, .`
-    \end{gathered}
-\end{equation}
+{\sum_{j^{**}=1}^{|K_{j'}|} \sum_{t'<t_m \leq \tau_{j',j^{**}}} \exp\left(\widehat\beta_{j',j^{**}}^T Z\right) \widehat\lambda_{0j',j^{**}}(t_m) \exp\left\{-\sum_{k=1}^{|K_{j'}|}\widehat\Lambda_{0j',k}(t_{m-1})\exp\left(\widehat\beta_{j',k}^T Z\right) \right\}} \, .
 $$
 
 ## Generating Random Multistate Survival Data

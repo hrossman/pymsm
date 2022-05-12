@@ -1,3 +1,4 @@
+\usepackage{natbib}
 ---
 title: 'PyMSM: Python package for Competing Risks and Multi-State models for Survival Data'
 tags:

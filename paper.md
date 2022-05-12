@@ -36,7 +36,7 @@ When faced with such data, a researcher or clinician might seek to characterize 
 `PyMSM` is a Python package for fitting multi-state models, with a simple API which allows user-defined models, predictions at a single or population sample level, and various statistical summaries and figures.
 Features of this software include:
 \begin{itemize}
-    \item Fitting competing risks and multi-stated models based on various types of survival analysis (time-to-event) such as Cox proportional hazards models or machine learning models, while taking into account right censoring, competing events, recurrent events, left truncation, and time-dependent covariates. Number of states in the model, and the possible transitions between them will be determined by the user, as well as the number of competing risks when fitting a competing risks model.    
+    \item Fitting competing risks and multi-stated models based on various types of survival analysis (time-to-event) such as Cox proportional hazards models or machine learning models, while taking into account right censoring, competing events, recurrent events, left truncation, and time-dependent covariates. The number of states in the model, and the possible transitions between them will be determined by the user, as well as the number of competing risks when fitting a competing risks model.    
     \item Running Monte-carlo simulations (in parallel computation) for paths emitted by the trained model and extracting various summary statistics and plots.
     \item Loading or configuring a pre-defined model and generating simulated multi-state survival data in terms of random paths using model parameters, which could be highly useful as a research tool.
     \item Modularity and compatibility for different time-to-event models such as Survival Forests and other custom ML models provided by the user.
@@ -66,13 +66,13 @@ Fitting a multi-state model to a data-set requires only a few simple steps;
 Once all the above was done, the user can fit a multi-state model to the data-set, and use it for downstream analyses.
 
 ## Path sampling
-Using the previously fitted multi-state model, the user can sample paths using Monte Carlo simulations. Providing covariates, initial state and time - next states and times spent at each state are sequentially sampled via the entire estimated multi-state model. The process concludes when the path arrives at a terminal state or the number of transitions exceeds a predefined maximum. Once multiple samplings has been done for every observation, the user can explore statistics such as the probability of being in any of the states or the time spent in each state.
+Using the previously fitted multi-state model, the user can sample paths using Monte Carlo simulations. Providing covariates, initial state and time - next states and times spent at each state are sequentially sampled via the entire estimated multi-state model. The process concludes when the path arrives at a terminal state or the number of transitions exceeds a predefined maximum. Once a large amount of multiple samplings has been done for every observation, the user can explore statistics such as the probability of being in any of the states or the time spent in each state.
 
 ## Costume fitters
-`PyMSM` allows configuration of custom event-specific-fitters.
+`PyMSM` works with Cox proportional hazards models by default through the lifelines [@Davidson-Pilon:2019] Python library, but also allows configuration of custom event-specific-fitters.
 EventSpecificFitter class is an abstract class which defines the API which needs to be implemented by the user.
 
-Some custom fitters are available off-the-shelf such as survival trees [@Ishwaran:2008].
+Some custom fitters are available off-the-shelf such as survival trees [@Ishwaran:2008] through the `scikit-survival` Python package [@PÃ¶lsterl:2020].
 
 ## Simulating Multi-state Survival Data
 Using a pre-loaded or a pre-defined model, `PyMSM` provides an API to generate simulated data of random trajectories using the model. Creating a simulated multi-state paths data-set could serve as a useful research tool in cases where data sharing is limited due to privacy limitations, or as a generation tool for any downstream task which requires individual trajectories.

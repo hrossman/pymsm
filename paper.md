@@ -72,7 +72,7 @@ Using the previously fitted multi-state model, the user can sample paths using M
 `PyMSM` works with Cox proportional hazards models by default through the lifelines [@Davidson-Pilon:2019] Python library, but also allows configuration of custom event-specific-fitters.
 EventSpecificFitter class is an abstract class which defines the API which needs to be implemented by the user.
 
-Some custom fitters are available off-the-shelf such as survival trees [@Ishwaran:2008] through the `scikit-survival` Python package [@PÃ¶lsterl:2020].
+Some custom fitters are available off-the-shelf such as survival trees [@Ishwaran:2008] through the `scikit-survival` Python package [@Pölsterl:2020].
 
 ## Simulating Multi-state Survival Data
 Using a pre-loaded or a pre-defined model, `PyMSM` provides an API to generate simulated data of random trajectories using the model. Creating a simulated multi-state paths data-set could serve as a useful research tool in cases where data sharing is limited due to privacy limitations, or as a generation tool for any downstream task which requires individual trajectories.

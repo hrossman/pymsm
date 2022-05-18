@@ -169,9 +169,8 @@ and finally, given a new $\breve{j}$, the estimated probability of staying at st
 ### Other transition-specific models
 The user can define other survival models and estimation procedures, such as accelerated failure time models, random survival forests [@Ishwaran:2008] etc, for each transition, as explained in section Costume Fitters above.
 
-## Prediction - Monte Carlo Simulation
-Based on the multi-state model, we reconstruct the complete distribution of the path for a new observation, given the observed covariates $W$. Based on the reconstructed distribution we estimate the probability of visiting each state, 
-the total length of stay at each state, the total length of stay in the entire system.
+## Prediction - Monte-Carlo Simulation
+Based on the multi-state model, we reconstruct the complete distribution of the path for a new observation, given the observed covariates $W$. Based on the reconstructed distribution we estimate the probability of visiting each state, the total length of stay at each state, and the total length of stay in the entire system.
 
 The above quantities can be predicted before entering the system and also during the stay at one of the systems' states, while correctly taking into account the accumulated time already spent in the system and $Z(\cdot)$.
 
@@ -195,9 +194,9 @@ p_{j|j',Z}= \\
 $$
 
 ## Generating Random Multistate Survival Data
-`PyMSM` allows the user to predefine a model by providing an input of transition-specific baseline hazards, vectors of regression coefficients, and a time-varying covariates update function if needed. After providing this information, the user can then simulate trajectories, thus creating a new multi-state data-set which may be valuable for a variety of purposes.
+`PyMSM` allows the user to predefine a multi-state model. For example, for Cox models, the user should provide transition-specific baseline hazards, vectors of regression coefficients, and a time-varying covariates update function if needed. After providing this information, the user can then simulate trajectories, thus creating a new multi-state data-set which may be valuable for a variety of purposes.
 
 # Acknowledgemnts
-This project is based on Roimi 2021. We thank Jonathan Somer, Asaf Ben Arie, Rom Gutman, Tomer Meir, & Uri Shalit for their work on the model, R code and valuable discussions.
+This project is based on Roimi 2021. We thank Jonathan Somer, Asaf Ben Arie, Rom Gutman, Tomer Meir, & Uri Shalit for their work on the model, R code and valuable discussions. The work was partially supported by the Israel Science Foundation (ISF) grant number 767/21 and by a grant from the Tel Aviv University Center for AI and Data Science (TAD).
 
 # References

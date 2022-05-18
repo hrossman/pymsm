@@ -133,17 +133,17 @@ All the above, set the main multi-state model components required for prediction
 ## Estimation
 
 ### Cox transition-specific hazard models
-The estimation procedure for the hazard functions that define the multi-state model can be chosen by the user. For example, if Cox models are adopted, where each transition $j \rightarrow j'$ consists of transition-specific unspecified baseline hazard function $\lambda_{0j,j'}(\cdot)$ and a 
+The estimation procedure for the hazard functions that defines the multi-state model can be chosen by the user. For example, if Cox models are adopted, where each transition $j \rightarrow j'$ consists of transition-specific unspecified baseline hazard function $\lambda_{0j,j'}(\cdot)$ and a 
 transition-specific vector of regression coefficients $\beta_{j,j'}$, i.e.,
 $$
 \lambda_{j,j'}(t|Z) = \lambda_{0j,j'}(t) \exp(Z^T \beta_{j,j'}) \, ,
 $$
 the estimation procedure is straightforward. Specifically, under transition-specific semi-parametric Cox models, we can easily deal with 
-right censoring and competing events based on the approach of Andersen & Keiding [@Andersen:1991]. Namely, maximization of the partial likelihood function in terms of all the involved  Cox models is done by maximizing the partial likelihood of each transition separately, and temporarily treating competing events as censoring. Thus, we use the standard partial likelihood estimators of $\beta_{j,j'}$ [@Klein:2006] and Breslow estimator of $\Lambda_{0j,j'}(t)=\int_0^t \lambda_{0j,j'}(u)du$ [@Breslow:1972]. 
+right censoring and competing events based on the approach of Andersen & Keiding [@Andersen:1991]. Namely, maximization of the partial likelihood function in terms of all the involved  Cox models is done by maximizing the partial-likelihood of each transition separately, and temporarily treating competing events as censoring. Thus, we use the standard partial-likelihood estimators of $\beta_{j,j'}$ [@Klein:2006] and Breslow estimator of $\Lambda_{0j,j'}(t)=\int_0^t \lambda_{0j,j'}(u)du$ [@Breslow:1972]. 
 Another important issue is left truncation which occurs at each transition that is not the origin state of the subject's path. Bias due to left truncation is eliminated by using the well-known risk-set correction [@Klein:2006]. 
 Recurrent events, which occurs when subjects visit the same state multiple times, are accommodated by the robust standard errors [@Andersen:1982]. 	
 
-Based on the estimates of the regression coefficients and the cumulative baseline hazard functions all the distribution functions above can be estimated by replacing the integrals with sums over the observed failure times, and any unknown parameter is replaced by its estimator. Specifically, let $\tau_{j^*,j}$ be the largest observed event time of transition $j^* \rightarrow j$. Then, 
+Based on the estimates of the regression coefficients and the cumulative baseline hazard functions, all the distribution functions above can be estimated by replacing the integrals with sums over the observed failure times, and any unknown parameter is replaced by its estimator. Specifically, let $\tau_{j^*,j}$ be the largest observed event time of transition $j^* \rightarrow j$. Then, 
 \begin{equation}
     \begin{gathered}
 \widehat{\Pr} (J_N=j | J_C=j^*,Z(0)=Z) \\
@@ -158,7 +158,7 @@ Based on the estimates of the regression coefficients and the cumulative baselin
     \hspace{0.5cm} = \frac{\sum_{t_m \leq t} \exp\left( \widehat\beta_{j^*,j'}^T Z\right) \widehat\lambda_{0j^*,j'}(t_m) \exp \left\{-\sum_{k=1}^{|K_{j^*}|} \widehat\Lambda_{0j^*,k}(t_{m-1})\exp\left( \widehat\beta_{j^*k}^T Z\right) \right\} }{ \sum_{t_m \leq \tau_{j^*,j'}} \exp\left( \widehat\beta_{j^*,j'}^T Z\right) \widehat\lambda_{0j^*,j'}(t_m) \exp \left\{-\sum_{k=1}^{K_{j^*}} \widehat\Lambda_{0j^*,k}(t_{m-1})\exp\left( \widehat\beta_{j^*,k}^T Z\right) \right\} } \, , 
     \end{gathered}
 \end{equation}
-and finally, given a new $\breve{j}$, the estimated probability of staying at state $j'$ less than or equal $t$ time unit is given by
+and finally, given a new $\breve{j}$, the estimated probability of staying at state $j'$ less than or equal $t$ time units is given by
 \begin{equation}
     \begin{gathered}
 \widehat{\Pr} (T\leq t| J_N=\breve{j}, J_C=j' , Z(t')=Z) \\
@@ -167,7 +167,7 @@ and finally, given a new $\breve{j}$, the estimated probability of staying at st
 \end{equation}
 
 ### Other transition-specific models
-Similarly, the user can define other survival models and estimation procedure, such as accelerated failure time model, random survival forests [@Ishwaran:2008] etc, for each transition, as explained in section Costume Fitters above.
+The user can define other survival models and estimation procedures, such as accelerated failure time models, random survival forests [@Ishwaran:2008] etc, for each transition, as explained in section Costume Fitters above.
 
 ## Prediction - Monte Carlo Simulation
 Based on the multi-state model, we reconstruct the complete distribution of the path for a new observation, given the observed covariates $W$. Based on the reconstructed distribution we estimate the probability of visiting each state, 

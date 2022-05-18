@@ -12,7 +12,7 @@ authors:
   - name: Ayya Keshet^[Co-first author] # note this makes a footnote saying 'Co-first author'
     orcid: 0000-0002-1841-7918
     affiliation: "1, 2" # (Multiple affiliations must be quoted)
-  - name: Maka Gorfine^[Corresponding author]
+  - name: Malka Gorfine^[Corresponding author]
     orcid: 0000-0002-1577-6624
     affiliation: 3
 affiliations:
@@ -27,8 +27,8 @@ bibliography: paper.bib
 ---
 
 # Summary
-Multi-state data are common, and could be used to describe trajectories in diverse applications such as a patient's health progression through disease states, pickups during the workday of a taxi driver, or a website browsing trajectory to name a few.
-When faced with such data, a researcher or clinician might seek to characterize the possible transitions between states, their occurrence probabilities, or to predict the trajectory of future observations - given various baseline and time-varying individual covariates (features). By fitting a multi-state model, we can learn the hazard for each specific transition, which would later be used to predict future paths. Predicting paths could be used at a single individual level, for example predicting how long until a cancer patient will be relapse-free given his current health status, or at what probability will a patient end a trajectory at any of the possible states. At the population level paths predictions could be used to estimate how many patients which arrive at the emergency-room will need to be admitted, given their covariates. Moreover, their expected hospitalization duration could also be inferred, and provide planners with anticipated patients load.
+Multi-state survival data are common, and could be used to describe trajectories in diverse applications such as a patient's health progression through disease states, pickups during the workday of a taxi driver, or a website browsing trajectory to name a few.
+When faced with such data, a researcher or clinician might seek to characterize the possible transitions between states, their occurrence probabilities, or to predict the trajectory of future observations given various baseline and time-varying individual covariates (features). By fitting a multi-state model, we can learn the hazard for each specific transition, which would later be used to predict future paths. Predicting paths could be used at a single individual level, for example predicting how long until a cancer patient will be relapse-free given his current health status, or at what probability will a patient end a trajectory at any of the possible states. At the population level paths predictions could be used, for example to estimate how many patients which arrive at the emergency-room will need to be admitted, given their covariates. Moreover, their expected hospitalization duration could also be inferred, and provide planners with anticipated patients load.
 
 
 # Statement of need
@@ -37,8 +37,8 @@ When faced with such data, a researcher or clinician might seek to characterize 
 Features of this software include:
 \begin{itemize}
     \item Fitting competing risks and multi-stated models based on various types of survival analysis (time-to-event) such as Cox proportional hazards models or machine learning models, while taking into account right censoring, competing events, recurrent events, left truncation, and time-dependent covariates. The number of states in the model, and the possible transitions between them will be determined by the user, as well as the number of competing risks when fitting a competing risks model.    
-    \item Running Monte-carlo simulations (in parallel computation) for paths emitted by the trained model and extracting various summary statistics and plots.
-    \item Loading or configuring a pre-defined model and generating simulated multi-state survival data in terms of random paths using model parameters, which could be highly useful as a research tool.
+    \item Running Monte-Carlo simulations (in parallel computation) for paths emitted by the trained model and extracting various summary statistics and plots.
+    \item Loading or configuring a pre-defined multi-state model and generating simulated multi-state survival data in terms of random paths, which could be highly useful as a research tool.
     \item Modularity and compatibility for different time-to-event models such as Survival Forests and other custom ML models provided by the user.
 \end{itemize}
 The package is designed to allow modular usage by both experienced researchers and non-expert users. In addition to fitting a multi-state model for a given data - `PyMSM` allows the user to simulate trajectories, thus creating a multi-state survival data-set, from a predefined model. This could be a valuable research tool - both for sharing sensitive simulated individual data and as a tool for any downstream task which needs individual trajectories.

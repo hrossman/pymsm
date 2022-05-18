@@ -41,27 +41,27 @@ Features of this software include:
     \item Loading or configuring a pre-defined multi-state model and generating simulated multi-state survival data in terms of random paths, which could be highly useful as a research tool.
     \item Modularity and compatibility for different time-to-event models such as Survival Forests and other custom ML models provided by the user.
 \end{itemize}
-The package is designed to allow modular usage by both experienced researchers and non-expert users. In addition to fitting a multi-state model for a given data - `PyMSM` allows the user to simulate trajectories, thus creating a multi-state survival data-set, from a predefined model. This could be a valuable research tool - both for sharing sensitive simulated individual data and as a tool for any downstream task which needs individual trajectories.
+The package is designed to allow modular usage by both experienced researchers and non-expert users. In addition to fitting a multi-state model for a given data, `PyMSM` allows the user to simulate trajectories, thus creating a multi-state survival data-set, from a predefined model. This could be a valuable research tool, both for sharing sensitive simulated individual data and as a tool for any downstream task which needs individual trajectories.
 To the authors best knowledge, this is the first open-source multi-state model tool that allows fitting of such models while also dealing with important concepts such as right censoring, competing events, recurrent events, left truncation, and time-dependent covariates.
 
 # Usage examples
-This project is based on methods first introduced during 2020 for predicting national COVID-19 hospitalizations in Israel. Important health policy applications based on these methods were built and used by government policymakers throughout the pandemic. For example: help assess hospital resource utilization [@Roimi:2021], associations between high hospital load and excess deaths [@Rossman:2021].  
-A similar R version of this package is available in Roimi 2021, yet this is the first Python version to be released as an open-source package containing extended features and use cases.
-Other usage examples are provided in the software package docs such as breast cancer state transitions (Rotterdam dataset), AIDs competing risk data, disease stage data from the European Society for Blood and Marrow Transplantation (EBMT) and COVID-19 national hospitalizations.  
+This project is based on methods first introduced during 2020 for predicting national COVID-19 hospitalizations in Israel. Important health policy applications based on these methods were built and used by government policymakers throughout the pandemic. For example, help assess hospital resource utilization [@Roimi:2021], and associations between high hospital load and excess deaths [@Rossman:2021]. 
+A similar R version of this package is available in Roimi et. al. 2021, yet this is the first Python version to be released as an open-source package containing extended features and use cases.
+Other usage examples are provided in the software package docs such as breast cancer state transitions (Rotterdam dataset - see Figure 1), AIDS competing-risk data, disease-stage data from the European Society for Blood and Marrow Transplantation (EBMT) and COVID-19 national hospitalizations.  
 
-![Transitions for the Rotterdam example dataset](rotterdam.png){ width=65% }
+![A multi-state model of the Rotterdam breast-cancer data, 2790 observations. Numbers next to arrows indicate number of observed transitions. ](rotterdam.png){ width=65% }
 
 # The `PyMSM` package
 A brief overview of the package functionality is described below. Detailed explanations of the API, along with four full usage examples on real data are available in the package documentation at https://hrossman.github.io/pymsm/.
 
 ## Model fitting
-Fitting a multi-state model to a data-set requires only a few simple steps;
+Fitting a multi-state model to a data-set requires only a few simple steps:
 \begin{itemize}
-    \item Preparaing a data-set in one of two formats
-    \item Defining a function for updating time-dependent covariates
-    \item Define covariates' columns
-    \item Define terminal states
-    \item Define a minimum number of data transitions needed to fit a transition
+    \item Preparaing a data-set in one of two formats.
+    \item Defining a function for updating time-dependent covariates.
+    \item Define covariates' columns.
+    \item Define terminal states.
+    \item Define a minimum number of data transitions needed to fit a transition.
 \end{itemize}  
 Once all the above was done, the user can fit a multi-state model to the data-set, and use it for downstream analyses.
 

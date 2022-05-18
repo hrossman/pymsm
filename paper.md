@@ -59,26 +59,26 @@ Fitting a multi-state model to a data-set requires only a few simple steps:
 \begin{itemize}
     \item Preparaing a data-set in one of two formats.
     \item Defining a function for updating time-dependent covariates.
-    \item Define covariates' columns.
-    \item Define terminal states.
-    \item Define a minimum number of data transitions needed to fit a transition.
+    \item Defining covariates' columns.
+    \item Defining terminal states.
+    \item Defining a minimum number of data transitions needed to fit a transition.
 \end{itemize}  
-Once all the above was done, the user can fit a multi-state model to the data-set, and use it for downstream analyses.
+Once all the above is done, the user can fit a multi-state model to the data-set, and use it for downstream analyses.
 
 ## Path sampling
-Using the previously fitted multi-state model, the user can sample paths using Monte Carlo simulations. Providing covariates, initial state and time - next states and times spent at each state are sequentially sampled via the entire estimated multi-state model. The process concludes when the path arrives at a terminal state or the number of transitions exceeds a predefined maximum. Once a large amount of multiple samplings has been done for every observation, the user can explore statistics such as the probability of being in any of the states or the time spent in each state.
+Using the previously fitted multi-state model, the user can sample paths using Monte-Carlo simulations. Given covariates, initial state and time, next states and times spent at each future state are sequentially sampled via the entire estimated multi-state model. The process concludes when the path arrives at a terminal state or the number of transitions exceeds a predefined maximum. Once a large number of paths have been sampled for each observation, the user can explore summary statistics such as the probability of being in any of the states or the median time spent in each state.
 
 ## Costume fitters
-`PyMSM` works with Cox proportional hazards models by default through the lifelines [@Davidson-Pilon:2019] Python library, but also allows configuration of custom event-specific-fitters.
-EventSpecificFitter class is an abstract class which defines the API which needs to be implemented by the user.
+`PyMSM` works with Cox proportional hazards models by default through the lifelines [@Davidson-Pilon:2019] Python library, but also allows configuration of custom event-specific fitters.
+EventSpecificFitter class is an abstract class which defines the API and needs to be implemented by the user.
 
 Some custom fitters are available off-the-shelf such as survival trees [@Ishwaran:2008] through the `scikit-survival` Python package [@Pölsterl:2020].
 
 ## Simulating Multi-state Survival Data
-Using a pre-loaded or a pre-defined model, `PyMSM` provides an API to generate simulated data of random trajectories using the model. Creating a simulated multi-state paths data-set could serve as a useful research tool in cases where data sharing is limited due to privacy limitations, or as a generation tool for any downstream task which requires individual trajectories.
+Using a pre-loaded or a pre-defined multi-state model, `PyMSM` provides an API to generate simulated data of random trajectories. Creating a simulated multi-state paths data-set could serve as a useful research tool in cases where data sharing is limited due to privacy limitations, or as a generation tool for any downstream task which requires individual trajectories.
 
 # Models and Methods
-In this section we give an overview of the models and methods underlying the statistics and computations performed in `PyMSM`.
+In this section we give an overview of the multi-state models and methods underlying the statistical analysis and computations performed in `PyMSM`.
 
 ## Introduction
 The description of the content of `PyMSM` would be easier to digest under a certain setting.  Thus, to set the stage, we adopt the multi-state model of Roimi [@Roimi:2021]. Specifically, assume a multi-state model consists of four states $A,B,C,D$ and six possible transitions:
@@ -89,7 +89,7 @@ Each transition is characterizes by a transition-specific hazard function, also 
 $$
 \lambda_{A,B} (t|Z) \,\,\, \lambda_{A,C} (t|Z) \,\,\, 	\lambda_{A,D} (t|Z) \,\,\, \lambda_{B,A} (t|Z)  \,\,\, \lambda_{B,D} (t|Z) \,\,\,  \lambda_{C,A} (t|Z) \,
 $$
-for $t > 0$ and $Z$ vector of covariates. Although $Z$ is shared by the six models above,  it does not imply that identical covariates must be used in these models. For example, in Cox models with   transition-dependent   regression coefficient vectors,  one can set any specific coefficient to 0 for excluding  the corresponding covariate.  
+for $t > 0$ and a $Z$ vector of covariates. Although $Z$ is shared by the six models above,  it does not imply that identical covariates must be used in these models. For example, in Cox models with   transition-dependent   regression coefficient vectors,  one can set any specific coefficient to 0 for excluding  the corresponding covariate.  
 
 Let $J_C$ and $J_N$ denote the current and next states, respectively, and $T$ denotes the transition time. Assume the journey of an observation in the system described by the multi-state model starts at state $j^*$ with vector of baseline covariates $W$. Let $Z(t)$ be a time-dependent vector of covariates, where
 $$ 

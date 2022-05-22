@@ -28,7 +28,7 @@ bibliography: paper.bib
 
 # Summary
 Multi-state survival data are common, and could be used to describe trajectories in diverse applications such as a patient's health progression through disease states, pickups during the workday of a taxi driver, or a website browsing trajectory to name a few.
-When faced with such data, a researcher or clinician might seek to characterize the possible transitions between states, their occurrence probabilities, or to predict the trajectory of future observations given various baseline and time-varying individual covariates (features). By fitting a multi-state model, we can learn the hazard for each specific transition, which would later be used to predict future paths. Predicting paths could be used at a single individual level, for example predicting how long until a cancer patient will be relapse-free given his current health status, or at what probability will a patient end a trajectory at any of the possible states. At the population level paths predictions could be used, for example to estimate how many patients which arrive at the emergency-room will need to be admitted, given their covariates. Moreover, their expected hospitalization duration could also be inferred, and provide planners with anticipated patients load.
+When faced with such data, a researcher or clinician might seek to characterize the possible transitions between states, their occurrence probabilities, or to predict the trajectory of future observations given various baseline and time-varying individual covariates (features). By fitting a multi-state model, we can learn the hazard for each specific transition, which would later be used to predict future paths. Predicting paths could be used at a single individual level, for example predicting how long will a cancer patient be relapse-free given his current health status, or at what probability will a patient end a trajectory at any of the possible states. At the population level paths predictions could be used, for example, to estimate how many patients which arrive at the emergency-room will need to be admitted, given their covariates. Moreover, their expected hospitalization duration could also be inferred, and provide planners with anticipated patients load.
 
 
 # Statement of need
@@ -41,7 +41,7 @@ Features of this software include:
     \item Loading or configuring a pre-defined multi-state model and generating simulated multi-state survival data in terms of random paths, which could be highly useful as a research tool.
     \item Modularity and compatibility for different time-to-event models such as Survival Forests and other custom ML models provided by the user.
 \end{itemize}
-The package is designed to allow modular usage by both experienced researchers and non-expert users. In addition to fitting a multi-state model for a given data, `PyMSM` allows the user to simulate trajectories, thus creating a multi-state survival data-set, from a predefined model. This could be a valuable research tool, both for sharing sensitive simulated individual data and as a tool for any downstream task which needs individual trajectories.
+The package is designed to allow modular usage by both experienced researchers and non-expert users. In addition to fitting a multi-state model for a given data-set, `PyMSM` allows the user to simulate trajectories, thus creating a multi-state survival data-set, from a predefined model. This could be a valuable research tool, both for sharing sensitive simulated individual data and as a tool for any downstream task which needs individual trajectories.
 To the authors best knowledge, this is the first open-source multi-state model tool that allows fitting of such models while also dealing with important concepts such as right censoring, competing events, recurrent events, left truncation, and time-dependent covariates.
 
 # Usage examples
@@ -57,7 +57,7 @@ A brief overview of the package functionality is described below. Detailed expla
 ## Model fitting
 Fitting a multi-state model to a data-set requires only a few simple steps:
 \begin{itemize}
-    \item Preparaing a data-set in one of two formats.
+    \item Preparing a data-set in one of two formats.
     \item Defining a function for updating time-dependent covariates.
     \item Defining covariates' columns.
     \item Defining terminal states.
@@ -66,10 +66,10 @@ Fitting a multi-state model to a data-set requires only a few simple steps:
 Once all the above is done, the user can fit a multi-state model to the data-set, and use it for downstream analyses.
 
 ## Path sampling
-Using the previously fitted multi-state model, the user can sample paths using Monte-Carlo simulations. Given covariates, initial state and time, next states and times spent at each future state are sequentially sampled via the entire estimated multi-state model. The process concludes when the path arrives at a terminal state or the number of transitions exceeds a predefined maximum. Once a large number of paths have been sampled for each observation, the user can explore summary statistics such as the probability of being in any of the states or the median time spent in each state.
+Using the previously fitted multi-state model, the user can sample paths using Monte-Carlo simulations. Given covariates, initial state and time, next states and times spent at each future state are sequentially sampled via the entire estimated multi-state model. The process concludes when the path arrives at a terminal state or the number of transitions exceeds a pre-defined maximum. Once a large number of paths have been sampled for each observation, the user can explore summary statistics such as the probability of being in any of the states or the median time spent in each state.
 
 ## Costume fitters
-`PyMSM` works with Cox proportional hazards models by default through the lifelines [@Davidson-Pilon:2019] Python library, but also allows configuration of custom event-specific fitters.
+`PyMSM` works with Cox proportional hazards models by default using the lifelines [@Davidson-Pilon:2019] Python library, but also allows configuration of custom event-specific fitters.
 EventSpecificFitter class is an abstract class which defines the API and needs to be implemented by the user.
 
 Some custom fitters are available off-the-shelf such as survival trees [@Ishwaran:2008] through the `scikit-survival` Python package [@Pölsterl:2020].
@@ -89,7 +89,7 @@ Each transition is characterizes by a transition-specific hazard function, also 
 $$
 \lambda_{A,B} (t|Z) \,\,\, \lambda_{A,C} (t|Z) \,\,\, 	\lambda_{A,D} (t|Z) \,\,\, \lambda_{B,A} (t|Z)  \,\,\, \lambda_{B,D} (t|Z) \,\,\,  \lambda_{C,A} (t|Z) \,
 $$
-for $t > 0$ and a $Z$ vector of covariates. Although $Z$ is shared by the six models above,  it does not imply that identical covariates must be used in these models. For example, in Cox models with   transition-dependent   regression coefficient vectors,  one can set any specific coefficient to 0 for excluding  the corresponding covariate.  
+for $t > 0$ and a $Z$ vector of covariates. Although $Z$ is shared by the six models above,  it does not imply that identical covariates must be used in these models. For example, in Cox models with   transition-dependent   regression coefficient vectors,  one can set any specific coefficient to zero for excluding  the corresponding covariate.  
 
 Let $J_C$ and $J_N$ denote the current and next states, respectively, and $T$ denotes the transition time. Assume the journey of an observation in the system described by the multi-state model starts at state $j^*$ with a vector of baseline covariates $W$. Let $Z(t)$ be a time-dependent vector of covariates, where
 $$ 
@@ -133,7 +133,7 @@ All the above, set the main multi-state model components required for prediction
 ## Estimation
 
 ### Cox transition-specific hazard models
-The estimation procedure for the hazard functions that defines the multi-state model can be chosen by the user. For example, if Cox models are adopted, where each transition $j \rightarrow j'$ consists of transition-specific unspecified baseline hazard function $\lambda_{0j,j'}(\cdot)$ and a 
+The estimation procedure for the hazard functions that define the multi-state model can be chosen by the user. For example, if Cox models are adopted, where each transition $j \rightarrow j'$ consists of transition-specific unspecified baseline hazard function $\lambda_{0j,j'}(\cdot)$ and a 
 transition-specific vector of regression coefficients $\beta_{j,j'}$, i.e.,
 $$
 \lambda_{j,j'}(t|Z) = \lambda_{0j,j'}(t) \exp(Z^T \beta_{j,j'}) \, ,
@@ -170,7 +170,7 @@ and finally, given a new $\breve{j}$, the estimated probability of staying at st
 The user can define other survival models and estimation procedures, such as accelerated failure time models, random survival forests [@Ishwaran:2008] etc, for each transition, as explained in section Costume Fitters above.
 
 ## Prediction - Monte-Carlo Simulation
-Based on the multi-state model, we reconstruct the complete distribution of the path for a new observation, given the observed covariates $W$. Based on the reconstructed distribution we estimate the probability of visiting each state, the total length of stay at each state, and the total length of stay in the entire system.
+Based on the multi-state model, we reconstruct the complete distribution of the path for a new observation, given the observed covariates $W$. Based on the reconstructed distribution we estimate the probability of visiting each state, the total length of stay at each state and the total length of stay in the entire system.
 
 The above quantities can be predicted before entering the system and also during the stay at one of the systems' states, while correctly taking into account the accumulated time already spent in the system and $Z(\cdot)$.
 
@@ -186,7 +186,7 @@ This is done by sampling $U \sim Uniform[0,1]$, equating
 $$
 U=\widehat{\Pr} (T\leq t| J_N=j', J_C=j^* , Z(0)=Z)
 $$ 
-and solving for $t$. Denote the sampled time by $t'$ and update $Z(t')$. In case $j'$, is a terminal state, the sampling path ends here. Otherwise, the current state is updated to $J_C=j'$, and the following state is sampled by $p_{j|j',Z(t')}$, $j=1 \in  K_{j'}$, 
+and solving for $t$. Denote the sampled time by $t'$ and update $Z(t')$. In case $j'$ is a terminal state, the sampling path ends here. Otherwise, the current state is updated to $J_C=j'$, and the following state is sampled by $p_{j|j',Z(t')}$, $j=1 \in  K_{j'}$, 
 $$
 p_{j|j',Z}= \\
 \frac{\sum_{t'<t_m \leq \tau_{j',j}} \exp\left(\widehat\beta_{j',j}^T Z\right)\widehat\lambda_{0j',j}(t_m)\exp\left\{-\sum_{k=1}^{|K_{j'}|}\widehat\Lambda_{0j',k}(t_{m-1})\exp\left(\widehat\beta_{j',k}^T Z\right) \right\} }
@@ -194,9 +194,9 @@ p_{j|j',Z}= \\
 $$
 
 ## Generating Random Multistate Survival Data
-`PyMSM` allows the user to predefine a multi-state model. For example, for Cox models, the user should provide transition-specific baseline hazards, vectors of regression coefficients, and a time-varying covariates update function if needed. After providing this information, the user can then simulate trajectories, thus creating a new multi-state data-set which may be valuable for a variety of purposes.
+`PyMSM` allows the user to pre-define a multi-state model. For example, for Cox models, the user should provide transition-specific baseline hazards, vectors of regression coefficients, and a time-varying covariates update function if needed. After providing this information, the user can then simulate trajectories, thus creating a new multi-state data-set which may be valuable for a variety of purposes.
 
 # Acknowledgemnts
-This project is based on Roimi 2021. We thank Jonathan Somer, Asaf Ben Arie, Rom Gutman, Tomer Meir, & Uri Shalit for their work on the model, R code and valuable discussions. The work was partially supported by the Israel Science Foundation (ISF) grant number 767/21 and by a grant from the Tel Aviv University Center for AI and Data Science (TAD).
+This project is based on Roimi 2021. We thank Jonathan Somer, Asaf Ben Arie, Rom Gutman, Tomer Meir and Uri Shalit for their work on the model, R code and valuable discussions. The work was partially supported by the Israel Science Foundation (ISF) grant number 767/21 and by a grant from the Tel Aviv University Center for AI and Data Science (TAD).
 
 # References

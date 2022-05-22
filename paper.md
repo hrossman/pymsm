@@ -190,7 +190,7 @@ and solving for $t$. Denote the sampled time by $t'$ and update $Z(t')$. In case
 $$
 p_{j|j',Z}= \\
 \frac{\sum_{t'<t_m \leq \tau_{j',j}} \exp\left(\widehat\beta_{j',j}^T Z\right)\widehat\lambda_{0j',j}(t_m)\exp\left\{-\sum_{k=1}^{|K_{j'}|}\widehat\Lambda_{0j',k}(t_{m-1})\exp\left(\widehat\beta_{j',k}^T Z\right) \right\} }
-{\sum_{\widehat{j}=1}^{|K_{j'}|} \sum_{t'<t_m \leq \tau_{j',\widehat{j}}} \exp\left(\widehat\beta_{j',\widehat{j}}^T Z\right) \widehat\lambda_{0j',\widehat{j}}(t_m) \exp\left\{-\sum_{k=1}^{|K_{j'}|}\widehat\Lambda_{0j',k}(t_{m-1})\exp\left(\widehat\beta_{j',k}^T Z\right) \right\}} \, .
+{\sum_{\widetilde{j}=1}^{|K_{j'}|} \sum_{t'<t_m \leq \tau_{j',\widetilde{j}}} \exp\left(\widehat\beta_{j',\widetilde{j}}^T Z\right) \widehat\lambda_{0j',\widetilde{j}}(t_m) \exp\left\{-\sum_{k=1}^{|K_{j'}|}\widehat\Lambda_{0j',k}(t_{m-1})\exp\left(\widehat\beta_{j',k}^T Z\right) \right\}} \, .
 $$
 
 ## Generating Random Multistate Survival Data

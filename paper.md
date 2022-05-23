@@ -49,7 +49,7 @@ This project is based on methods first introduced during 2020 for predicting nat
 A similar R version of this package is available in Roimi et. al. 2021, yet this is the first Python version to be released as an open-source package containing extended features and use cases.
 Other usage examples are provided in the software package docs such as breast cancer state transitions (Rotterdam dataset - see Figure 1), AIDS competing-risk data, disease-stage data from the European Society for Blood and Marrow Transplantation (EBMT) and COVID-19 national hospitalizations.  
 
-![A multi-state model of the Rotterdam breast-cancer data, 2790 observations. Numbers next to arrows indicate number of observed transitions. Graph automatically created by PyMSM after deining a data-set.](rotterdam.png){ width=65% }
+![A multi-state model of the Rotterdam breast-cancer data, 2790 observations. Numbers next to arrows indicate number of observed transitions. Graph automatically created by PyMSM after defining a data-set.](rotterdam.png){ width=65% }
 
 # The `PyMSM` package
 A brief overview of the package functionality is described below. Detailed explanations of the API, along with four full usage examples on real data are available in the package documentation at https://hrossman.github.io/pymsm/.
@@ -93,7 +93,7 @@ for $t > 0$ and a $Z$ vector of covariates. Although $Z$ is shared by the six mo
 
 Let $J_C$ and $J_N$ denote the current and next states, respectively, and $T$ denotes the transition time. Assume the journey of an observation in the system described by the multi-state model starts at state $j^*$ with a vector of baseline covariates $W$. Let $Z(t)$ be a time-dependent vector of covariates, where
 $$ 
-Z(T) = (W^T,\widetilde{W}(T))
+Z(T)^T = (W^T,\widetilde{W}(T)^T)
 $$
 and $\widetilde{W}(t)$ is a time-dependent vector of covariates known at the entrance to the new state. Let $K_{j^*}$ be the set of possible states that can be reached directly from state $j^*$. Then, the conditional probability of transition $j^* \rightarrow j$, $j \in K_{j^*}$, by time $t$ given $Z(0)=Z$ is given by
 $$

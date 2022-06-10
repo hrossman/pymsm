@@ -16,7 +16,7 @@ stateDiagram-v2
     A --> C
 ```
 
-2) An illness-death model with the same three states but three possible transitions $A\rightarrowB$, $A\rightarrowC$ and $B\rightarrowC$ . 
+2) An illness-death model with the same three states but three possible transitions $A \rightarrow B$, $A \rightarrow C$ and $B \rightarrow C$ . 
 
 ``` mermaid
 stateDiagram-v2
@@ -29,9 +29,8 @@ stateDiagram-v2
 
 
 The description of the content of `PyMSM` would be easier to digest under a certain setting.  Thus, to set the stage, we adopt the multistate model of [Roimi et. al. (2021)](https://academic.oup.com/jamia/article/28/6/1188/6105188). Specifically, assume a multi-state model consists of four states $A,B,C,D$ and six possible transitions:
-$$
-A \rightarrow B \,\,\,\,\,\,       A \rightarrow C   \,\,\,\,\,\,     A \rightarrow D   \,\,\,\,\,\,    B \rightarrow A \,\,\,\,\,\,    B \rightarrow D \,\,\,\,\,\,   C \rightarrow A \, .
-$$
+$A \rightarrow B$,       $A \rightarrow C$,     $A \rightarrow D$,    $B \rightarrow A$,    $B \rightarrow D$,   $C \rightarrow A$.
+
 
 ``` mermaid
 stateDiagram-v2

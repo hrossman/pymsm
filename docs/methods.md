@@ -25,7 +25,7 @@ stateDiagram-v2
     B --> C
 ```
 
-3) Or any other more involved multistate framework (add figures of these models). 
+3) Or any other more involved multistate framework. 
 
 
 The description of the content of `PyMSM` would be easier to digest under a certain setting.  Thus, to set the stage, we adopt the multistate model of [Roimi et. al. (2021)](https://academic.oup.com/jamia/article/28/6/1188/6105188). Specifically, assume a multi-state model consists of four states $A,B,C,D$ and six possible transitions:
@@ -41,29 +41,37 @@ stateDiagram-v2
     B --> D
     C --> A
 ```
-Each transition is characterizes by a transition-specific hazard function, also known as a cause-specific hazard function,
+
+Each transition is characterized by a transition-specific hazard function, also known as a cause-specific hazard function,
+
 $$
 \lambda_{A,B} (t|Z) \,\,\, \lambda_{A,C} (t|Z) \,\,\, 	\lambda_{A,D} (t|Z) \,\,\, \lambda_{B,A} (t|Z)  \,\,\, \lambda_{B,D} (t|Z) \,\,\,  \lambda_{C,A} (t|Z) \,
 $$
-for $t > 0$ and $Z$ vector of covariates. Although $Z$ is shared by the six models above,  it does not imply that identical covariates must be used in these models. For example, in Cox models with   transition-dependent   regression coefficient vectors,  one can set any specific coefficient to 0 for excluding  the corresponding covariate.  
 
+for $t > 0$ and a $Z$ vector of covariates. Although $Z$ is shared by the six models above,  it does not imply that identical covariates must be used in these models. For example, in Cox models with   transition-dependent   regression coefficient vectors,  one can set any specific coefficient to zero for excluding  the corresponding covariate.  
 
-Let $J_C$ and $J_N$ denote the current and next states, respectively, and $T$ denotes the transition time. Assume the journey of an observation in the system described by the multi-state model starts at state $j^*$ with vector of baseline covariates $W$. Let $Z(t)$ be a time-dependent vector of covariates, where
+Let $J_C$ and $J_N$ denote the current and next states, respectively, and $T$ denotes the transition time. Assume the journey of an observation in the system described by the multi-state model starts at state $j^\ast$ with a vector of baseline covariates $W$. Let $Z(t)$ be a time-dependent vector of covariates, where
+
 $$ 
-Z(t) = (W^T,\widetilde{W}(t))
+Z(T)^T = (W^T,\widetilde{W}(T)^T)
 $$
-and $\widetilde{W}(t)$ is a time-dependent vector of covariates known at the entrance to the new state. Let $K_{j^*}$ be the set of possible states that can be reached directly from state $j^*$. Then, the conditional probability of transition $j^* \rightarrow j$, $j \in K_{j^*}$, by time $t$ given $Z(0)=Z$ is given by
+
+and $\widetilde{W}(t)$ is a time-dependent vector of covariates known at the entrance to the new state. Let $K_{j^\ast}$ be the set of possible states that can be reached directly from state $j^\ast$. Then, the conditional probability of transition $j^\ast \rightarrow j$, $j \in K_{j^\ast}$, by time $t$ given $Z(0)=Z$ is given by
+
 $$
-\Pr(T \leq t, J_N=j|J_C=j^*,Z(0)=Z) = \int_0^t \lambda_{j^*,j}(u|Z)\exp\left\{-\sum_{k=1}^{|K_{j^*}|} \Lambda_{j^*,k}(u-|Z) \right\} du \, ,
+\Pr(T \leq t, J_N=j|J_C=j^\ast,Z(0)=Z) = \int_0^t \lambda_{j^\ast,j}(u|Z)\exp\left\{-\sum_{k=1}^{|K_{j^\ast}|} \Lambda_{j^\ast,k}(u-|Z) \right\} du
 $$
-where $u-$ is a time  just prior to $u$, $|K_{j^*}|$ is the cardinality of $K_{j^*}$ and  $\Lambda_{j,k}(t|Z)=\int_0^t \lambda_{j,k}(u|Z) du$ is the cumulative hazard function. In our example, if the first state $j^*=A$, $K_{j^*}=\{B,C,D\}$, and 
+
+where $u-$ is a time  just prior to $u$, $|K_{j^\ast}|$ is the cardinality of $K_{j^\ast}$ and  $\Lambda_{j,k}(t|Z)=\int_0^t \lambda_{j,k}(u|Z) du$ is the cumulative hazard function. In our example, if the first state $j^\ast=A$, $K_{j^\ast}=\{B,C,D\}$, and 
 
 $$
 \Pr(T \leq t, J_N=j|J_C=A,Z(0)=Z) = 
-$$  
 $$
-\int_0^t \lambda_{A,j}(u|Z)\exp\left\{- \Lambda_{A,B}(u-|Z) - \Lambda_{A,C}(u-|Z) - \Lambda_{A,D}(u-|Z)\right\} du \, ,
+
 $$
+\int_0^t \lambda_{A,j}(u|Z)\exp\left\{- \Lambda_{A,B}(u-|Z) - \Lambda_{A,C}(u-|Z) - \Lambda_{A,D}(u-|Z)\right\} du \, .
+$$
+
 
 The marginal probability of transition $j^* \rightarrow j$ is given by
 $$

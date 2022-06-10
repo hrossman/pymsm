@@ -16,7 +16,7 @@ stateDiagram-v2
     A --> C
 ```
 
-2) An illness-death model with the same three states but three possible transitions $A \rightarrow B$, $A \rightarrow C$ and $B \rightarrow C$ . 
+2) An illness-death model with the same three states but three possible transitions $A\rightarrowB$, $A\rightarrowC$ and $B\rightarrowC$ . 
 
 ``` mermaid
 stateDiagram-v2

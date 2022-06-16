@@ -68,7 +68,7 @@ Once all the above is done, the user can fit a multi-state model to the data-set
 ## Path sampling
 Using the previously fitted multi-state model, the user can sample paths using Monte-Carlo simulations. Given covariates, initial state and time, next states and times spent at each future state are sequentially sampled via the entire estimated multi-state model. The process concludes when the path arrives at a terminal state or the number of transitions exceeds a pre-defined maximum. Once a large number of paths have been sampled for each observation, the user can explore summary statistics such as the probability of being in any of the states or the median time spent in each state.
 
-## Costume fitters
+## Custom fitters
 `PyMSM` works with Cox proportional hazards models by default using the lifelines [@Davidson-Pilon:2019] Python library, but also allows configuration of custom event-specific fitters.
 EventSpecificFitter class is an abstract class which defines the API and needs to be implemented by the user.
 
@@ -167,7 +167,7 @@ and finally, given a new $\breve{j}$, the estimated probability of staying at st
 \end{equation}
 
 ### Other transition-specific models
-The user can define other survival models and estimation procedures, such as accelerated failure time models, random survival forests [@Ishwaran:2008] etc, for each transition, as explained in section Costume Fitters above.
+The user can define other survival models and estimation procedures, such as accelerated failure time models, random survival forests [@Ishwaran:2008] etc, for each transition, as explained in section Custom Fitters above.
 
 ## Prediction - Monte-Carlo Simulation
 Based on the multi-state model, we reconstruct the complete distribution of the path for a new observation, given the observed covariates $W$. Based on the reconstructed distribution we estimate the probability of visiting each state, the total length of stay at each state and the total length of stay in the entire system.

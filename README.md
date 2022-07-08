@@ -56,8 +56,7 @@ patient_paths = multi_state_model.run_monte_carlo_simulation(
                   current_time=0,
                   n_random_samples=10_000,
                   max_transitions=10,
-                  n_jobs=4,
-                  print_paths=True)
+                  n_jobs=4)
 ```
 
 ```mermaid

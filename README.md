@@ -35,28 +35,29 @@ Requires Python >=3.8
 ## Quick example
 
 ```py linenums="1"
-# Load data (See Rotterdam example for full details)
-from pymsm.datasets import prep_rotterdam
-dataset, states_labels = prep_rotterdam()
+# Load COVID hospitalization data 
+from pymsm.datasets import prep_covid_hosp_data
+dataset, state_labels = prep_covid_hosp_data()
 
-# Define terminal states
-terminal_states = [3]
-
-#Init MultistateModel
+# Init MultistateModel
 from pymsm.multi_state_competing_risks_model import MultiStateModel
-multi_state_model = MultiStateModel(dataset,terminal_states)
+multi_state_model = MultiStateModel(
+                      dataset,
+                      terminal_states = [4],
+                      covariate_names=["is_male", "age", "was_severe"])
 
 # Fit model to data
 multi_state_model.fit()
 
-# Run Monte-Carlo simulation and sample paths
-mcs = multi_state_model.run_monte_carlo_simulation(
-              sample_covariates = dataset[0].covariates.values,
-              origin_state = 1,
-              current_time = 0,
-              max_transitions = 2,
-              n_random_samples = 10,
-              print_paths=True)
+# Run Monte-Carlo simulation for a single patient and sample paths
+patient_paths = multi_state_model.run_monte_carlo_simulation(
+                  sample_covariates=pd.Series({"is_male":0, "age":75, "was_severe":0}),
+                  origin_state=2,
+                  current_time=0,
+                  n_random_samples=10_000,
+                  max_transitions=10,
+                  n_jobs=4,
+                  print_paths=True)
 ```
 
 ```mermaid

@@ -62,12 +62,16 @@ patient_paths = multi_state_model.run_monte_carlo_simulation(
 
 ```mermaid
     stateDiagram-v2
-    s1 : (1) Primary surgery
-    s2 : (2) Disease recurrence
-    s3 : (3) Death
-    s1 --> s2: 1518 
-    s1 --> s3: 195 
-    s2 --> s3: 1077 
+    s1 : (1) Discharged\Recovered
+    s2 : (2) Mild or Moderate
+    s3 : (3) Severe
+    s4 : (4) Deceased
+    s1 --> s2: 98 
+    s2 --> s1: 2135 
+    s2 --> s3: 275 
+    s2 --> s4: 52 
+    s3 --> s2: 193 
+    s3 --> s4: 135 
 ```  
 
 

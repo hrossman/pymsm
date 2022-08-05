@@ -81,6 +81,8 @@ nav:
       - api/multistate_model.md
       - api/multistate_simulator.md
       - api/pathobject.md
+    - Paper draft:
+      - preprint_PyMSM.pdf
 
 
 plugins:

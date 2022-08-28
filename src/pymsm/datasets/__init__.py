@@ -316,7 +316,7 @@ def prep_covid_hosp_data():
     # rename states
     states_mapper = {0: 0, 16: 1, 23: 2, 4: 3, 5: 4}
     state_labels = {
-        1: "Discharged\Recovered",
+        1: "Discharged or Recovered",
         2: "Mild or Moderate",
         3: "Severe",
         4: "Deceased",

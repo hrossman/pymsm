@@ -29,8 +29,14 @@ Features include:
 ```console
 pip install pymsm
 ```
+Requires Python >=3.8.  
 
-Requires Python >=3.8
+Alternatively if you want to work with the latest development version, you can also directly install it from GitHub.
+To do that, you will need to 
+1. Clone the repository to `REPO_FOLDER` (choose your own location)
+2. Got to the location of the repository `cd $REPO_FOLDER` (Note! Not the pymsm folder, but the one above)
+3. Run `pip install -e pymsm`. This imports the package for your Python interpreter
+
 
 ## Quick example
 

@@ -34,6 +34,8 @@ def test_rotterdam():
         n_jobs=None,
     )
 
+    assert len(all_mcs)==N_SAMPLES
+
 
 def test_ebmt():
     # load and prep data
@@ -69,6 +71,8 @@ def test_ebmt():
         max_transitions=10,
         print_paths=False,
     )
+
+    assert len(mc_paths)==N_SAMPLES
 
 
 def test_covid_hosp():
@@ -158,3 +162,6 @@ def test_covid_hosp():
     los = np.array(
         [path_total_time_at_states(path, states=[2, 3]) for path in mc_paths]
     )
+    print(los)
+
+    assert len(mc_paths)==10

@@ -1,3 +1,5 @@
+N_SAMPLES = 5
+
 def test_msm_sim():
     # Load Rotterdam data and fit a model
     from pymsm.datasets import prep_rotterdam
@@ -46,11 +48,13 @@ def test_msm_sim():
         sample_covariates=dataset[0].covariates.values,
         origin_state=1,
         current_time=2,
-        n_random_samples=3,
+        n_random_samples=N_SAMPLES,
         max_transitions=10,
         print_paths=True,
         n_jobs=1,
     )
+
+    assert len(sim_paths)==N_SAMPLES
 
 
 def test_sim_on_rossi():
@@ -100,3 +104,5 @@ def test_sim_on_rossi():
         max_transitions=10,
         print_paths=True,
     )
+
+    assert len(mc_paths)==N_SAMPLES

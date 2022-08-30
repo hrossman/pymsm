@@ -34,7 +34,7 @@ def test_rotterdam():
         n_jobs=None,
     )
 
-    assert len(all_mcs)==N_SAMPLES
+    assert len(all_mcs) == N_SAMPLES
 
 
 def test_ebmt():
@@ -72,7 +72,7 @@ def test_ebmt():
         print_paths=False,
     )
 
-    assert len(mc_paths)==N_SAMPLES
+    assert len(mc_paths) == N_SAMPLES
 
 
 def test_covid_hosp():
@@ -164,4 +164,4 @@ def test_covid_hosp():
     )
     print(los)
 
-    assert len(mc_paths)==10
+    assert len(mc_paths) == 10

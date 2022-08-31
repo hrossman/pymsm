@@ -93,6 +93,7 @@ def test_covid_hosp():
 
     path_freqs = get_path_frequencies(dataset, state_labels_short)
     print(path_freqs)
+    assert isinstance(path_freqs,pd.Series)
 
     # define time-varying covariates
     def covid_update_covariates_function(
@@ -125,7 +126,7 @@ def test_covid_hosp():
         sample_covariates=pd.Series({"is_male": 0, "age": 75, "was_severe": 0}),
         origin_state=2,
         current_time=0,
-        n_random_samples=10,
+        n_random_samples=N_SAMPLES,
         max_transitions=10,
         print_paths=False,
         n_jobs=-1,
@@ -156,6 +157,7 @@ def test_covid_hosp():
 
     path_freqs = get_path_frequencies(mc_paths, state_labels_short)
     print(path_freqs)
+    assert isinstance(path_freqs,pd.Series)
 
     from pymsm.statistics import path_total_time_at_states
 
@@ -164,4 +166,4 @@ def test_covid_hosp():
     )
     print(los)
 
-    assert len(mc_paths) == 10
+    assert len(mc_paths) == N_SAMPLES

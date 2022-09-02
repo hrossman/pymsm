@@ -79,8 +79,7 @@ mcs = multi_state_model.run_monte_carlo_simulation(
 ## Full examples
 1. [Rotterdam Illness-death example](https://github.com/hrossman/pymsm/blob/main/docs/full_examples/Rotterdam_example.ipynb)
 2. [EBMT multistate example](https://github.com/hrossman/pymsm/blob/main/docs/full_examples/EBMT_example.ipynb)
-3. [COVID hospitalizations multistate example](https://github.com/hrossman/pymsm/blob/main/docs/full_examples/COVID_hospitalization_example.ipynb)
-
+3. [COVID hospitalizations multistate example](https://github.com/hrossman/pymsm/blob/main/docs/full_examples/COVID_hospitalization_example.ipynb)  
 
 
 ## Background and Motivation

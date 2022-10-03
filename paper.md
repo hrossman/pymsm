@@ -91,7 +91,7 @@ $$
 $$
 for $t > 0$ and a $Z$ vector of covariates. Although $Z$ is shared by the six models above,  it does not imply that identical covariates must be used in these models. For example, in Cox models with   transition-dependent   regression coefficient vectors,  one can set any specific coefficient to zero for excluding the corresponding covariate.  
 
-Let $J_C$ and $J_N$ denote the current and next states, respectively, and $T$ denotes the transition time. Assume the journey of an observation in the system described by the multi-state model starts at state $j^*$ with a vector of baseline covariates $W$. Let $Z(t)$ be a time-dependent vector of covariates, where
+Let $J_C$ and $J_N$ denote the current and next states, respectively, and $T$ denote the transition time. Assume the journey of an observation in the system described by the multi-state model starts at state $j^*$ with a vector of baseline covariates $W$. Let $Z(t)$ be a time-dependent vector of covariates, where
 $$ 
 Z(T)^T = (W^T,\widetilde{W}(T)^T)
 $$
@@ -128,7 +128,7 @@ $$
 \frac{ \int_{t'}^t \lambda_{j',j}(u|Z)\exp\left\{-\sum_{k=1}^{|K_{j'}|} \Lambda_{j',k}(u-|Z) \right\} du }
 { \int_{t'}^\infty \lambda_{j',j}(u|Z)\exp\left\{-\sum_{k=1}^{|K_{j'}|} \Lambda_{j',k}(u-|Z) \right\} du } \, .
 $$    
-All the above, set the main multi-state model components required for prediction, as will be explained in the following sections.
+For all of the above, set the main multi-state model components required for prediction, as will be explained in the following sections.
 
 ## Estimation
 
@@ -143,7 +143,7 @@ right censoring and competing events based on the approach of Andersen & Keiding
 Another important issue is left truncation which occurs at each transition that is not the origin state of the subject's path. Bias due to left truncation is eliminated by using the well-known risk-set correction [@Klein:2006]. 
 Recurrent events, which occurs when subjects visit the same state multiple times, are accommodated by the robust standard errors [@Andersen:1982]. 	
 
-Based on the estimates of the regression coefficients and the cumulative baseline hazard functions, all the distribution functions above can be estimated by replacing the integrals with sums over the observed failure times, and any unknown parameter is replaced by its estimator. Specifically, let $\tau_{j^*,j}$ be the largest observed event time of transition $j^* \rightarrow j$. Then, 
+Based on the estimates of the regression coefficients and the cumulative baseline hazard functions, all the distribution functions above can be estimated by replacing the integrals with sums over the observed failure times, replacing any unknown parameter by its estimator. Specifically, let $\tau_{j^*,j}$ be the largest observed event time of transition $j^* \rightarrow j$. Then, 
 \begin{equation}
     \begin{gathered}
 \widehat{\Pr} (J_N=j | J_C=j^*,Z(0)=Z) \\

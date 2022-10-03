@@ -8,7 +8,7 @@
 ![Tests](https://github.com/hrossman/pymsm/actions/workflows/tests.yml/badge.svg)
 [![codecov](https://codecov.io/gh/hrossman/pymsm/branch/main/graph/badge.svg?token=FG434UHSQ2)](https://codecov.io/gh/hrossman/pymsm)
 [![pypi version](https://img.shields.io/pypi/v/pymsm)](https://pypi.org/project/pymsm/)
-[![DOI](https://zenodo.org/badge/443028256.svg)](https://zenodo.org/badge/latestdoi/443028256)  
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7140849.svg)](https://doi.org/10.5281/zenodo.7140849)
 
 `PyMSM` is a Python package for fitting competing risks and multistate models, with a simple API which allows user-defined model, predictions at a single or population sample level, statistical summaries and figures.  
 
@@ -86,14 +86,13 @@ If you found this library useful in academic research, please cite:
 ```bibtex
 @software{Rossman_PyMSM_Multistate_modeling_2022,
     author = {Rossman, Hagai and Keshet, Ayya and Gorfine, Malka},
-    doi = {https://doi.org/10.5281/zenodo.6300873},
+    doi = {https://doi.org/10.5281/zenodo.7140849},
     license = {MIT},
     month = {2},
     title = {{PyMSM, Multistate modeling in Python}},
     url = {https://github.com/hrossman/pymsm},
     year = {2022}
 }
-```
 
 Also consider starring the project [on GitHub](https://github.com/hrossman/pymsm)
 

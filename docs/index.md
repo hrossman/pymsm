@@ -20,6 +20,7 @@ Features include:
 - Load or configure a pre-defined model and run path simulations.
 - Modularity and compatibility for different time-to-event models such as Survival Forests and other custom models.
 
+For details, read the [JOSS paper](https://joss.theoj.org/papers/10.21105/joss.04566)  
 
 ## Installation
 

@@ -9,7 +9,7 @@
 Multistate competing risk models in Python  
   
 [Read the Docs](https://hrossman.github.io/pymsm/)  
-[For details read the JOSS paper](https://joss.theoj.org/papers/10.21105/joss.04566)  
+For details, read the [JOSS paper](https://joss.theoj.org/papers/10.21105/joss.04566)  
   
 [Hagai Rossman](https://hrossman.github.io/), [Ayya Keshet](https://github.com/ayya-keshet), [Malka Gorfine](https://www.tau.ac.il/~gorfinem/) 2022
 

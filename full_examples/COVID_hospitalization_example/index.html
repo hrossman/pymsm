@@ -1,0 +1,1949 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="The documentation for the PyMSM software library.">
+      
+      
+        <meta name="author" content="Hagai Rossman, Ayya Keshet">
+      
+      
+      <link rel="icon" href="../../pymsm_icon.svg">
+      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.2.8">
+    
+    
+      
+        <title>COVID hospitalization example - PyMSM</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.644de097.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.e6a45f82.min.css">
+        
+      
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../css/ansi-colours.css">
+    
+      <link rel="stylesheet" href="../../css/jupyter-cells.css">
+    
+      <link rel="stylesheet" href="../../css/pandas-dataframe.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+
+  <script>function gtag(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],gtag("js",new Date),gtag("config","G-4PXS01G51T"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&gtag("event","search",{search_term:this.value})}),"undefined"!=typeof location$&&location$.subscribe(function(e){gtag("config","G-4PXS01G51T",{page_path:e.pathname})})})</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-4PXS01G51T"></script>
+
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="amber">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#in-this-notebook" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="PyMSM" class="md-header__button md-logo" aria-label="PyMSM" data-md-component="logo">
+      
+  <img src="../../pymsm_icon.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            PyMSM
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              COVID hospitalization example
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      <form class="md-header__option" data-md-component="palette">
+        
+          
+          
+          <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+          
+            <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3 3.19.09m3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95 2.06.05m-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31z"/></svg>
+            </label>
+          
+        
+          
+          
+          <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+          
+            <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5c-.84 0-1.65.15-2.39.42L12 2M3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29L3.34 7m.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14L3.36 17M20.65 7l-1.77 3.79a7.023 7.023 0 0 0-2.38-4.15l4.15.36m-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29L20.64 17M12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44L12 22z"/></svg>
+            </label>
+          
+        
+      </form>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/hrossman/pymsm/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hrossman/pymsm
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="PyMSM" class="md-nav__button md-logo" aria-label="PyMSM" data-md-component="logo">
+      
+  <img src="../../pymsm_icon.svg" alt="logo">
+
+    </a>
+    PyMSM
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/hrossman/pymsm/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hrossman/pymsm
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        PyMSM in a nutshell
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          Usage
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Usage" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Usage
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/Preparing_a_dataset/" class="md-nav__link">
+        Preparing a dataset
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/fitting_a_multistate_model/" class="md-nav__link">
+        Fitting a multistate model
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/path_sampling/" class="md-nav__link">
+        Path sampling
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/Datasets/" class="md-nav__link">
+        Datasets
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/competing_risks_stackplot/" class="md-nav__link">
+        Competing risks stackplot
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/examining_a_model/" class="md-nav__link">
+        Examining a model
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/custom_fitters/" class="md-nav__link">
+        Custom fitters
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/Simulator/" class="md-nav__link">
+        Simulator
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          Full examples
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Full examples" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Full examples
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Rotterdam_example/" class="md-nav__link">
+        Rotterdam example
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          COVID hospitalization example
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        COVID hospitalization example
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#in-this-notebook" class="md-nav__link">
+    In this notebook
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#load-data" class="md-nav__link">
+    Load data
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#path-frequencies" class="md-nav__link">
+    Path frequencies
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#define-time-varying-covariates" class="md-nav__link">
+    Define time-varying covariates
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fitting-the-multistate-model" class="md-nav__link">
+    Fitting the Multistate model
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#trimming-transitions" class="md-nav__link">
+    Trimming transitions
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#single-patient-stats" class="md-nav__link">
+    Single patient stats
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#saving-the-model-and-configuring-a-simulator" class="md-nav__link">
+    Saving the model and configuring a simulator
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AIDSI_example/" class="md-nav__link">
+        AIDSI example
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EBMT_example/" class="md-nav__link">
+        EBMT example
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          API
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="API" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          API
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/multistate_model/" class="md-nav__link">
+        Multistate model
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/multistate_simulator/" class="md-nav__link">
+        Multistate simulator
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/pathobject/" class="md-nav__link">
+        Pathobject
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#in-this-notebook" class="md-nav__link">
+    In this notebook
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#load-data" class="md-nav__link">
+    Load data
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#path-frequencies" class="md-nav__link">
+    Path frequencies
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#define-time-varying-covariates" class="md-nav__link">
+    Define time-varying covariates
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fitting-the-multistate-model" class="md-nav__link">
+    Fitting the Multistate model
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#trimming-transitions" class="md-nav__link">
+    Trimming transitions
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#single-patient-stats" class="md-nav__link">
+    Single patient stats
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#saving-the-model-and-configuring-a-simulator" class="md-nav__link">
+    Saving the model and configuring a simulator
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+
+
+  <h1>COVID hospitalization example</h1>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script>
+(function() {
+  function addWidgetsRenderer() {
+    var requireJsScript = document.createElement('script');
+    requireJsScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js';
+
+    var mimeElement = document.querySelector('script[type="application/vnd.jupyter.widget-view+json"]');
+    var jupyterWidgetsScript = document.createElement('script');
+    var widgetRendererSrc = 'https://unpkg.com/@jupyter-widgets/html-manager@*/dist/embed-amd.js';
+    var widgetState;
+
+    // Fallback for older version:
+    try {
+      widgetState = mimeElement && JSON.parse(mimeElement.innerHTML);
+
+      if (widgetState && (widgetState.version_major < 2 || !widgetState.version_major)) {
+        widgetRendererSrc = 'jupyter-js-widgets@*/dist/embed.js';
+      }
+    } catch(e) {}
+
+    jupyterWidgetsScript.src = widgetRendererSrc;
+
+    document.body.appendChild(requireJsScript);
+    document.body.appendChild(jupyterWidgetsScript);
+  }
+
+  document.addEventListener('DOMContentLoaded', addWidgetsRenderer);
+}());
+</script>
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="in-this-notebook">In this notebook<a class="headerlink" href="#in-this-notebook" title="Permanent link">¤</a></h2>
+<p>This notebook provides an  example of using the pymsm package in a more complex setting which includes recurring events and time-varying covariates.<br />
+We will also see how to load a saved model and run simualtions.<br />
+For all this, we will use Israel COVID-19 hospitalization <a href="https://github.com/JonathanSomer/covid-19-multi-state-model/blob/master/data/data_for_paper.csv">public data</a>, as described in <a href="https://academic.oup.com/jamia/article/28/6/1188/6105188">Roimi et. al. 2021</a>.  </p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Imports</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="kn">from</span> <span class="nn">pymsm.datasets</span> <span class="kn">import</span> <span class="n">prep_covid_hosp_data</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="kn">from</span> <span class="nn">pymsm.multi_state_competing_risks_model</span> <span class="kn">import</span> <span class="n">MultiStateModel</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="kn">from</span> <span class="nn">pymsm.statistics</span> <span class="kn">import</span> <span class="p">(</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="n">prob_visited_states</span><span class="p">,</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="n">stats_total_time_at_states</span><span class="p">,</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    <span class="n">get_path_frequencies</span><span class="p">,</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    <span class="n">path_total_time_at_states</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="p">)</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="kn">from</span> <span class="nn">pymsm.simulation</span> <span class="kn">import</span> <span class="n">MultiStateSimulator</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="o">%</span><span class="n">load_ext</span> <span class="n">autoreload</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="o">%</span><span class="n">autoreload</span> <span class="mi">2</span>
+</code></pre></div>
+
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="load-data">Load data<a class="headerlink" href="#load-data" title="Permanent link">¤</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span> <span class="nn">pymsm.datasets</span> <span class="kn">import</span> <span class="n">prep_covid_hosp_data</span><span class="p">,</span> <span class="n">plot_covid_hosp</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">dataset</span><span class="p">,</span> <span class="n">state_labels</span> <span class="o">=</span> <span class="n">prep_covid_hosp_data</span><span class="p">()</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">plot_covid_hosp</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">state_labels</span><span class="p">)</span>
+</code></pre></div>
+
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>
+<code>100%|██████████| 2675/2675 [00:42&lt;00:00, 62.45it/s]
+</code>
+</pre>
+</div>
+</div>
+<div class="output_area">
+<div class="output_html rendered_html output_subarea ">
+<img src="https://mermaid.ink/img/c3RhdGVEaWFncmFtLXYyCnMxIDogKDEpIERpc2NoYXJnZWQgb3IgUmVjb3ZlcmVkCnMyIDogKDIpIE1pbGQgb3IgTW9kZXJhdGUKczMgOiAoMykgU2V2ZXJlCnM0IDogKDQpIERlY2Vhc2VkCnMxIC0tPiBzMjogOTggCnMxIC0tPiBzMzogMiAKczIgLS0+IHMxOiAyMTM1IApzMiAtLT4gczM6IDI3NSAKczIgLS0+IHM0OiA1MiAKczMgLS0+IHMxOiA5IApzMyAtLT4gczI6IDE5MyAKczMgLS0+IHM0OiAxMzUgCgo="/>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Some definitions</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="n">covariate_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;is_male&quot;</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">,</span> <span class="s2">&quot;was_severe&quot;</span><span class="p">]</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="n">terminal_states</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="n">state_labels_short</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;R&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="s2">&quot;S&quot;</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span> <span class="s2">&quot;D&quot;</span><span class="p">}</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="nb">print</span><span class="p">(</span><span class="n">state_labels</span><span class="p">)</span>
+</code></pre></div>
+
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
+<code>{1: &#39;Discharged or Recovered&#39;, 2: &#39;Mild or Moderate&#39;, 3: &#39;Severe&#39;, 4: &#39;Deceased&#39;}
+</code>
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Let's look at one patients path</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">dataset</span><span class="p">[</span><span class="mi">567</span><span class="p">]</span><span class="o">.</span><span class="n">print_path</span><span class="p">()</span>
+</code></pre></div>
+
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
+<code>Sample id: 577
+States: [2 3 4]
+Transition times: [ 6 31]
+Covariates:
+is_male        1.0
+age           72.5
+was_severe     0.0
+Name: 567, dtype: float64
+</code>
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>For the example above, we see a man aged 72.5,<br />
+who follows a path of "Mild or Moderate"-&gt;"Severe"-&gt;"Deceased"<br />
+with transition times of 6 and 31 days.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="path-frequencies">Path frequencies<a class="headerlink" href="#path-frequencies" title="Permanent link">¤</a></h2>
+<p>We can print out a summary for all different trajectories in the data</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">path_freqs</span> <span class="o">=</span> <span class="n">get_path_frequencies</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">state_labels_short</span><span class="p">)</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nb">print</span><span class="p">(</span><span class="n">path_freqs</span><span class="p">)</span>
+</code></pre></div>
+
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
+<code>M-&gt;R                               1906
+M                                   202
+M-&gt;S                                 76
+S-&gt;D                                 74
+M-&gt;S-&gt;D                              59
+M-&gt;S-&gt;M-&gt;R                           46
+M-&gt;D                                 44
+M-&gt;R-&gt;M-&gt;R                           42
+S                                    42
+M-&gt;R-&gt;M                              36
+M-&gt;S-&gt;M                              35
+S-&gt;M-&gt;R                              28
+S-&gt;M                                 27
+M-&gt;S-&gt;M-&gt;S                            8
+S-&gt;R                                  6
+S-&gt;M-&gt;S                               5
+S-&gt;M-&gt;S-&gt;M-&gt;R                         3
+S-&gt;M-&gt;D                               3
+M-&gt;S-&gt;M-&gt;S-&gt;M                         3
+M-&gt;S-&gt;M-&gt;S-&gt;M-&gt;R                      3
+M-&gt;R-&gt;M-&gt;R-&gt;M-&gt;R                      3
+M-&gt;S-&gt;R                               3
+S-&gt;M-&gt;S-&gt;D                            2
+M-&gt;S-&gt;M-&gt;D                            2
+M-&gt;R-&gt;M-&gt;S                            2
+S-&gt;M-&gt;S-&gt;M-&gt;S-&gt;M                      2
+M-&gt;R-&gt;M-&gt;D                            2
+M-&gt;R-&gt;M-&gt;R-&gt;M                         2
+M-&gt;R-&gt;S                               1
+M-&gt;R-&gt;M-&gt;R-&gt;M-&gt;R-&gt;M-&gt;R-&gt;M-&gt;R-&gt;C       1
+M-&gt;S-&gt;M-&gt;R-&gt;M-&gt;R                      1
+M-&gt;R-&gt;S-&gt;M-&gt;R                         1
+S-&gt;M-&gt;S-&gt;M-&gt;S-&gt;M-&gt;R                   1
+S-&gt;M-&gt;S-&gt;M-&gt;D                         1
+S-&gt;M-&gt;R-&gt;M                            1
+M-&gt;S-&gt;M-&gt;S-&gt;M-&gt;S-&gt;M                   1
+M-&gt;S-&gt;M-&gt;S-&gt;M-&gt;S                      1
+dtype: int64
+</code>
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="define-time-varying-covariates">Define time-varying covariates<a class="headerlink" href="#define-time-varying-covariates" title="Permanent link">¤</a></h2>
+<p>We can define a custom "update_covariates_function" such as below: </p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="k">def</span> <span class="nf">covid_update_covariates_function</span><span class="p">(</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>    <span class="n">covariates_entering_origin_state</span><span class="p">,</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>    <span class="n">origin_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>    <span class="n">target_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>    <span class="n">time_at_origin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>    <span class="n">abs_time_entry_to_target_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="p">):</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>    <span class="n">covariates</span> <span class="o">=</span> <span class="n">covariates_entering_origin_state</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>    <span class="c1"># update is_severe covariate</span>
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>    <span class="k">if</span> <span class="n">origin_state</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>        <span class="n">covariates</span><span class="p">[</span><span class="s1">&#39;was_severe&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>
+<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>    <span class="c1"># # update cum_hosp_tim covariate</span>
+<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>    <span class="c1"># if ((origin_state==2) &amp; (origin_state==3)):</span>
+<a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a>    <span class="c1">#     covariates[&quot;cum_hosp_time&quot;] += time_at_origin</span>
+<a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a>
+<a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a>    <span class="k">return</span> <span class="n">covariates</span>
+</code></pre></div>
+
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="fitting-the-multistate-model">Fitting the Multistate model<a class="headerlink" href="#fitting-the-multistate-model" title="Permanent link">¤</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">multi_state_model</span> <span class="o">=</span> <span class="n">MultiStateModel</span><span class="p">(</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>    <span class="n">dataset</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>    <span class="n">terminal_states</span><span class="o">=</span><span class="n">terminal_states</span><span class="p">,</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>    <span class="n">update_covariates_fn</span><span class="o">=</span><span class="n">covid_update_covariates_function</span><span class="p">,</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>    <span class="n">covariate_names</span><span class="o">=</span><span class="n">covariate_cols</span><span class="p">,</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>    <span class="n">state_labels</span><span class="o">=</span><span class="n">state_labels</span><span class="p">,</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="p">)</span>
+</code></pre></div>
+
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">multi_state_model</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+</code></pre></div>
+
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
+<code>Fitting Model at State: 2
+&gt;&gt;&gt; Fitting Transition to State: 1, n events: 2135
+&gt;&gt;&gt; Fitting Transition to State: 3, n events: 275
+&gt;&gt;&gt; Fitting Transition to State: 4, n events: 52
+Fitting Model at State: 1
+&gt;&gt;&gt; Fitting Transition to State: 2, n events: 98
+&gt;&gt;&gt; Fitting Transition to State: 3, n events: 2
+</code>
+</pre>
+</div>
+</div>
+<div class="output_area">
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>
+<code>/opt/conda/lib/python3.9/site-packages/lifelines/utils/__init__.py:1123: ConvergenceWarning: Column is_male have very low variance when conditioned on death event present or not. This may harm convergence. This could be a form of &#39;complete separation&#39;. For example, try the following code:
+
+&gt;&gt;&gt; events = df[&#39;target_state&#39;].astype(bool)
+&gt;&gt;&gt; print(df.loc[events, &#39;is_male&#39;].var())
+&gt;&gt;&gt; print(df.loc[~events, &#39;is_male&#39;].var())
+
+A very low variance means that the column is_male completely determines whether a subject dies or not. See https://stats.stackexchange.com/questions/11109/how-to-deal-with-perfect-separation-in-logistic-regression.
+
+  warnings.warn(dedent(warning_text), ConvergenceWarning)
+/opt/conda/lib/python3.9/site-packages/lifelines/fitters/coxph_fitter.py:1594: ConvergenceWarning: Newton-Rhaphson convergence completed successfully but norm(delta) is still high, 0.537. This may imply non-unique solutions to the maximum likelihood. Perhaps there is collinearity or complete separation in the dataset?
+
+  warnings.warn(
+</code>
+</pre>
+</div>
+</div>
+<div class="output_area">
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
+<code>Fitting Model at State: 3
+&gt;&gt;&gt; Fitting Transition to State: 2, n events: 193
+&gt;&gt;&gt; Fitting Transition to State: 1, n events: 9
+</code>
+</pre>
+</div>
+</div>
+<div class="output_area">
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>
+<code>/opt/conda/lib/python3.9/site-packages/lifelines/utils/__init__.py:1123: ConvergenceWarning: Column was_severe have very low variance when conditioned on death event present or not. This may harm convergence. This could be a form of &#39;complete separation&#39;. For example, try the following code:
+
+&gt;&gt;&gt; events = df[&#39;target_state&#39;].astype(bool)
+&gt;&gt;&gt; print(df.loc[events, &#39;was_severe&#39;].var())
+&gt;&gt;&gt; print(df.loc[~events, &#39;was_severe&#39;].var())
+
+A very low variance means that the column was_severe completely determines whether a subject dies or not. See https://stats.stackexchange.com/questions/11109/how-to-deal-with-perfect-separation-in-logistic-regression.
+
+  warnings.warn(dedent(warning_text), ConvergenceWarning)
+/opt/conda/lib/python3.9/site-packages/lifelines/fitters/coxph_fitter.py:1594: ConvergenceWarning: Newton-Rhaphson convergence completed successfully but norm(delta) is still high, 0.262. This may imply non-unique solutions to the maximum likelihood. Perhaps there is collinearity or complete separation in the dataset?
+
+  warnings.warn(
+</code>
+</pre>
+</div>
+</div>
+<div class="output_area">
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
+<code>&gt;&gt;&gt; Fitting Transition to State: 4, n events: 135
+</code>
+</pre>
+</div>
+</div>
+<div class="output_area">
+<div class="output_html rendered_html output_subarea ">
+<img src="https://mermaid.ink/img/c3RhdGVEaWFncmFtLXYyCnMxIDogKDEpIERpc2NoYXJnZWQgb3IgUmVjb3ZlcmVkCnMyIDogKDIpIE1pbGQgb3IgTW9kZXJhdGUKczMgOiAoMykgU2V2ZXJlCnM0IDogKDQpIERlY2Vhc2VkCnMxIC0tPiBzMjogOTggCnMxIC0tPiBzMzogMiAKczIgLS0+IHMxOiAyMTM1IApzMiAtLT4gczM6IDI3NSAKczIgLS0+IHM0OiA1MiAKczMgLS0+IHMxOiA5IApzMyAtLT4gczI6IDE5MyAKczMgLS0+IHM0OiAxMzUgCgo="/>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">multi_state_model</span><span class="o">.</span><span class="n">transition_table</span>
+</code></pre></div>
+
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="scoped">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+<thead>
+    <tr style="text-align: right;">
+      <th>target_state</th>
+      <th>Censored</th>
+      <th>Discharged\Recovered</th>
+      <th>Mild or Moderate</th>
+      <th>Severe</th>
+      <th>Deceased</th>
+    </tr>
+    <tr>
+      <th>origin_state</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+<tbody>
+    <tr>
+      <th>Discharged\Recovered</th>
+      <td>2044</td>
+      <td>0</td>
+      <td>98</td>
+      <td>2</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>Mild or Moderate</th>
+      <td>309</td>
+      <td>2135</td>
+      <td>0</td>
+      <td>275</td>
+      <td>52</td>
+    </tr>
+    <tr>
+      <th>Severe</th>
+      <td>135</td>
+      <td>9</td>
+      <td>193</td>
+      <td>0</td>
+      <td>135</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Note that we get some warnings for some of the transitions. These should be handled or at least acknowledged when fitting a model.<br />
+Another option might be to discard these transitions that contain a small number of samples. We can set the <code>trim_transitions_threshold</code> to a minimal nuber of samples for which a model will be trained.<br />
+Let's set this to 10 below</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="trimming-transitions">Trimming transitions<a class="headerlink" href="#trimming-transitions" title="Permanent link">¤</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="n">multi_state_model</span> <span class="o">=</span> <span class="n">MultiStateModel</span><span class="p">(</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>    <span class="n">dataset</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>    <span class="n">terminal_states</span><span class="o">=</span><span class="n">terminal_states</span><span class="p">,</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>    <span class="n">update_covariates_fn</span><span class="o">=</span><span class="n">covid_update_covariates_function</span><span class="p">,</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>    <span class="n">covariate_names</span><span class="o">=</span><span class="n">covariate_cols</span><span class="p">,</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>    <span class="n">state_labels</span><span class="o">=</span><span class="n">state_labels</span><span class="p">,</span>
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>    <span class="n">trim_transitions_threshold</span><span class="o">=</span><span class="mi">10</span>
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="p">)</span>
+</code></pre></div>
+
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="n">multi_state_model</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+</code></pre></div>
+
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
+<code>Fitting Model at State: 2
+&gt;&gt;&gt; Fitting Transition to State: 1, n events: 2135
+&gt;&gt;&gt; Fitting Transition to State: 3, n events: 275
+&gt;&gt;&gt; Fitting Transition to State: 4, n events: 52
+Fitting Model at State: 1
+&gt;&gt;&gt; Fitting Transition to State: 2, n events: 98
+Fitting Model at State: 3
+&gt;&gt;&gt; Fitting Transition to State: 2, n events: 193
+&gt;&gt;&gt; Fitting Transition to State: 4, n events: 135
+</code>
+</pre>
+</div>
+</div>
+<div class="output_area">
+<div class="output_html rendered_html output_subarea ">
+<img src="https://mermaid.ink/img/c3RhdGVEaWFncmFtLXYyCnMxIDogKDEpIERpc2NoYXJnZWRcUmVjb3ZlcmVkCnMyIDogKDIpIE1pbGQgb3IgTW9kZXJhdGUKczMgOiAoMykgU2V2ZXJlCnM0IDogKDQpIERlY2Vhc2VkCnMxIC0tPiBzMjogOTggCnMyIC0tPiBzMTogMjEzNSAKczIgLS0+IHMzOiAyNzUgCnMyIC0tPiBzNDogNTIgCnMzIC0tPiBzMjogMTkzIApzMyAtLT4gczQ6IDEzNSAKCg=="/>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="n">multi_state_model</span><span class="o">.</span><span class="n">transition_table</span><span class="p">()</span>
+</code></pre></div>
+
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="scoped">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+<thead>
+    <tr style="text-align: right;">
+      <th>target_state</th>
+      <th>Censored</th>
+      <th>Discharged\Recovered</th>
+      <th>Mild or Moderate</th>
+      <th>Severe</th>
+      <th>Deceased</th>
+    </tr>
+    <tr>
+      <th>origin_state</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+<tbody>
+    <tr>
+      <th>Discharged\Recovered</th>
+      <td>2044</td>
+      <td>0</td>
+      <td>98</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>Mild or Moderate</th>
+      <td>309</td>
+      <td>2135</td>
+      <td>0</td>
+      <td>275</td>
+      <td>52</td>
+    </tr>
+    <tr>
+      <th>Severe</th>
+      <td>135</td>
+      <td>0</td>
+      <td>193</td>
+      <td>0</td>
+      <td>135</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="single-patient-stats">Single patient stats<a class="headerlink" href="#single-patient-stats" title="Permanent link">¤</a></h2>
+<p>Let's take a look at how the model models transitions for a single patient - a female aged 75<br />
+We'll run a Monte-Carlo simulation for 100 samples and present some path statistics</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="c1"># Run MC for a sample single patient</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="n">mc_paths</span> <span class="o">=</span> <span class="n">multi_state_model</span><span class="o">.</span><span class="n">run_monte_carlo_simulation</span><span class="p">(</span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>    <span class="n">sample_covariates</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">({</span><span class="s2">&quot;is_male&quot;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">:</span><span class="mi">75</span><span class="p">,</span> <span class="s2">&quot;was_severe&quot;</span><span class="p">:</span><span class="mi">0</span><span class="p">}),</span>
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>    <span class="n">origin_state</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>    <span class="n">current_time</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>    <span class="n">n_random_samples</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>    <span class="n">max_transitions</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>    <span class="n">print_paths</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a>    <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span>
+<a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a><span class="p">)</span>
+</code></pre></div>
+
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>
+<code> 32%|███▏      | 32/100 [00:16&lt;00:43,  1.56it/s]/home/hagair/repo/pymsm/src/pymsm/multi_state_competing_risks_model.py:594: RuntimeWarning: invalid value encountered in true_divide
+  probability_for_each_t / probability_for_each_t.max()
+ 56%|█████▌    | 56/100 [00:33&lt;00:29,  1.48it/s]/home/hagair/repo/pymsm/src/pymsm/multi_state_competing_risks_model.py:594: RuntimeWarning: invalid value encountered in true_divide
+  probability_for_each_t / probability_for_each_t.max()
+ 80%|████████  | 80/100 [00:49&lt;00:13,  1.43it/s]/home/hagair/repo/pymsm/src/pymsm/multi_state_competing_risks_model.py:594: RuntimeWarning: invalid value encountered in true_divide
+  probability_for_each_t / probability_for_each_t.max()
+100%|██████████| 100/100 [01:01&lt;00:00,  1.61it/s]
+/home/hagair/repo/pymsm/src/pymsm/multi_state_competing_risks_model.py:594: RuntimeWarning: invalid value encountered in true_divide
+  probability_for_each_t / probability_for_each_t.max()
+</code>
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Let's calculate the probability of being in any of the states and also obtain stats regarding time in each state</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="c1"># Probability of visiting any of the states</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="k">for</span> <span class="n">state</span><span class="p">,</span> <span class="n">state_label</span> <span class="ow">in</span> <span class="n">state_labels</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>    <span class="k">if</span> <span class="n">state</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>        <span class="k">continue</span>
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>    <span class="nb">print</span><span class="p">(</span>
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>        <span class="sa">f</span><span class="s2">&quot;Probabilty of ever being </span><span class="si">{</span><span class="n">state_label</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">prob_visited_states</span><span class="p">(</span><span class="n">mc_paths</span><span class="p">,</span> <span class="n">states</span><span class="o">=</span><span class="p">[</span><span class="n">state</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span>
+<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a>    <span class="p">)</span>
+<a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>
+<a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a>
+<a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a><span class="c1"># Stats for times at states</span>
+<a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a><span class="n">dfs</span> <span class="o">=</span> <span class="p">[]</span>
+<a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a><span class="k">for</span> <span class="n">state</span><span class="p">,</span> <span class="n">state_label</span> <span class="ow">in</span> <span class="n">state_labels</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+<a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a>    <span class="k">if</span> <span class="n">state</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">state</span> <span class="ow">in</span> <span class="n">terminal_states</span><span class="p">:</span>
+<a id="__codelineno-13-14" name="__codelineno-13-14" href="#__codelineno-13-14"></a>        <span class="k">continue</span>
+<a id="__codelineno-13-15" name="__codelineno-13-15" href="#__codelineno-13-15"></a>    <span class="n">dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+<a id="__codelineno-13-16" name="__codelineno-13-16" href="#__codelineno-13-16"></a>        <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+<a id="__codelineno-13-17" name="__codelineno-13-17" href="#__codelineno-13-17"></a>            <span class="n">data</span><span class="o">=</span><span class="n">stats_total_time_at_states</span><span class="p">(</span><span class="n">mc_paths</span><span class="p">,</span> <span class="n">states</span><span class="o">=</span><span class="p">[</span><span class="n">state</span><span class="p">]),</span>
+<a id="__codelineno-13-18" name="__codelineno-13-18" href="#__codelineno-13-18"></a>            <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="n">state_label</span><span class="p">],</span>
+<a id="__codelineno-13-19" name="__codelineno-13-19" href="#__codelineno-13-19"></a>        <span class="p">)</span>
+<a id="__codelineno-13-20" name="__codelineno-13-20" href="#__codelineno-13-20"></a>    <span class="p">)</span>
+<a id="__codelineno-13-21" name="__codelineno-13-21" href="#__codelineno-13-21"></a><span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">dfs</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+</code></pre></div>
+
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
+<code>Probabilty of ever being Discharged\Recovered = 0.09
+Probabilty of ever being Mild or Moderate = 1.0
+Probabilty of ever being Severe = 0.24
+Probabilty of ever being Deceased = 1.0
+</code>
+</pre>
+</div>
+</div>
+<div class="output_area">
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="scoped">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+<thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Discharged\Recovered</th>
+      <th>Mild or Moderate</th>
+      <th>Severe</th>
+    </tr>
+  </thead>
+<tbody>
+    <tr>
+      <th>time_in_state_mean</th>
+      <td>3.970</td>
+      <td>4.070</td>
+      <td>0.470</td>
+    </tr>
+    <tr>
+      <th>time_in_state_std</th>
+      <td>14.983</td>
+      <td>2.507</td>
+      <td>1.253</td>
+    </tr>
+    <tr>
+      <th>time_in_state_median</th>
+      <td>0.000</td>
+      <td>4.000</td>
+      <td>0.000</td>
+    </tr>
+    <tr>
+      <th>time_in_state_min</th>
+      <td>0.000</td>
+      <td>1.000</td>
+      <td>0.000</td>
+    </tr>
+    <tr>
+      <th>time_in_state_max</th>
+      <td>96.000</td>
+      <td>18.000</td>
+      <td>7.000</td>
+    </tr>
+    <tr>
+      <th>time_in_state_quantile_0.1</th>
+      <td>0.000</td>
+      <td>2.000</td>
+      <td>0.000</td>
+    </tr>
+    <tr>
+      <th>time_in_state_quantile_0.25</th>
+      <td>0.000</td>
+      <td>3.000</td>
+      <td>0.000</td>
+    </tr>
+    <tr>
+      <th>time_in_state_quantile_0.75</th>
+      <td>0.000</td>
+      <td>5.000</td>
+      <td>0.000</td>
+    </tr>
+    <tr>
+      <th>time_in_state_quantile_0.9</th>
+      <td>0.000</td>
+      <td>7.000</td>
+      <td>2.000</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Print out the path frequencies for the sampled paths</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="n">path_freqs</span> <span class="o">=</span> <span class="n">get_path_frequencies</span><span class="p">(</span><span class="n">mc_paths</span><span class="p">,</span> <span class="n">state_labels</span><span class="p">)</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="n">path_freqs</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</code></pre></div>
+
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="output_text output_subarea output_execute_result">
+<pre>
+<code>Mild or Moderate-&gt;Deceased                                             67
+Mild or Moderate-&gt;Severe-&gt;Deceased                                     24
+Mild or Moderate-&gt;Discharged\\Recovered-&gt;Mild or Moderate-&gt;Deceased     9
+dtype: int64</code>
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>A CDF for the total time in hospital</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="n">los</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">path_total_time_at_states</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">states</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">mc_paths</span><span class="p">])</span>
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">los</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">los</span><span class="p">),</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span> <span class="n">lw</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a><span class="c1"># ax.set_xlim(0,20)</span>
+<a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;CDF of Length of Stay&#39;</span><span class="p">)</span>
+<a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a><span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Days&#39;</span><span class="p">);</span>
+</code></pre></div>
+
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="output_png output_subarea ">
+<img src="data:image/png;base64,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"
+>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can also look at Monte-Carlo simulations for the same patient, assuming we already know she has been in the Severe (3) state, for 2 days.</p>
+<p>To do this, we simply need to set the <code>origin_state</code> to 3, set the <code>current_time</code> to 2, and update her covariates accordingly.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="c1"># Run MC for a sample single patient</span>
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="n">mc_paths_severe</span> <span class="o">=</span> <span class="n">multi_state_model</span><span class="o">.</span><span class="n">run_monte_carlo_simulation</span><span class="p">(</span>
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>    <span class="n">sample_covariates</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">({</span><span class="s2">&quot;is_male&quot;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">:</span><span class="mi">75</span><span class="p">,</span> <span class="s2">&quot;was_severe&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}),</span>
+<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>    <span class="n">origin_state</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+<a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>    <span class="n">current_time</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+<a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>    <span class="n">n_random_samples</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+<a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a>    <span class="n">max_transitions</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+<a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a>    <span class="n">print_paths</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a>    <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span>
+<a id="__codelineno-16-10" name="__codelineno-16-10" href="#__codelineno-16-10"></a><span class="p">)</span>
+</code></pre></div>
+
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>
+<code>100%|██████████| 100/100 [00:59&lt;00:00,  1.67it/s]
+/home/hagair/repo/pymsm/src/pymsm/multi_state_competing_risks_model.py:594: RuntimeWarning: invalid value encountered in true_divide
+  probability_for_each_t / probability_for_each_t.max()
+</code>
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now we can calculate the probability of being in any of the states and obtain statistics regarding time in each state.</p>
+<p>We can compare these to the statistics we obtained above, when the patient started in a Mild (2) state.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="c1"># Probability of visiting any of the states</span>
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="k">for</span> <span class="n">state</span><span class="p">,</span> <span class="n">state_label</span> <span class="ow">in</span> <span class="n">state_labels</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>    <span class="k">if</span> <span class="n">state</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+<a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>        <span class="k">continue</span>
+<a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>    <span class="nb">print</span><span class="p">(</span>
+<a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a>        <span class="sa">f</span><span class="s2">&quot;Probabilty of ever being </span><span class="si">{</span><span class="n">state_label</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">prob_visited_states</span><span class="p">(</span><span class="n">mc_paths_severe</span><span class="p">,</span> <span class="n">states</span><span class="o">=</span><span class="p">[</span><span class="n">state</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span>
+<a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a>    <span class="p">)</span>
+<a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a>
+<a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a>
+<a id="__codelineno-17-10" name="__codelineno-17-10" href="#__codelineno-17-10"></a><span class="c1"># Stats for times at states</span>
+<a id="__codelineno-17-11" name="__codelineno-17-11" href="#__codelineno-17-11"></a><span class="n">dfs</span> <span class="o">=</span> <span class="p">[]</span>
+<a id="__codelineno-17-12" name="__codelineno-17-12" href="#__codelineno-17-12"></a><span class="k">for</span> <span class="n">state</span><span class="p">,</span> <span class="n">state_label</span> <span class="ow">in</span> <span class="n">state_labels</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+<a id="__codelineno-17-13" name="__codelineno-17-13" href="#__codelineno-17-13"></a>    <span class="k">if</span> <span class="n">state</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">state</span> <span class="ow">in</span> <span class="n">terminal_states</span><span class="p">:</span>
+<a id="__codelineno-17-14" name="__codelineno-17-14" href="#__codelineno-17-14"></a>        <span class="k">continue</span>
+<a id="__codelineno-17-15" name="__codelineno-17-15" href="#__codelineno-17-15"></a>    <span class="n">dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+<a id="__codelineno-17-16" name="__codelineno-17-16" href="#__codelineno-17-16"></a>        <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+<a id="__codelineno-17-17" name="__codelineno-17-17" href="#__codelineno-17-17"></a>            <span class="n">data</span><span class="o">=</span><span class="n">stats_total_time_at_states</span><span class="p">(</span><span class="n">mc_paths_severe</span><span class="p">,</span> <span class="n">states</span><span class="o">=</span><span class="p">[</span><span class="n">state</span><span class="p">]),</span>
+<a id="__codelineno-17-18" name="__codelineno-17-18" href="#__codelineno-17-18"></a>            <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="n">state_label</span><span class="p">],</span>
+<a id="__codelineno-17-19" name="__codelineno-17-19" href="#__codelineno-17-19"></a>        <span class="p">)</span>
+<a id="__codelineno-17-20" name="__codelineno-17-20" href="#__codelineno-17-20"></a>    <span class="p">)</span>
+<a id="__codelineno-17-21" name="__codelineno-17-21" href="#__codelineno-17-21"></a><span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">dfs</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+</code></pre></div>
+
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
+<code>Probabilty of ever being Discharged\Recovered = 0.0
+Probabilty of ever being Mild or Moderate = 0.11
+Probabilty of ever being Severe = 1.0
+Probabilty of ever being Deceased = 1.0
+</code>
+</pre>
+</div>
+</div>
+<div class="output_area">
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="scoped">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+<thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Discharged\Recovered</th>
+      <th>Mild or Moderate</th>
+      <th>Severe</th>
+    </tr>
+  </thead>
+<tbody>
+    <tr>
+      <th>time_in_state_mean</th>
+      <td>0.0</td>
+      <td>0.100</td>
+      <td>8.570</td>
+    </tr>
+    <tr>
+      <th>time_in_state_std</th>
+      <td>0.0</td>
+      <td>0.458</td>
+      <td>10.872</td>
+    </tr>
+    <tr>
+      <th>time_in_state_median</th>
+      <td>0.0</td>
+      <td>0.000</td>
+      <td>5.000</td>
+    </tr>
+    <tr>
+      <th>time_in_state_min</th>
+      <td>0.0</td>
+      <td>0.000</td>
+      <td>0.000</td>
+    </tr>
+    <tr>
+      <th>time_in_state_max</th>
+      <td>0.0</td>
+      <td>3.000</td>
+      <td>83.000</td>
+    </tr>
+    <tr>
+      <th>time_in_state_quantile_0.1</th>
+      <td>0.0</td>
+      <td>0.000</td>
+      <td>0.000</td>
+    </tr>
+    <tr>
+      <th>time_in_state_quantile_0.25</th>
+      <td>0.0</td>
+      <td>0.000</td>
+      <td>2.750</td>
+    </tr>
+    <tr>
+      <th>time_in_state_quantile_0.75</th>
+      <td>0.0</td>
+      <td>0.000</td>
+      <td>10.000</td>
+    </tr>
+    <tr>
+      <th>time_in_state_quantile_0.9</th>
+      <td>0.0</td>
+      <td>0.000</td>
+      <td>19.000</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="saving-the-model-and-configuring-a-simulator">Saving the model and configuring a simulator<a class="headerlink" href="#saving-the-model-and-configuring-a-simulator" title="Permanent link">¤</a></h2>
+<p>We can save the model for later use, and configure a simulator to generate simulated paths</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="kn">from</span> <span class="nn">pymsm.simulation</span> <span class="kn">import</span> <span class="n">extract_competing_risks_models_list_from_msm</span>
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>
+<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="n">competing_risks_models_list</span> <span class="o">=</span> <span class="n">extract_competing_risks_models_list_from_msm</span><span class="p">(</span>
+<a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a>    <span class="n">multi_state_model</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span>
+<a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a><span class="p">)</span>
+<a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a>
+<a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a><span class="c1"># Configure the simulator</span>
+<a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a><span class="n">mssim</span> <span class="o">=</span> <span class="n">MultiStateSimulator</span><span class="p">(</span>
+<a id="__codelineno-18-9" name="__codelineno-18-9" href="#__codelineno-18-9"></a>    <span class="n">competing_risks_models_list</span><span class="p">,</span>
+<a id="__codelineno-18-10" name="__codelineno-18-10" href="#__codelineno-18-10"></a>    <span class="n">terminal_states</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span>
+<a id="__codelineno-18-11" name="__codelineno-18-11" href="#__codelineno-18-11"></a>    <span class="n">update_covariates_fn</span><span class="o">=</span><span class="n">covid_update_covariates_function</span><span class="p">,</span>
+<a id="__codelineno-18-12" name="__codelineno-18-12" href="#__codelineno-18-12"></a>    <span class="n">covariate_names</span><span class="o">=</span><span class="n">covariate_cols</span><span class="p">,</span>
+<a id="__codelineno-18-13" name="__codelineno-18-13" href="#__codelineno-18-13"></a>    <span class="n">state_labels</span><span class="o">=</span><span class="n">state_labels</span><span class="p">,</span>
+<a id="__codelineno-18-14" name="__codelineno-18-14" href="#__codelineno-18-14"></a><span class="p">)</span>
+</code></pre></div>
+
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
+<code>2 1 &lt;pymsm.competing_risks_model.EventSpecificModel object at 0x7f279807b3d0&gt;
+2 3 &lt;pymsm.competing_risks_model.EventSpecificModel object at 0x7f2798071280&gt;
+2 4 &lt;pymsm.competing_risks_model.EventSpecificModel object at 0x7f279807bf10&gt;
+1 2 &lt;pymsm.competing_risks_model.EventSpecificModel object at 0x7f2799dd9dc0&gt;
+3 2 &lt;pymsm.competing_risks_model.EventSpecificModel object at 0x7f27d41c56d0&gt;
+3 4 &lt;pymsm.competing_risks_model.EventSpecificModel object at 0x7f27d7a33fa0&gt;
+</code>
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>And now we can sample paths from this simulator  </p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="c1"># Run MC for a sample single patient</span>
+<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="n">sim_paths</span> <span class="o">=</span> <span class="n">multi_state_model</span><span class="o">.</span><span class="n">run_monte_carlo_simulation</span><span class="p">(</span>
+<a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>    <span class="n">sample_covariates</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">({</span><span class="s2">&quot;is_male&quot;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">:</span><span class="mi">75</span><span class="p">,</span> <span class="s2">&quot;was_severe&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}),</span>
+<a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a>    <span class="n">origin_state</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+<a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a>    <span class="n">current_time</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+<a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a>    <span class="n">n_random_samples</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+<a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a>    <span class="n">max_transitions</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+<a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a>    <span class="n">print_paths</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a>    <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span>
+<a id="__codelineno-19-10" name="__codelineno-19-10" href="#__codelineno-19-10"></a><span class="p">)</span>
+</code></pre></div>
+
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>
+<code>100%|██████████| 5/5 [00:00&lt;00:00, 1717.99it/s]
+</code>
+</pre>
+</div>
+</div>
+<div class="output_area">
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
+<code>States: [3, 4]
+Transition times: [7.455064368055986e-06]
+
+
+States: [3, 4]
+Transition times: [5.683086033370088e-05]
+
+
+States: [3, 4]
+Transition times: [1.0000540635121609]
+
+
+States: [3, 4]
+Transition times: [5.76903884628166e-05]
+
+
+States: [3, 4]
+Transition times: [3.2004960103027e-05]
+
+
+</code>
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="../Rotterdam_example/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Rotterdam example" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Rotterdam example
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../AIDSI_example/" class="md-footer__link md-footer__link--next" aria-label="Next: AIDSI example" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              AIDSI example
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.5e67fbfe.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.c44cc438.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
